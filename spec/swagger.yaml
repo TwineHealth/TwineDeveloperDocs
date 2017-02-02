@@ -1,0 +1,2179 @@
+swagger: '2.0'
+info:
+  version: 1.0.1-draft
+  title: Twine API
+  x-logo:
+    url: '/images/twinehealth_hz_4color.png'
+  contact:
+    email: apiteam@twinehealth.com
+  description: |
+    # Overview
+    The Twine Health API is RESTful API. The requests and responses are formated according to the [JSON API](http://jsonapi.org/format/1.0/) specification.
+    
+    In addition to this documentation, we also provide an [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) "yaml" file describing the API: [Twine API Specification](spec/swagger.yaml).
+
+    # Authentication
+    Authentication for the Twine API is based on the [OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749). Twine currently supports grant types of **client_credentials** and **refresh_token**.
+    
+    See [POST /oauth/token](#operation/createToken) for details on the request and response formats.
+    <!-- ReDoc-Inject: <security-definitions> -->
+host: api.twinehealth.com
+basePath: /pub
+schemes:
+  - https
+consumes:
+  - application/vnd.api+json
+produces:
+  - application/vnd.api+json
+securityDefinitions:
+  twine_auth:
+    description: |
+      Get access to data while protecting your account credentials.
+      OAuth2 is also a safer and more secure way to give you access.
+    type: oauth2
+    authorizationUrl: 'https://api.twinehealth.com/pub/oauth/dialog'
+    flow: implicit
+    scopes:
+      'group': access patients and data within a group
+      'organization': access patients and data within an organization
+tags:
+  - name: oauth
+    description: Authentication operations
+  - name: organization
+    description: Administration of organizations. Organizations can contain groups.
+  - name: group
+    description: Administration of groups. A Twine group can correspond to a practice or a set of patients within an organization.
+  - name: reward budget
+    description: Administration of reward budgets
+  - name: patient
+    description: Patients are the health participants of Twine.
+  - name: plan
+    description: Action plans include health goals and actions.
+  - name: metric
+    description: Observations or results from measurements or labs. Note that the documentation for this API is incomplete.
+  - name: reward
+    description: Operations for rewards
+x-tagGroups:
+  - name: Authentication (oauth)
+    tags:
+      - oauth
+  - name: Admin
+    tags:
+      - organization
+      - group
+      - reward budget
+  - name: Patient Health Data
+    tags:
+      - patient
+      - plan
+      - metric
+      - reward
+paths:
+  /oauth/token:
+    post:
+      tags:
+        - oauth
+      summary: Create an oauth token
+      description: |
+        Create an OAuth 2.0 Bearer token. A valid bearer token is required for all other API requests.
+
+        Be sure to set the header `Content-Type: "application/vnd.api+json"`. Otherwise, you will get an error
+        403 Forbidden. Using `Content-Type: "application/json"` is permitted (to support older oauth clients) but when
+        using `application/json` the body should have a body in the following format instead of nesting under
+        `data.attributes`:
+        ```
+        {
+          "grant_type": "client_credentials",
+          "client_id": "95c78ab2-167f-40b8-8bec-8398d4b87454",
+          "client_secret": "35d18dc9-a3dd-4948-b787-063a490b9354"
+        }
+        ```
+      operationId: createToken
+      consumes: 
+        - application/vnd.api+json
+        - application/json
+      parameters:
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - groups
+            - organization
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateTokenRequest'
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/CreateTokenResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+      security:
+        - twine_auth:
+          - 'group'
+          - 'organization'
+  /oauth/token/{id}/group:
+    get:
+      tags:
+        - oauth
+      summary: Get the groups for a token
+      description: Get the list of groups a token can be used to access.
+      operationId: fetchTokenGroups
+      parameters:
+        - name: id
+          in: path
+          description: Token identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchGroupsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+      security:
+        - twine_auth:
+          - 'group'
+          - 'organization'
+  /oauth/token/{id}/organization:
+    get:
+      tags:
+        - oauth
+      summary: Get the organization for a token
+      description: Get the organization a token can be used to access.
+      operationId: fetchTokenOrganization
+      parameters:
+        - name: id
+          in: path
+          description: Token identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchOrganizationResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /group/{id}:
+    get:
+      tags:
+        - group
+      summary: Get a group
+      description: Get a group record by id.
+      operationId: fetchGroup
+      parameters:
+        - name: id
+          in: path
+          description: Group identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchGroupResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /group:
+    post:
+      tags:
+        - group
+      summary: Create a group
+      description: Create a group record.
+      operationId: createGroup
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateGroupRequest'      
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/CreateGroupResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+
+  /patient:
+    get:
+      tags:
+        - patient
+      summary: List patients
+      description: Get a list of patients.
+      operationId: fetchPatients
+      parameters:
+        - name: filter[groups]
+          in: query
+          type: string
+          description: Comma-separated list of Twine group ids (either a group or organization filter is required)
+        - name: filter[organization]
+          in: query
+          type: string
+          description: Twine organization id (either a group or organization filter is required)
+        - name: filter[identifier][system]
+          in: query
+          type: string
+          description: "Identifer system (example: \"MyEHR\") - requires a \"filter[identifier][value]\" parmeter"
+        - name: filter[identifier][value]
+          in: query
+          type: string
+          description: "Identifer value (example: \"12345\") - requires a \"filter[identifier][system]\" parmeter"
+        - name: page[number]
+          in: query
+          description: Page number
+          required: false
+          type: integer
+          default: 1
+        - name: page[size]
+          in: query
+          description: Page size
+          required: false
+          type: integer
+          default: 10
+          maximum: 50
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchPatientsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+    post:
+      tags:
+        - patient
+      summary: Create a patient
+      description: Create a patient record.
+      operationId: createPatient
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreatePatientRequest'
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/CreatePatientResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+  /patient/{id}:
+    get:
+      tags:
+        - patient
+      summary: Get a patient
+      description: Gets a patient record by id.
+      operationId: fetchPatient
+      parameters:
+        - name: id
+          in: path
+          description: Patient identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchPatientResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+    patch:
+      tags:
+        - patient
+      summary: Update a patient
+      description: Update a patient record.
+      operationId: updatePatient
+      parameters:
+        - name: id
+          in: path
+          description: Patient identifier
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdatePatientRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UpdatePatientResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        
+  /patient/{id}/group:
+    get:
+      tags:
+        - patient
+      summary: Get the list of groups for a patient
+      description: Get the list of groups for a patient.
+      operationId: fetchPatientGroups
+      parameters:
+        - name: id
+          in: path
+          description: Patient identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchGroupsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /patient/{id}/coach:
+    get:
+      tags:
+        - patient
+      summary: Get the list of coaches for a patient
+      description: Get the list of coaches for a patient.
+      operationId: fetchPatientCoaches
+      parameters:
+        - name: id
+          in: path
+          description: Patient identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchCoachesResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+            
+  /patient_plan_summary/{id}:
+    get: 
+      tags:
+        - plan
+      summary: Get the plan summary for a patient
+      description: Get the plan summary for a patient.
+      operationId: fetchPatientPlanSummary
+      parameters:
+        - name: id
+          in: path
+          description: Plan summary identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchPatientPlanSummaryResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /patient_plan_summary:
+    get:
+      tags:
+        - plan
+      summary: List patient plan summaries
+      description: Get a list of patient plan summaries
+      operationId: fetchPatientPlanSummaries
+      parameters:
+        - name: filter[patient]
+          in: query
+          type: string
+          description: Patient id to fetch plan summary for
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchPatientPlanSummariesResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /action:
+    post:
+      tags:
+        - plan
+      description: Create a plan action
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateActionRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateActionResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+    
+            
+  /coach/{id}:
+    get:
+      tags:
+        - coach
+      summary: Get a coach
+      description: Get a coach record by id.
+      operationId: fetchCoach
+      parameters:
+        - name: id
+          in: path
+          description: Coach identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchCoachResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  
+  /organization/{id}:
+    get:
+      tags:
+        - organization
+      summary: Get an organization
+      description: Get an organization record by id.
+      operationId: fetchOrganization
+      parameters:
+        - name: id
+          in: path
+          description: Organization identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchOrganizationResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+            
+  /reward_budget:
+    get:
+      tags:
+        - reward budget
+      summary: List reward budgets
+      description: Get a list of reward budgets matching the specified filters.
+      operationId: fetchRewardBudgets
+      parameters:
+        - name: filter[group]
+          in: query
+          description: Filter the budgets for a specified group
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchRewardBudgetsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+    post:
+      tags:
+        - reward budget
+      summary: Create a reward budget
+      description: Create a reward budget for a group.
+      operationId: createRewardBudget
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateRewardBudgetRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateRewardBudgetResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+  
+  /reward:
+    post:
+      tags:
+        - reward
+      summary: Create a reward
+      description: Create a reward for a patient associated with an action in the patient's plan.
+      operationId: createReward
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateRewardRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateRewardResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        
+
+      
+
+definitions:
+
+  CreateOrUpdateMetaResponse:
+    type: object
+    properties:
+      req_id:
+        type: string
+      ignored:
+        type: array
+        items:
+          type: string
+  FetchMetaResponse:
+    type: object
+    properties:
+      req_id:
+        type: string
+      count:
+        type: integer
+  CollectionResponseLinks:
+    type: object
+    properties:
+      self:
+        type: string
+      next:
+        type: string
+      prev:
+        type: string
+      last:
+        type: string
+        
+  Error:
+    type: object
+    properties:
+      status:
+        type: string
+      code:
+        type: string
+        enum:
+          - Forbidden
+          - InvalidParameter
+          - InvalidBodyParameter
+          - ResourceNotFound
+          - Unauthorized
+          - InvalidCredentials
+          - InvalidGrantType
+      title:
+        type: string
+      detail:
+        type: string
+      source:
+        type: object
+        properties:
+          parameter: 
+            type: string
+          pointer:
+            type: string
+  CreateOrUpdateErrorResponse:
+    type: object
+    properties:
+      meta: 
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      errors:
+        $ref: '#/definitions/Error'
+    example:
+      {
+        "meta": {
+          "req_id": "d07c8b12-c95e-4a06-8424-92aac94bb445"
+        },
+        "errors": [{
+          "code": "Unauthorized",
+          "detail": "A valid bearer token is required",
+          "status":"401"
+          }
+        ]
+      }
+  FetchErrorResponse:
+    type: object
+    properties:
+      meta: 
+        $ref: '#/definitions/FetchMetaResponse'
+      errors:
+        $ref: '#/definitions/Error'
+    example:
+      {
+        "meta": {
+          "req_id": "d07c8b12-c95e-4a06-8424-92aac94bb445"
+        },
+        "errors": [{
+          "code": "Unauthorized",
+          "detail": "A valid bearer token is required",
+          "status":"401"
+          }
+        ]
+      }
+        
+  # BEGIN /oauth/token definitions
+  TokenResource:
+      type: object
+      required:
+        - type
+        - id
+      properties:
+        type:
+          type: string
+          example: token
+          enum:
+            - token
+        id:
+          type: string
+          example: '57b36c9a04ad8c2224f2af35'
+        attributes:
+          required:
+            - access_token
+            - refresh_token
+            - token_type
+            - expires_in
+          properties:
+            access_token:
+              type: string
+              example: 'a01fe2bb-1977-48d9-b722-ac7f9135143f'
+            refresh_token:
+              type: string
+              example: 'b452cb17-72e2-4e90-b9c6-d77a0b66cf7c'
+            token_type:
+              type: string
+              enum:
+                - bearer
+              example: 'bearer'
+            expires_in:
+              type: integer
+              example: 3600
+        relationships:
+          type: object
+          properties:
+            groups:
+              required:
+                - links
+                - data
+              properties:
+                data: 
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - type
+                      - id
+                    properties:
+                      type:
+                        type: string
+                        enum: 
+                          - group
+                        example: group
+                      id:
+                        type: string
+                        example: '57b36d6f04ad8c2224f2af36'
+                links:
+                  required:
+                    - related
+                  properties:
+                    related:
+                      type: string
+                      pattern: '/oauth/token/[0-9a-z]+/group'
+                      example: '/oauth/token/57b36d8804ad8c2224f2af37/group'
+            organization:
+              required:
+                - links
+                - data
+              properties:
+                data: 
+                  required:
+                    - type
+                    - id
+                  properties:
+                    type:
+                      type: string
+                      enum: 
+                        - organization
+                      example: organization
+                    id:
+                      type: string
+                      example: '57b36d6f04ad8c2224f2af36'
+                links:
+                  required:
+                    - related
+                  properties:
+                    related:
+                      type: string
+                      pattern: '/oauth/token/[0-9a-z]+/organization'
+                      example: '/oauth/token/57b36d8804ad8c2224f2af37/organization'
+  CreateTokenRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        type: object
+        required:
+          - attributes
+        properties:
+          type:
+            type: string
+            enum: 
+              - token
+            example: token
+          attributes:
+            type: object
+            required:
+              - client_id
+              - grant_type
+            properties:
+              grant_type:
+                type: string
+                enum:
+                  - refresh_token
+                  - client_credentials
+                example: client_credentials
+              client_id:
+                type: string
+                description: Contact Twine to get a client id and secret. 
+                example: '19391dc5-8af8-4152-93e8-74ff9361607e'
+              client_secret:
+                type: string
+                description: Contact Twine to get a client id and secret. Secret is required if grant_type is "client_credentials"
+                example: '63eca384-7a65-42e2-872b-afd3e8659d0a'
+              refresh_token:
+                type: string
+                description: Required if grant_type is "refresh_token"
+                example: 'b7dcc4a4-593b-4410-a0c5-97ae48939396'
+    example: 
+      {
+        "data": {
+          "type": "oauth/token",
+          "attributes": {
+            "grant_type": "client_credentials",
+            "client_id": "95c78ab2-167f-40b8-8bec-8398d4b87454",
+            "client_secret": "35d18dc9-a3dd-4948-b787-063a490b9354"
+          }
+        }
+      }
+  CreateTokenResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/TokenResource'
+      included:
+        type: array
+        items:
+          $ref: '#/definitions/GroupResource'
+    example: 
+      {
+        "meta": {
+          "req_id": "2de51f1a-bafa-4e48-a0d0-cd8d4a9ffb28"
+        },
+        "data": {
+          "type": "oauth/token",
+          "id": "5817a24d678a7c2cbf5df3ee",
+          "attributes": {
+            "access_token": "c1b83534-76c1-4a27-b1d4-8140e24dd7c6",
+            "refresh_token": "a38d192a-76fd-4b1d-954c-893c9d29c8f4",
+            "token_type": "bearer",
+            "expires_in": 3601
+          },
+          "relationships": {
+            "groups": {
+              "data": [{
+                "type": "group",
+                "id": "5755db2a3db4179179999acf"
+              }],
+              "links": {
+                "related": "/pub/oauth/token/5817a24d678a7c2cbf5df3ee/group"
+              }
+            }
+          }
+        }
+      }
+      
+  # END /oauth/token definitions
+  
+  # BEGIN /group definitions
+  GroupResource:
+      type: object
+      required:
+        - id
+        - type
+        - attributes
+      properties:
+        id:
+          type: string
+          example: '57b36e3c04ad8c2224f2af38'
+        type:
+          type: string
+          enum:
+            - group
+          example: group
+        attributes:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              example: Team Health
+        links:
+          type: object
+          readOnly: true
+          required:
+            - self
+          properties:
+            self:
+              type: string
+              pattern: '/group/[0-9a-z]+'
+              example: '/group/57b36e3c04ad8c2224f2af38'
+ 
+  FetchGroupResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/GroupResource'
+    example:
+      {
+        "meta": {
+          "req_id": "2b59851e-0f6c-4a8f-a8a6-15bd7c0346e7"
+        },
+        "data": {
+          "type":"group",
+          "id":"5755db2a3db4179179999acf",
+          "attributes": {
+            "name":"Patients Lead"
+          },
+          "links": {
+            "self": "/pub/group/5755db2a3db4179179999acf"
+          }
+        }
+      }
+      
+  FetchGroupsResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/GroupResource'
+    example:
+      {
+        "meta": {
+          "req_id": "ab554093-6081-4d37-aa7b-ca6312367ca4",
+          "count":1
+        },
+        "links": {
+          "self": "/pub/oauth/token/5817a24d678a7c2cbf5df3ee/group"
+        },
+        "data": [{
+          "type":"group",
+          "id":"5755db2a3db4179179999acf",
+          "attributes": {
+            "name":"Patients Lead"
+          },
+          "links": {
+            "self":"/pub/group/5755db2a3db4179179999acf"
+          }
+        }]
+      }
+ 
+  CreateGroupRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/GroupResource'
+    example:
+      {
+        "data": {
+          "type":"group",
+          "attributes": {
+            "name":"New Group"
+          }
+        }
+      }
+
+  CreateGroupResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/GroupResource'
+    example:
+      {
+        "meta": {
+          "req_id": "6ac6d0f2-00b2-4031-8c35-97b2bfb0aced"
+        },
+        "data": {
+          "type": "group",
+          "id": "5817acae6f5316c0d05ba8b8",
+          "attributes": {
+            "name": "New Group"
+          },
+          "links": {
+            "self": "/pub/group/5817acae6f5316c0d05ba8b8"
+          }
+        }
+      }
+
+    
+  # END /group definitions
+
+  # BEGIN /patient definitions
+  PhoneNumber:
+    type: object
+    required:
+      - type
+      - value
+      - primary
+    properties:
+      type:
+        type: string
+        enum:
+          - home
+          - work
+          - mobile
+          - home-fax
+          - work-fax
+          - other
+        example: mobile
+      value:
+        type: string
+        example: '555-555-1234'
+      primary:
+        type: boolean
+        example: true
+  Address:
+    type: object
+    properties:
+      city:
+        type: string
+        example: 'Cambridge'
+      state:
+        type: string
+        example: 'MA'
+      postal_code:
+        type: string
+        example: '02138'
+      lines:
+        type: array
+        example: 
+          - '1234 Any St.'
+        items:
+          type: string
+      use: 
+        type: string
+      type:
+        type: string
+      text:
+        type: string
+      district:
+        type: string
+      country:
+        type: string
+  PatientIdentifier:
+    type: object
+    required:
+      - system
+      - value
+    properties:
+      label: 
+        type: string
+      system: 
+        type: string
+      value: 
+        type: string
+  PatientResource:
+    type: object
+    required:
+      - type
+      - attributes
+    properties:
+      id:
+        type: string
+        example: '57b36ef304ad8c2224f2af3a'
+      type:
+        type: string
+        enum:
+          - patient
+        example: patient
+      attributes:
+        type: object
+        properties:
+          first_name:
+            type: string
+            example: Fiona
+          last_name:
+            type: string
+            example: Reeves
+          email_address:
+            type: string
+            example: fiona@example.com
+          phone_numbers:
+            type: array
+            items:
+              $ref: '#/definitions/PhoneNumber'
+          addresses:
+            type: array
+            items:
+              $ref: '#/definitions/Address'
+          identifiers:
+            type: array
+            items:
+              $ref: '#/definitions/PatientIdentifier'
+          birth_date:
+            type: string
+            format: date
+            example: '1944-03-06'
+          gender:
+            type: string
+            enum:
+              - male
+              - female
+              - other
+            example: female
+          updated_at:
+            type: string
+            format: dateTime
+            example: '2016-07-11T17:13:57.027Z'
+            readOnly: true
+          first_access_at:
+            type: string
+            format: dateTime
+            example: '2016-06-03T13:15:22.000Z'
+            readOnly: true
+          invited_at:
+            type: string
+            format: dateTime
+            example: '2016-06-01T16:20:16.000Z'
+            readOnly: true
+          enrolled_at:
+            type: string
+            format: dateTime
+            example: '2016-05-26T15:25:54.000Z'
+            readOnly: true
+          last_access_at:
+            type: string
+            format: dateTime
+            example: '2016-07-11T17:50:49.400Z'
+            readOnly: true
+      links:
+        type: object
+        readOnly: true
+        properties:
+          self:
+            type: string
+            pattern: '/patient/[0-9a-z]+'
+            example: '/patient/57b36ef304ad8c2224f2af3a'
+          twine_web_app:
+            type: string
+            example: 'https://app.twinehealth.com/#/coach/patient/5367c6300b7bb6e94188c02c/overview'
+            description: 'A link to the patient record in the Twine web application.'
+      relationships:
+        type: object
+        required: 
+          - groups
+        properties:
+          groups:
+            required:
+              - data
+            properties:
+              data: 
+                type: array
+                items:
+                  type: object
+                  required:
+                    - type
+                    - id
+                  properties:
+                    type:
+                      type: string
+                      enum: 
+                        - group
+                      example: group
+                    id:
+                      type: string
+                      example: '57b3708b04ad8c2224f2af3b'
+          coaches:
+            required: 
+              - data
+            properties:
+              data:
+                type: array
+                items: 
+                  type: object
+                  required:
+                    - type
+                    - id
+                  properties:
+                    type: 
+                      type: string
+                      enum:
+                        - coach
+                      example: coach
+                    id:
+                      type: string
+                      example: '57fee2a66b49113551658505'
+                    meta:
+                      type: object
+                      properties:
+                        primary:
+                          type: boolean
+                    
+              links:
+                readOnly: true
+                properties:
+                  related:
+                    type: string
+                    pattern: '/patient/[0-9a-z]+/group'
+                    example: '/patient/57b36ef304ad8c2224f2af3a/group'
+  
+  FetchPatientsResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      links:
+        $ref: '#/definitions/CollectionResponseLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/PatientResource'
+    example:
+      {
+        "meta": {
+          "req_id": "155c690b-50b2-4ff2-8abe-b809a8a51e53",
+          "count": 263
+        },
+        "links": {
+          "self": "/pub/patient?filter[groups]=5755db2a3db4179179999acf&page[number]=1&page[size]=3",
+          "next": "/pub/patient?filter[groups]=5755db2a3db4179179999acf&page[number]=2&page[size]=3",
+          "last": "/pub/patient?filter[groups]=5755db2a3db4179179999acf&page[number]=88&page[size]=3"
+        },
+        "data": [
+          {
+            "type": "patient",
+            "id": "58163112237d84a94035f78b",
+            "attributes": {
+              "first_name": "Lucy",
+              "last_name": "Bernhard",
+              "updated_at": "2016-03-16T13:32:57.000Z",
+              "birth_date": "1938-10-04",
+              "addresses": [],
+              "phone_numbers": [
+                {
+                  "primary": true,
+                  "value": "880-136-7979 x6183"
+                },
+                {
+                  "primary": false,
+                  "value": "919.814.3552 x40123"
+                }
+              ],
+              "identifiers": [
+                {
+                  "label": "Twine Sample Data Filler Patient",
+                  "system": "twine-filler-patient",
+                  "value": "filler-92"
+                }
+              ]
+            },
+            "links": {
+              "twine_web_app": "http://10.0.1.55:9000/#/coach/admin/coaches/58163112237d84a94035f78b/profile",
+              "self": "/pub/patient/58163112237d84a94035f78b"
+            },
+            "relationships": {
+              "groups": {
+                "data": [
+                  {
+                    "type": "group",
+                    "id": "5755db2a3db4179179999acf"
+                  }
+                ],
+                "links": {
+                  "related": "/pub/patient/58163112237d84a94035f78b/group"
+                }
+              },
+              "coaches": {
+                "data": [
+                  {
+                    "type": "coach",
+                    "id": "581630c3237d84a9403533c6",
+                    "meta": {
+                      "primary": true
+                    }
+                  }
+                ],
+                "links": {
+                  "related": "/pub/patient/58163112237d84a94035f78b/coach"
+                }
+              }
+            }
+          },
+          {
+            "type": "patient",
+            "id": "58163103237d84a94035f0b3",
+            "attributes": {
+              "first_name": "Annette",
+              "last_name": "Parisian",
+              "updated_at": "2016-02-04T12:55:03.000Z",
+              "email_address": "annette.parisian@example.com",
+              "birth_date": "1983-03-16",
+              "addresses": [],
+              "phone_numbers": [
+                {
+                  "primary": true,
+                  "value": "044.758.5704 x1965"
+                }
+              ],
+              "identifiers": [
+                {
+                  "label": "Twine Sample Data Filler Patient",
+                  "system": "twine-filler-patient",
+                  "value": "filler-5"
+                }
+              ]
+            },
+            "links": {
+              "twine_web_app": "http://10.0.1.55:9000/#/coach/admin/coaches/58163103237d84a94035f0b3/profile",
+              "self": "/pub/patient/58163103237d84a94035f0b3"
+            },
+            "relationships": {
+              "groups": {
+                "data": [
+                  {
+                    "type": "group",
+                    "id": "5755db2a3db4179179999acf"
+                  }
+                ],
+                "links": {
+                  "related": "/pub/patient/58163103237d84a94035f0b3/group"
+                }
+              },
+              "coaches": {
+                "data": [
+                  {
+                    "type": "coach",
+                    "id": "581630c3237d84a9403533c6",
+                    "meta": {
+                      "primary": true
+                    }
+                  }
+                ],
+                "links": {
+                  "related": "/pub/patient/58163103237d84a94035f0b3/coach"
+                }
+              }
+            }
+          },
+          {
+            "type": "patient",
+            "id": "58163103237d84a94035f043",
+            "attributes": {
+              "first_name": "Lexi",
+              "last_name": "Thompson",
+              "updated_at": "2016-01-23T16:12:07.000Z",
+              "email_address": "lexi.thompson@example.com",
+              "birth_date": "1932-04-06",
+              "addresses": [],
+              "phone_numbers": [
+                {
+                  "primary": true,
+                  "value": "1-977-830-6179 x26334"
+                }
+              ],
+              "identifiers": [
+                {
+                  "label": "Twine Sample Data Filler Patient",
+                  "system": "twine-filler-patient",
+                  "value": "filler-3"
+                }
+              ]
+            },
+            "links": {
+              "twine_web_app": "http://10.0.1.55:9000/#/coach/admin/coaches/58163103237d84a94035f043/profile",
+              "self": "/pub/patient/58163103237d84a94035f043"
+            },
+            "relationships": {
+              "groups": {
+                "data": [
+                  {
+                    "type": "group",
+                    "id": "5755db2a3db4179179999acf"
+                  }
+                ],
+                "links": {
+                  "related": "/pub/patient/58163103237d84a94035f043/group"
+                }
+              },
+              "coaches": {
+                "data": [
+                  {
+                    "type": "coach",
+                    "id": "581630c3237d84a9403533c6",
+                    "meta": {
+                      "primary": true
+                    }
+                  }
+                ],
+                "links": {
+                  "related": "/pub/patient/58163103237d84a94035f043/coach"
+                }
+              }
+            }
+          }
+        ]
+      }
+
+  FetchPatientResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/PatientResource'
+    example:
+      {
+        "meta": {
+          "req_id": "23001d51-669b-4948-b9fa-11dbffdf8ced"
+        },
+        "data": {
+          "type": "patient",
+          "id": "58163112237d84a94035f78b",
+          "attributes": {
+            "first_name": "Lucy",
+            "last_name": "Bernhard",
+            "updated_at": "2016-03-16T13:32:57.000Z",
+            "birth_date": "1938-10-04",
+            "addresses": [],
+            "phone_numbers": [
+              {
+                "primary": true,
+                "value": "880-136-7979 x6183"
+              },
+              {
+                "primary": false,
+                "value": "919.814.3552 x40123"
+              }
+            ],
+            "identifiers": [
+              {
+                "label": "Twine Sample Data Filler Patient",
+                "system": "twine-filler-patient",
+                "value": "filler-92"
+              }
+            ]
+          },
+          "links": {
+            "twine_web_app": "http://10.0.1.55:9000/#/coach/admin/coaches/58163112237d84a94035f78b/profile",
+            "self": "/pub/patient/58163112237d84a94035f78b"
+          },
+          "relationships": {
+            "groups": {
+              "data": [
+                {
+                  "type": "group",
+                  "id": "5755db2a3db4179179999acf"
+                }
+              ],
+              "links": {
+                "related": "/pub/patient/58163112237d84a94035f78b/group"
+              }
+            },
+            "coaches": {
+              "data": [
+                {
+                  "type": "coach",
+                  "id": "581630c3237d84a9403533c6",
+                  "meta": {
+                    "primary": true
+                  }
+                }
+              ],
+              "links": {
+                "related": "/pub/patient/58163112237d84a94035f78b/coach"
+              }
+            }
+          }
+        },
+        "included": []
+      }
+   
+
+  
+  CreatePatientRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/PatientResource'
+    example:
+      {
+        "data": {
+          "type": "patient",
+          "attributes": {
+            "first_name": "Jack",
+            "last_name": "Frost"
+          },
+          "relationships": {
+            "groups": {
+              "data": [{
+                "type": "group",
+                "id": "5755db2a3db4179179999acf"
+              }]
+            }
+          }
+        }
+      }
+
+  CreatePatientResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/PatientResource'
+    example:
+      {
+        "meta": {
+          "req_id": "5b813ad3-cabc-418f-add4-1e53bc69f7cb"
+        },
+        "data": {
+          "type": "patient",
+          "id": "5817ead56f5316c0d05ba8bf",
+          "attributes": {
+            "first_name": "Jack",
+            "last_name": "Frost",
+            "updated_at": "2016-11-01T01:07:33.121Z",
+            "addresses": [],
+            "phone_numbers": [],
+            "identifiers":[]
+          },
+          "links": {
+            "twine_web_app": "http://10.0.1.55:9000/#/coach/patient/5817ead56f5316c0d05ba8bf",
+            "self": "/pub/patient/5817ead56f5316c0d05ba8bf"
+          },
+          "relationships": {
+            "groups": {
+              "data": [{
+                "type": "group",
+                "id": "5755db2a3db4179179999acf"
+              }],
+              "links": {
+                "related": "/pub/patient/5817ead56f5316c0d05ba8bf/group"
+              }
+            },
+            "coaches": {
+              "data": [],
+              "links": {
+                "related":"/pub/patient/5817ead56f5316c0d05ba8bf/coach"
+              }
+            }
+          }
+        },
+        "included": []
+      }
+    
+  UpdatePatientRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/PatientResource'
+    example:
+      {
+        "data": {
+          "id": "5817ead56f5316c0d05ba8bf",
+          "type": "patient",
+          "attributes": {
+            "first_name": "Jonathon"
+          }
+        }
+      }
+    
+  UpdatePatientResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/PatientResource'
+    example:
+      {
+        "meta": {
+          "req_id": "5b813ad3-cabc-418f-add4-1e53bc69f7cb"
+        },
+        "data": {
+          "type": "patient",
+          "id": "5817ead56f5316c0d05ba8bf",
+          "attributes": {
+            "first_name": "Jack",
+            "last_name": "Frost",
+            "updated_at": "2016-11-01T01:07:33.121Z",
+            "addresses": [],
+            "phone_numbers": [],
+            "identifiers":[]
+          },
+          "links": {
+            "twine_web_app": "http://10.0.1.55:9000/#/coach/patient/5817ead56f5316c0d05ba8bf",
+            "self": "/pub/patient/5817ead56f5316c0d05ba8bf"
+          },
+          "relationships": {
+            "groups": {
+              "data": [{
+                "type": "group",
+                "id": "5755db2a3db4179179999acf"
+              }],
+              "links": {
+                "related": "/pub/patient/5817ead56f5316c0d05ba8bf/group"
+              }
+            },
+            "coaches": {
+              "data": [],
+              "links": {
+                "related":"/pub/patient/5817ead56f5316c0d05ba8bf/coach"
+              }
+            }
+          }
+        },
+        "included": []
+      }
+   
+  # END /patient definitions        
+  
+  # BEGIN /coach definitions
+  CoachResource:
+      type: object
+      required:
+        - id
+        - type
+        - attributes
+      properties:
+        id:
+          type: string
+          example: '57b36e3c04ad8c2224f2af38'
+        type:
+          type: string
+          enum:
+            - coach
+          example: coach
+        attributes:
+          properties:
+            first_name:
+              type: string
+              example: Clarisa
+            last_name:
+              type: string
+              example: Rivera
+        links:
+          readOnly: true
+          required:
+            - self
+          properties:
+            self:
+              type: string
+              pattern: '/coach/[0-9a-z]+'
+              example: '/coach/57b36e3c04ad8c2224f2af38'
+  FetchCoachResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/CoachResource'
+    example:
+      { 
+        "meta": {
+          "req_id": "b928037e-98ed-434f-b0c4-d74b1a38a560"
+        },
+        "data": {
+          "type": "coach",
+          "id": "581630c3237d84a9403533c6",
+          "attributes": {
+            "first_name": "Clarisa",
+            "last_name": "Rivera"
+          },
+          "links": {
+            "self": "/pub/coach/581630c3237d84a9403533c6"
+          }
+        }, 
+        "included": []
+      }
+  
+  FetchCoachesResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/CoachResource'
+    example:
+      { 
+        "meta": {
+          "req_id": "48c47326-0c8b-4c5e-85da-7fc0d00f1e4d",
+          "count": 1
+        },
+        "links": {
+          "self": "/pub/patient/58163112237d84a94035f78b/coach"
+        },
+        "data": [{
+          "type":"coach",
+          "id":"581630c3237d84a9403533c6",
+          "attributes": {
+            "first_name": "Clarisa",
+            "last_name":"Rivera"
+          },
+          "links": {
+            "self":"/pub/coach/581630c3237d84a9403533c6"
+          }
+        }],
+        "included": []
+      }
+  # END /coach definitions
+  
+  # BEGIN /organization definitions
+  OrganizationResource:
+      type: object
+      required:
+        - id
+        - type
+        - attributes
+      properties:
+        id:
+          type: string
+          example: '57b36e3c04ad8c2224f2af38'
+        type:
+          type: string
+          enum:
+            - organization
+          example: organization
+        attributes:
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              example: Health Activation Partners
+        links:
+          readOnly: true
+          required:
+            - self
+          properties:
+            self:
+              type: string
+              pattern: '/organization/[0-9a-z]+'
+              example: '/organization/57b36e3c04ad8c2224f2af38'
+  
+  FetchOrganizationResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/OrganizationResource'
+    example:
+      { 
+        "meta": {
+          "req_id": "aeb94ed8-d7f9-4e72-a78f-e276c4f52c2a"
+        },
+        "data": {
+          "type": "organizaton",
+          "id": "5873b63605376e337a89d64a",
+          "attributes": {
+            "name": "Health Activation Partners"
+          },
+          "links": {
+            "self": "/pub/organization/5873b63605376e337a89d64a"
+          }
+        }
+      }
+  # END /organization definitions
+  
+  # BEGIN /patient_plan_summary definitions
+  PatientPlanSummaryResource:
+      type: object
+      required:
+        - id
+        - type
+      properties:
+        id:
+          type: string
+          example: '57b36e3c04ad8c2224f2af38'
+        type:
+          type: string
+          enum:
+            - patient_plan_summary
+          example: patient_plan_summary
+        relationships:
+          type: object
+          required:
+            - actions
+            - bundles
+            - patient
+          properties:
+            actions:
+              type: array
+              items: 
+                type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - type
+                      - id
+                    properties:
+                      type:
+                        type: string
+                      id:
+                        type: string
+                  links:
+                    type: object
+                    properties:
+                      related:
+                        type: string
+            bundles:
+              type: array
+              items: 
+                type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - type
+                      - id
+                    properties:
+                      type:
+                        type: string
+                      id:
+                        type: string
+            patient:
+              type: object
+              properties:
+                  data:
+                    type: object
+                    properties:
+                      type: 
+                        type: string
+                      id:
+                        type: string
+        links:
+          readOnly: true
+          required:
+            - self
+          properties:
+            self:
+              type: string
+              pattern: '/patient_plan_summary/[0-9a-z]+'
+              example: '/patient_plan_summary/57b36e3c04ad8c2224f2af38'
+  
+  FetchPatientPlanSummaryResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/PatientPlanSummaryResource'
+  FetchPatientPlanSummariesResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        type: array
+        items: 
+          $ref: '#/definitions/PatientPlanSummaryResource'
+        
+  ActionResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id: 
+        type: string
+      attributes:
+        type: object
+        properties:
+          type:
+            type: string
+            enum:
+              - other_lifestyle
+          title:
+            type: string
+          effective_from:
+            type: string
+            format: dateTime
+          tracking:
+            type: boolean
+          thread:
+            type: string
+      relationships:
+        type: object
+        properties:
+          plan:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+  
+  CreateActionRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/ActionResource'
+        
+  CreateActionResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/ActionResource'
+        
+  # END /patient_plan_summary definitions
+  
+  RewardBudgetResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type: 
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          time_window:
+            type: object
+            properties:
+              start_at:
+                type: string
+                format: dateTime
+              end_at:
+                type: string
+                format: dateTime
+          allowance_per_patient:
+            type: number
+          active:
+            type: boolean
+      relationships:
+        type: object
+        properties:
+          group:
+            type: object
+            properties: 
+              data:
+                type: object
+                required:
+                  - type
+                  - id
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              
+  FetchRewardBudgetsResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        type: array
+        items: 
+          $ref: '#/definitions/RewardBudgetResource'
+          
+  CreateRewardBudgetRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/RewardBudgetResource'
+        
+  CreateRewardBudgetResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/RewardBudgetResource'
+          
+  RewardResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id: 
+        type: string
+      attributes:
+        type: object
+        properties:
+          amount:
+            type: number
+          awarded:
+            type: boolean
+          awarded_amount:
+            type: number
+          awarded_at:
+            type: string
+            format: dateTime
+          description:
+            type: string
+          end_at:
+            type: string
+            format: dateTime
+          thread:
+            type: string
+      relationships:
+        type: object
+        properties:
+          patient:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+          budget:
+            type: object
+            properties:
+              data: 
+                type: object
+                properties:
+                  type: 
+                    type: string
+                  id:
+                    type: string
+                    
+  CreateRewardRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/RewardResource'
+
+  CreateRewardResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/RewardResource'          
