@@ -1972,6 +1972,56 @@ definitions:
         items: 
           $ref: '#/definitions/PatientPlanSummaryResource'
         
+  Identifier:
+    type: object
+    required:
+      - system
+      - value
+    properties:
+      label:
+        type: string
+      system:
+        type: string
+      value:
+        type: string
+  ActionMetric:
+    type: object
+    properties:
+      metric_type:
+        type: string
+      unit:
+        type: string
+      goal:
+        type: object
+      validations:
+        type: object
+        properties:
+          minimum:
+            type: object
+            properties:
+              value:
+                type: number
+              unit:
+                type: string
+          maximum:
+            type: object
+            properties:
+              value:
+                type: number
+              unit:
+                type: string
+  ActionWindow:
+    type: object
+    required:
+      - type
+    properties:
+      title:
+        type: string
+      type:
+        type: string
+      _id:
+        type: string
+
   ActionResource:
     type: object
     required:
@@ -1991,13 +2041,61 @@ definitions:
               - other_lifestyle
           title:
             type: string
+          static_title:
+            type: string
+            readOnly: true
           effective_from:
+            type: string
+            format: dateTime
+          effective_to:
             type: string
             format: dateTime
           tracking:
             type: boolean
-          thread:
+          _thread:
             type: string
+          adherence:
+            type: object
+            readOnly: true
+            properties:
+              due:
+                type: integer
+              complete:
+                type: integer
+              streak:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  updated_at:
+                    type: string
+                    format: dateTime
+          frequency_goal:
+            type: object
+            properties:
+              count:
+                type: integer
+          identifiers:
+            type: array
+            items:
+              $ref: '#/definitions/Identifier'
+          details:
+            type: object
+            additionalProperties: true
+          intake:
+            type: object
+            additionalProperties: true
+          metric_required:
+            type: boolean
+          metrics:
+            type: array
+            items:
+              $ref: '#/definitions/ActionMetric'
+          windows:
+            type: array
+            items:
+              $ref: '#/definitions/ActionWindow'
+
       relationships:
         type: object
         properties:
@@ -2013,7 +2111,7 @@ definitions:
                     type: string
               links:
                 type: object
-  
+
   CreateActionRequest:
     type: object
     required:
