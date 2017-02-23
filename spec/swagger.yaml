@@ -52,7 +52,7 @@ tags:
   - name: metric
     description: Observations or results from measurements or labs. Note that the documentation for this API is incomplete.
   - name: reward
-    description: Operations for rewards
+    description: Operations for rewards. Each reward (also known as a reward allocation) is associated with an action in a patient's plan and is allocated from a reward budget.
 x-tagGroups:
   - name: Authentication (oauth)
     tags:
@@ -632,6 +632,31 @@ paths:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
   
   /reward:
+    get:
+      tags:
+        - reward
+      summary: List rewards
+      description: Get a list of reward allocations for a patient associated with an action in the patient's plan.
+      operationId: fetchRewards
+      parameters:
+        - name: filter[patient]
+          in: query
+          description: Filter the reward allocations for a specified patient
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchRewardsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
     post:
       tags:
         - reward
@@ -661,7 +686,7 @@ paths:
           description: Invalid Request
           schema:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        
+
 
       
 
@@ -2258,6 +2283,18 @@ definitions:
                   id:
                     type: string
                     
+  FetchRewardsResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/RewardResource'
+
   CreateRewardRequest:
     type: object
     required:

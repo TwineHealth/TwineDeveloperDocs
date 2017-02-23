@@ -34,3 +34,7 @@ node_modules
 
 # IntelliJ IDEA/WebStorm
 .idea
+
+# Some clients only support the JSON format of swagger, but we don't want to maintain both in the repo
+/spec/swagger.json
+/spec/LICENSE
