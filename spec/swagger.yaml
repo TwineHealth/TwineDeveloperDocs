@@ -495,6 +495,7 @@ paths:
     post:
       tags:
         - plan
+      summary: Create action
       description: Create a plan action
       parameters:
         - name: body
@@ -519,7 +520,79 @@ paths:
           description: Invalid Request
           schema:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
-    
+
+  /patient_health_metric:
+    get:
+      tags:
+        - metric
+      summary: List patient health metrics
+      description: Get a list of patient health metrics.
+      operationId: fetchPatientHealthMetrics
+      parameters:
+        - name: filter[patient]
+          in: query
+          description: Filter the patient health metrics for a specified patient
+          required: true
+          type: string
+        - name: page[number]
+          in: query
+          description: Page number
+          required: false
+          type: integer
+          default: 1
+        - name: page[size]
+          in: query
+          description: Page size
+          required: false
+          type: integer
+          default: 10
+          maximum: 50
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchPatientHealthMetricResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+    post:
+      tags:
+        - metric
+      summary: Create patient health metrics
+      description: Create one or more patient health metrics
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreatePatientHealthMetricRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreatePatientHealthMetricResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+
             
   /coach/{id}:
     get:
@@ -2157,6 +2230,136 @@ definitions:
         
   # END /patient_plan_summary definitions
   
+  PatientHealthMetricResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          type:
+            type: string
+            enum:
+              - blood_pressure_systolic
+              - blood_pressure_diastolic
+              - hemoglobin_a1c
+              - hdl_cholesterol
+              - ldl_cholesterol
+              - total_cholesterol
+              - triglycerides
+              - blood_urea_nitrogen
+              - creatinine
+              - hemoglobin
+              - hematocrit
+              - total_serum_iron
+              - thyroid_stimulating_hormone
+              - free_thyroxine
+              - free_triiodothyronine
+              - total_triiodothyronine
+              - cd4_cell_count
+              - hiv_viral_load
+              - inr
+              - free_testosterone
+              - total_testosterone
+              - c_reactive_protein
+              - prostate_specific_antigen
+              - cotinine
+              - c_peptide
+              - blood_pressure
+              - blood_glucose
+              - weight
+              - heart_rate
+              - body_fat_percentage
+              - body_mass_index
+              - body_temperature
+              - forced_expiratory_volume1
+              - forced_vital_capacity
+              - lean_body_mass
+              - nausea_level
+              - oxygen_saturation
+              - pain_level
+              - peak_expiratory_flow_rate
+              - peripheral_perfusion_index
+              - respiratory_rate
+              - sleep_analysis_asleep
+              - sleep_analysis_in_bed
+              - inhaler_usage
+          code:
+            type: object
+            required:
+              - system
+              - value
+            properties:
+              system:
+                type: string
+              value:
+                type: string
+          value:
+            type: number
+          systolic:
+            type: number
+          diastolic:
+            type: number
+          unit:
+            type: string
+          occurred_at:
+            type: string
+            format: dateTime
+
+      relationships:
+        type: object
+        properties:
+          patient:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+
+  CreatePatientHealthMetricRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/PatientHealthMetricResource'
+
+  CreatePatientHealthMetricResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/PatientHealthMetricResource'
+
+  FetchPatientHealthMetricResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      links:
+        $ref: '#/definitions/CollectionResponseLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/PatientHealthMetricResource'
+
   RewardBudgetResource:
     type: object
     required:
