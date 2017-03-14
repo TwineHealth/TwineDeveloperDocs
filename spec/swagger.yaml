@@ -40,19 +40,19 @@ tags:
   - name: oauth
     description: Authentication operations
   - name: organization
-    description: Administration of organizations. Organizations can contain groups.
+    description: An organization is a Twine customer. No data is accessible across organizations.
   - name: group
-    description: Administration of groups. A Twine group can correspond to a practice or a set of patients within an organization.
+    description: A group is a cohort of patients within an organization. The creation of groups allows for the segmentation of dashboards and analytics. For example, a group might correspond to the patients in a particular practice or the employees of a particular employer.
   - name: reward budget
-    description: Administration of reward budgets
+    description: A reward budget provides the rules for a reward program for a group. Different reward budgets can be created for different periods of time.
   - name: patient
-    description: Patients are the health participants of Twine.
+    description: A patient is the core user of Twine.
   - name: plan
-    description: Action plans include health goals and actions.
+    description: A plan is the set of actions and associated goals for a patient.
   - name: metric
-    description: Observations or results from measurements or labs. Note that the documentation for this API is incomplete.
-  - name: reward
-    description: Operations for rewards. Each reward (also known as a reward allocation) is associated with an action in a patient's plan and is allocated from a reward budget.
+    description: A metric is a quantitative result for a patient. For example, vital signs, lab results, etc. are all metrics. Note that the documentation for this API is incomplete.
+  - name: reward allocation
+    description: A reward allocation is a specific reward that has been created for a patient.
 x-tagGroups:
   - name: Authentication (oauth)
     tags:
@@ -67,7 +67,7 @@ x-tagGroups:
       - patient
       - plan
       - metric
-      - reward
+      - reward allocation
 paths:
   /oauth/token:
     post:
@@ -184,6 +184,94 @@ paths:
           schema:
             $ref: '#/definitions/FetchErrorResponse'
 
+  /organization/{id}:
+    get:
+      tags:
+        - organization
+      summary: Get an organization
+      description: Get an organization record by id.
+      operationId: fetchOrganization
+      parameters:
+        - name: id
+          in: path
+          description: Organization identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchOrganizationResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /group:
+    post:
+      tags:
+        - group
+      summary: Create a group
+      description: Create a group record.
+      operationId: createGroup
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateGroupRequest'
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/CreateGroupResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+    get:
+      tags:
+        - group
+      summary: List groups
+      description: Get a list of groups matching the specified filters.
+      operationId: fetchGroups
+      parameters:
+        - name: filter[organization]
+          in: query
+          description: Organization identifier
+          required: true
+          type: string
+        - name: filter[name]
+          in: query
+          description: Group name
+          required: false
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchGroupsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
   /group/{id}:
     get:
       tags:
@@ -210,24 +298,26 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-  /group:
+
+
+  /reward_budget:
     post:
       tags:
-        - group
-      summary: Create a group
-      description: Create a group record.
-      operationId: createGroup
+        - reward budget
+      summary: Create a reward budget
+      description: Create a reward budget for a group.
+      operationId: createRewardBudget
       parameters:
         - name: body
           in: body
           required: true
           schema:
-            $ref: '#/definitions/CreateGroupRequest'      
+            $ref: '#/definitions/CreateRewardBudgetRequest'
       responses:
-        '201':
-          description: Created
+        '200':
+          description: OK
           schema:
-            $ref: '#/definitions/CreateGroupResponse'
+            $ref: '#/definitions/CreateRewardBudgetResponse'
         '401':
           description: Unauthorized
           schema:
@@ -240,8 +330,89 @@ paths:
           description: Invalid Request
           schema:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
+    get:
+      tags:
+        - reward budget
+      summary: List reward budgets
+      description: Get a list of reward budgets matching the specified filters.
+      operationId: fetchRewardBudgets
+      parameters:
+        - name: filter[group]
+          in: query
+          description: group identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchRewardBudgetsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /reward_budget/{id}:
+    get:
+      tags:
+        - reward budget
+      summary: Get a reward budget
+      description: Get a reward budget record by id.
+      operationId: fetchRewardBudget
+      parameters:
+        - name: id
+          in: path
+          description: Reward budget identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchRewardBudgetResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
 
   /patient:
+    post:
+      tags:
+        - patient
+      summary: Create a patient
+      description: Create a patient record.
+      operationId: createPatient
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreatePatientRequest'
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/CreatePatientResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
     get:
       tags:
         - patient
@@ -295,35 +466,6 @@ paths:
           description: Invalid Request
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-    post:
-      tags:
-        - patient
-      summary: Create a patient
-      description: Create a patient record.
-      operationId: createPatient
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/CreatePatientRequest'
-      responses:
-        '201':
-          description: Created
-          schema:
-            $ref: '#/definitions/CreatePatientResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
   /patient/{id}:
     get:
       tags:
@@ -384,12 +526,11 @@ paths:
           description: Invalid Request
           schema:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        
   /patient/{id}/group:
     get:
       tags:
         - patient
-      summary: Get the list of groups for a patient
+      summary: List groups for a patient
       description: Get the list of groups for a patient.
       operationId: fetchPatientGroups
       parameters:
@@ -415,7 +556,7 @@ paths:
     get:
       tags:
         - patient
-      summary: Get the list of coaches for a patient
+      summary: List coaches for a patient
       description: Get the list of coaches for a patient.
       operationId: fetchPatientCoaches
       parameters:
@@ -437,7 +578,7 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-            
+
   /patient_plan_summary/{id}:
     get: 
       tags:
@@ -620,133 +761,25 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-  
-  /organization/{id}:
-    get:
-      tags:
-        - organization
-      summary: Get an organization
-      description: Get an organization record by id.
-      operationId: fetchOrganization
-      parameters:
-        - name: id
-          in: path
-          description: Organization identifier
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchOrganizationResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-            
-  /reward_budget:
-    get:
-      tags:
-        - reward budget
-      summary: List reward budgets
-      description: Get a list of reward budgets matching the specified filters.
-      operationId: fetchRewardBudgets
-      parameters:
-        - name: filter[group]
-          in: query
-          description: Filter the budgets for a specified group
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchRewardBudgetsResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
+
+  /reward_allocation:
     post:
       tags:
-        - reward budget
-      summary: Create a reward budget
-      description: Create a reward budget for a group.
-      operationId: createRewardBudget
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/CreateRewardBudgetRequest'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/CreateRewardBudgetResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-  
-  /reward:
-    get:
-      tags:
-        - reward
-      summary: List rewards
-      description: Get a list of reward allocations for a patient associated with an action in the patient's plan.
-      operationId: fetchRewards
-      parameters:
-        - name: filter[patient]
-          in: query
-          description: Filter the reward allocations for a specified patient
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchRewardsResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-    post:
-      tags:
-        - reward
-      summary: Create a reward
-      description: Create a reward for a patient associated with an action in the patient's plan.
+        - reward allocation
+      summary: Create a reward allocation
+      description: Create a reward allocation for a patient.
       operationId: createReward
       parameters:
         - name: body
           in: body
           required: true
           schema:
-            $ref: '#/definitions/CreateRewardRequest'
+            $ref: '#/definitions/CreateRewardAllocationRequest'
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/CreateRewardResponse'
+            $ref: '#/definitions/CreateRewardAllocationResponse'
         '401':
           description: Unauthorized
           schema:
@@ -759,9 +792,59 @@ paths:
           description: Invalid Request
           schema:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
+    get:
+      tags:
+        - reward allocation
+      summary: List reward allocations
+      description: Get a list of reward allocations matching the specified filters.
+      operationId: fetchRewardAllocations
+      parameters:
+        - name: filter[patient]
+          in: query
+          description: Patient identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchRewardAllocationsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
 
+  /reward_allocation/{id}:
+      get:
+        tags:
+          - reward allocation
+        summary: Get a reward allocation
+        description: Get a reward allocation record by id.
+        operationId: fetchRewardAllocation
+        parameters:
+          - name: id
+            in: path
+            description: Reward allocation identifier
+            required: true
+            type: string
+        responses:
+          '200':
+            description: OK
+            schema:
+              $ref: '#/definitions/FetchRewardAllocationResponse'
+          '401':
+            description: Unauthorized
+            schema:
+              $ref: '#/definitions/FetchErrorResponse'
+          '403':
+            description: Forbidden
+            schema:
+              $ref: '#/definitions/FetchErrorResponse'
 
-      
 
 definitions:
 
@@ -1336,6 +1419,149 @@ definitions:
             description: 'A link to the patient record in the Twine web application.'
       relationships:
         type: object
+        required:
+          - groups
+        properties:
+          groups:
+            required:
+              - data
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - group
+                      example: group
+                    id:
+                      type: string
+                      example: '57b3708b04ad8c2224f2af3b'
+          coaches:
+            required:
+              - data
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - type
+                    - id
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - coach
+                      example: coach
+                    id:
+                      type: string
+                      example: '57fee2a66b49113551658505'
+                    meta:
+                      type: object
+                      properties:
+                        primary:
+                          type: boolean
+
+              links:
+                readOnly: true
+                properties:
+                  related:
+                    type: string
+                    pattern: '/patient/[0-9a-z]+/group'
+                    example: '/patient/57b36ef304ad8c2224f2af3a/group'
+  PatientCreateResource:
+    type: object
+    required:
+      - type
+      - attributes
+    properties:
+      id:
+        type: string
+        example: '57b36ef304ad8c2224f2af3a'
+      type:
+        type: string
+        enum:
+          - patient
+        example: patient
+      attributes:
+        type: object
+        properties:
+          first_name:
+            type: string
+            example: Fiona
+          last_name:
+            type: string
+            example: Reeves
+          email_address:
+            type: string
+            example: fiona@example.com
+          phone_numbers:
+            type: array
+            items:
+              $ref: '#/definitions/PhoneNumber'
+          addresses:
+            type: array
+            items:
+              $ref: '#/definitions/Address'
+          identifiers:
+            type: array
+            items:
+              $ref: '#/definitions/PatientIdentifier'
+          birth_date:
+            type: string
+            format: date
+            example: '1944-03-06'
+          gender:
+            type: string
+            enum:
+              - male
+              - female
+              - other
+            example: female
+          updated_at:
+            type: string
+            format: dateTime
+            example: '2016-07-11T17:13:57.027Z'
+            readOnly: true
+          first_access_at:
+            type: string
+            format: dateTime
+            example: '2016-06-03T13:15:22.000Z'
+            readOnly: true
+          invited_at:
+            type: string
+            format: dateTime
+            example: '2016-06-01T16:20:16.000Z'
+            readOnly: true
+          enrolled_at:
+            type: string
+            format: dateTime
+            example: '2016-05-26T15:25:54.000Z'
+            readOnly: true
+          last_access_at:
+            type: string
+            format: dateTime
+            example: '2016-07-11T17:50:49.400Z'
+            readOnly: true
+      links:
+        type: object
+        readOnly: true
+        properties:
+          self:
+            type: string
+            pattern: '/patient/[0-9a-z]+'
+            example: '/patient/57b36ef304ad8c2224f2af3a'
+          twine_web_app:
+            type: string
+            example: 'https://app.twinehealth.com/#/coach/patient/5367c6300b7bb6e94188c02c/overview'
+            description: 'A link to the patient record in the Twine web application.'
+      relationships:
+        type: object
         required: 
           - groups
         properties:
@@ -1349,7 +1575,6 @@ definitions:
                   type: object
                   required:
                     - type
-                    - id
                   properties:
                     type:
                       type: string
@@ -1358,7 +1583,29 @@ definitions:
                       example: group
                     id:
                       type: string
+                      description: Required if the `meta.query` is not defined.
                       example: '57b3708b04ad8c2224f2af3b'
+                    meta:
+                      type: object
+                      description: Allows the specification of a query for a group id rather than providing a group id directly
+                      required:
+                        - query
+                      properties:
+                        query:
+                          type: object
+                          description: |
+                           1. If the query does not return any groups, a group with the specified name will be created and related to the patient.
+                           2. If the query returns one group, that group will be related to the patient.
+                           3. If the query returns more than one group, the creation of the patient will fail.
+                          required:
+                            - organization
+                            - name
+                          properties:
+                            organization:
+                              type: string
+                            name:
+                              type: string
+
           coaches:
             required: 
               - data
@@ -1676,7 +1923,7 @@ definitions:
       - data
     properties:
       data:
-        $ref: '#/definitions/PatientResource'
+        $ref: '#/definitions/PatientCreateResource'
     example:
       {
         "data": {
@@ -2373,15 +2620,12 @@ definitions:
       attributes:
         type: object
         properties:
-          time_window:
-            type: object
-            properties:
-              start_at:
-                type: string
-                format: dateTime
-              end_at:
-                type: string
-                format: dateTime
+          start_at:
+            type: string
+            format: dateTime
+          end_at:
+            type: string
+            format: dateTime
           allowance_per_patient:
             type: number
           active:
@@ -2402,8 +2646,8 @@ definitions:
                     type: string
                   id:
                     type: string
-              
-  FetchRewardBudgetsResponse:
+
+  FetchRewardBudgetResponse:
     type: object
     required:
       - data
@@ -2411,10 +2655,20 @@ definitions:
       meta:
         $ref: '#/definitions/FetchMetaResponse'
       data:
-        type: array
-        items: 
-          $ref: '#/definitions/RewardBudgetResource'
-          
+        $ref: '#/definitions/RewardBudgetResource'
+
+  FetchRewardBudgetsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        meta:
+          $ref: '#/definitions/FetchMetaResponse'
+        data:
+          type: array
+          items:
+            $ref: '#/definitions/RewardBudgetResource'
+
   CreateRewardBudgetRequest:
     type: object
     required:
@@ -2433,7 +2687,7 @@ definitions:
       data:
         $ref: '#/definitions/RewardBudgetResource'
           
-  RewardResource:
+  RewardAllocationResource:
     type: object
     required:
       - type
@@ -2446,18 +2700,23 @@ definitions:
       attributes:
         type: object
         properties:
+          description:
+            type: string
+          start_at:
+            type: string
+            format: dateTime
+          end_at:
+            type: string
+            format: dateTime
           amount:
             type: number
+          available:
+            type: string
           awarded:
             type: boolean
           awarded_amount:
             type: number
           awarded_at:
-            type: string
-            format: dateTime
-          description:
-            type: string
-          end_at:
             type: string
             format: dateTime
           thread:
@@ -2485,8 +2744,18 @@ definitions:
                     type: string
                   id:
                     type: string
-                    
-  FetchRewardsResponse:
+
+  FetchRewardAllocationResponse:
+      type: object
+      required:
+        - data
+      properties:
+        meta:
+          $ref: '#/definitions/FetchMetaResponse'
+        data:
+          $ref: '#/definitions/RewardAllocationResource'
+
+  FetchRewardAllocationsResponse:
     type: object
     required:
       - data
@@ -2496,17 +2765,17 @@ definitions:
       data:
         type: array
         items:
-          $ref: '#/definitions/RewardResource'
+          $ref: '#/definitions/RewardAllocationResource'
 
-  CreateRewardRequest:
+  CreateRewardAllocationRequest:
     type: object
     required:
       - data
     properties:
       data:
-        $ref: '#/definitions/RewardResource'
+        $ref: '#/definitions/RewardAllocationResource'
 
-  CreateRewardResponse:
+  CreateRewardAllocationResponse:
     type: object
     required:
       - data
@@ -2514,4 +2783,4 @@ definitions:
       meta:
         $ref: '#/definitions/CreateOrUpdateMetaResponse'
       data:
-        $ref: '#/definitions/RewardResource'          
+        $ref: '#/definitions/RewardAllocationResource'          
