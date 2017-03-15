@@ -10,7 +10,7 @@ info:
     # Overview
     The Twine Health API is RESTful API. The requests and responses are formated according to the [JSON API](http://jsonapi.org/format/1.0/) specification.
     
-    In addition to this documentation, we also provide an [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) "yaml" file describing the API: [Twine API Specification](spec/swagger.yaml).
+    In addition to this documentation, we also provide an [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) "yaml" file describing the API: [Twine API Specification](swagger.yaml).
 
     # Authentication
     Authentication for the Twine API is based on the [OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749). Twine currently supports grant types of **client_credentials** and **refresh_token**.
@@ -43,6 +43,8 @@ tags:
     description: An organization is a Twine customer. No data is accessible across organizations.
   - name: group
     description: A group is a cohort of patients within an organization. The creation of groups allows for the segmentation of dashboards and analytics. For example, a group might correspond to the patients in a particular practice or the employees of a particular employer.
+  - name: coach
+    description: A coach is a person that supports a patient
   - name: reward budget
     description: A reward budget provides the rules for a reward program for a group. Different reward budgets can be created for different periods of time.
   - name: patient
@@ -61,6 +63,7 @@ x-tagGroups:
     tags:
       - organization
       - group
+      - coach
       - reward budget
   - name: Patient Health Data
     tags:
@@ -388,7 +391,37 @@ paths:
       tags:
         - patient
       summary: Create a patient
-      description: Create a patient record.
+      description: |
+        Create a patient record.
+
+        Example for creating a patient with a group specified using `meta.query` instead of `id`:
+
+        ```JSON
+        {
+          "data": {
+            "type": "patient",
+            "attributes": {
+              "first_name": "Andrew",
+              "last_name": "Smith"
+            },
+            "relationships": {
+              "groups": {
+                "data": [
+                  {
+                    "type": "group",
+                    "meta": {
+                      "query": {
+                        "organization": "58c88de7c93eb96357a87033",
+                        "name": "Patients Lead"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+        ```
       operationId: createPatient
       parameters:
         - name: body
@@ -431,11 +464,11 @@ paths:
         - name: filter[identifier][system]
           in: query
           type: string
-          description: "Identifer system (example: \"MyEHR\") - requires a \"filter[identifier][value]\" parmeter"
+          description: "Identifier system (example: \"MyEHR\") - requires a \"filter[identifier][value]\" parameter"
         - name: filter[identifier][value]
           in: query
           type: string
-          description: "Identifer value (example: \"12345\") - requires a \"filter[identifier][system]\" parmeter"
+          description: "Identifier value (example: \"12345\") - requires a \"filter[identifier][system]\" parameter"
         - name: page[number]
           in: query
           description: Page number
@@ -2080,6 +2113,7 @@ definitions:
             - coach
           example: coach
         attributes:
+          type: object
           properties:
             first_name:
               type: string
@@ -2088,6 +2122,7 @@ definitions:
               type: string
               example: Rivera
         links:
+          type: object
           readOnly: true
           required:
             - self
@@ -2207,7 +2242,7 @@ definitions:
           "req_id": "aeb94ed8-d7f9-4e72-a78f-e276c4f52c2a"
         },
         "data": {
-          "type": "organizaton",
+          "type": "organization",
           "id": "5873b63605376e337a89d64a",
           "attributes": {
             "name": "Health Activation Partners"
