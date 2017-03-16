@@ -52,7 +52,7 @@ tags:
   - name: plan
     description: A plan is the set of actions and associated goals for a patient.
   - name: metric
-    description: A metric is a quantitative result for a patient. For example, vital signs, lab results, etc. are all metrics. Note that the documentation for this API is incomplete.
+    description: A metric is a quantitative result for a patient. For example, vital signs, lab results, etc. are all metrics.
   - name: reward allocation
     description: A reward allocation is a specific reward that has been created for a patient.
 x-tagGroups:
@@ -671,6 +671,7 @@ paths:
         - plan
       summary: Create action
       description: Create a plan action
+      operationId: createAction
       parameters:
         - name: body
           in: body
@@ -696,6 +697,72 @@ paths:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
 
   /patient_health_metric:
+    post:
+      tags:
+        - metric
+      summary: Create patient health metrics
+      description: |
+        Create one or more patient health metrics.
+
+        Example for creating a patient health result with a patient specified using `meta.query` instead of `id`:
+
+        ```JSON
+          {
+            "data": {
+              "type": "patient_health_metric",
+               "attributes": {
+                 "code": {
+                   "system": "LOINC",
+                   "value": "13457-7"
+                 },
+                 "type": "ldl_cholesterol",
+                 "occurred_at": "2017-03-14T11:00:57.000Z",
+                 "value": "121",
+                 "unit": "mg/dl"
+              },
+              "relationships": {
+                "patient": {
+                  "data": {
+                    "type": "patient",
+                    "meta": {
+                      "query": {
+                        "identifier": {
+                          "system": "medical-record-number",
+                          "value": "121212"
+                        },
+                        "organization": "58c4554710123c5c40dbab81"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ```
+      operationId: createPatientHealthMetric
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreatePatientHealthMetricRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreatePatientHealthMetricResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
     get:
       tags:
         - metric
@@ -738,36 +805,33 @@ paths:
           description: Invalid Request
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-    post:
+  /patient_health_metric/{id}:
+    get:
       tags:
         - metric
-      summary: Create patient health metrics
-      description: Create one or more patient health metrics
+      summary: Get a patient health metric
+      description: Get the plan summary for a patient.
+      operationId: fetchPatientHealthMetric
       parameters:
-        - name: body
-          in: body
+        - name: id
+          in: path
+          description: Patient health metric identifier
           required: true
-          schema:
-            $ref: '#/definitions/CreatePatientHealthMetricRequest'
+          type: string
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/CreatePatientHealthMetricResponse'
+            $ref: '#/definitions/FetchPatientHealthMetricResponse'
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+            $ref: '#/definitions/FetchErrorResponse'
         '403':
           description: Forbidden
           schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+            $ref: '#/definitions/FetchErrorResponse'
 
-            
   /coach/{id}:
     get:
       tags:
@@ -1620,7 +1684,7 @@ definitions:
                       example: '57b3708b04ad8c2224f2af3b'
                     meta:
                       type: object
-                      description: Allows the specification of a query for a group id rather than providing a group id directly
+                      description: Allows the specification of a query for a group rather than providing a group id directly
                       required:
                         - query
                       properties:
@@ -2517,6 +2581,9 @@ definitions:
     required:
       - type
       - id
+    description: |
+      Note that `data` can either be a single object or an array of objects matching the schema specified here
+      (bulk create). When bulk creating multiple, the relationships in every item **must** be the same.
     properties:
       type:
         type: string
@@ -2607,14 +2674,76 @@ definitions:
                     type: string
                   id:
                     type: string
+                    description: Required if the `meta.query` is not defined.
+                    example: '5817ead56f5316c0d05ba8bf'
+                  meta:
+                    type: object
+                    description: Allows the specification of a query for a patient rather than providing a patient id directly
+                    required:
+                      - query
+                    properties:
+                      query:
+                        type: object
+                        description: The query must return one and only one patient.
+                        required:
+                          - identifier
+                        properties:
+                          groups:
+                            type: array
+                            items:
+                              type: string
+                          organization:
+                            type: string
+                          identifier:
+                            type: object
+                            required:
+                              - system
+                              - value
+                            properties:
+                              system:
+                                type: string
+                              value:
+                                type: string
               links:
                 type: object
+    example:
+      {
+        "data": {
+          "type": "patient_health_metric",
+           "attributes": {
+             "code": {
+               "system": "LOINC",
+               "value": "13457-7"
+             },
+             "type": "ldl_cholesterol",
+             "occurred_at": "2017-03-14T11:00:57.000Z",
+             "value": "121",
+             "unit": "mg/dl"
+          },
+          "relationships": {
+            "patient": {
+              "data": {
+                "type": "patient",
+                "id": ""
+              }
+            }
+          }
+        }
+      }
 
   CreatePatientHealthMetricRequest:
     type: object
     required:
       - data
     properties:
+      meta:
+        type: object
+        properties:
+          ignore_duplicates:
+            type: boolean
+            description: |
+              If `true`, the patient health metric will be ignored if there is an existing patient health metric for
+              the same patient, with the same `type` and same `occurred_at`.
       data:
         $ref: '#/definitions/PatientHealthMetricResource'
 
