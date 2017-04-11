@@ -44,7 +44,7 @@ tags:
   - name: group
     description: A group is a cohort of patients within an organization. The creation of groups allows for the segmentation of dashboards and analytics. For example, a group might correspond to the patients in a particular practice or the employees of a particular employer.
   - name: reward budget
-    description: A reward budget provides the rules for a reward program for a group. Different reward budgets can be created for different periods of time.
+    description: A reward budget provides the details for a rewards program for a group. Different rewards budgets can be created for different periods of time specified by the start_at and end_at dates. A reward budget can activated for a patient any time between these dates. An activated reward budget for a patient is called a reward budget assignment.
   - name: patient
     description: A patient is the core user of Twine.
   - name: plan
@@ -337,9 +337,9 @@ paths:
       description: Get a list of reward budgets matching the specified filters.
       operationId: fetchRewardBudgets
       parameters:
-        - name: filter[group]
+        - name: filter[groups]
           in: query
-          description: group identifier
+          description: Comma-separated list of group identifiers
           required: true
           type: string
       responses:
@@ -374,6 +374,33 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/FetchRewardBudgetResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /reward_budget/{id}/group:
+    get:
+      tags:
+        - reward budget
+      summary: Get group for a reward budget
+      description: Get the group related to a reward budget.
+      operationId: fetchRewardBudgetGroup
+      parameters:
+        - name: id
+          in: path
+          description: Reward budget identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchGroupsResponse'
         '401':
           description: Unauthorized
           schema:
@@ -2611,7 +2638,6 @@ definitions:
     type: object
     required:
       - type
-      - id
     properties:
       type: 
         type: string
@@ -2619,22 +2645,51 @@ definitions:
         type: string
       attributes:
         type: object
+        required:
+          - start_at
+          - end_at
+          - value
+          - unit
+          - duration_active
+          - fulfill_as_earned
+          - frozen
         properties:
           start_at:
+            description: 'Date at which the budget period for the reward program starts.'
             type: string
             format: dateTime
           end_at:
+            description: 'Date at which the budget period for the reward program ends.'
             type: string
             format: dateTime
-          allowance_per_patient:
+          value:
+            description: 'Value of the budget. (Must be greater than 0)'
             type: number
-          active:
+          unit:
+            description: 'Unit of the budget.'
+            type: string
+            enum:
+              - dollar
+              - point
+              - credit
+          duration_active:
+            description: 'Number of days that a budget can be active after it has been activated for a patient. (Must be greater than 0)'
+            type: number
+          fulfill_as_earned:
+            description: 'If true, the reward allocations made against an activated budget can be fulfulled as they are earned. If false, the reward allocations should only be fulfilled when a budget that has been activated for a patient is closed.'
+            type: boolean
+          frozen:
+            description: 'If true, the reward budget cannot be activated for a patient.'
             type: boolean
       relationships:
         type: object
+        required:
+          - group
         properties:
           group:
             type: object
+            required:
+              - data
             properties: 
               data:
                 type: object
