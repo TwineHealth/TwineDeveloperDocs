@@ -1,9 +1,9 @@
 swagger: '2.0'
 info:
-  version: 1.0.1-draft
+  version: 1.1.0-reward-enhancements-3868
   title: Twine API
   x-logo:
-    url: 'images/twinehealth_hz_4color.png'
+    url: '/images/twinehealth_hz_4color.png'
   contact:
     email: apiteam@twinehealth.com
   description: |
@@ -1690,6 +1690,7 @@ definitions:
           - groups
         properties:
           groups:
+            type: object
             required:
               - data
             properties:
@@ -1731,7 +1732,8 @@ definitions:
                               type: string
 
           coaches:
-            required: 
+            type: object
+            required:
               - data
             properties:
               data:
