@@ -45,16 +45,22 @@ tags:
     description: A group is a cohort of patients within an organization. The creation of groups allows for the segmentation of dashboards and analytics. For example, a group might correspond to the patients in a particular practice or the employees of a particular employer.
   - name: coach
     description: A coach is a person that supports a patient
-  - name: reward budget
-    description: A reward budget provides the details for a rewards program for a group. Different rewards budgets can be created for different periods of time specified by the start_at and end_at dates. A reward budget can activated for a patient any time between these dates. An activated reward budget for a patient is called a reward budget assignment.
+  - name: reward program
+    description: A reward program provides the details for a rewards program for a group. Different rewards programs can be created for different periods of time specified by the start_at and end_at dates. A reward program can activated for a patient any time between these dates. An activated reward program for a patient is called a reward program activation.
   - name: patient
     description: A patient is the core user of Twine.
   - name: plan
     description: A plan is the set of actions and associated goals for a patient.
   - name: metric
     description: A metric is a quantitative result for a patient. For example, vital signs, lab results, etc. are all metrics.
-  - name: reward allocation
-    description: A reward allocation is a specific reward that has been created for a patient.
+  - name: reward program activation
+    description: A reward program activation is the activation of a reward program for a specific patient.
+  - name: reward
+    description: A reward allocates a portion of the budget from the reward program activation for achieving a particular goal and sets a target date.
+  - name: reward earning
+    description: A reward earning specifies the portion of a reward that was earned and at what date.
+  - name: reward earning fulfillment
+    description: A reward earning fulfillment specifies the portion of a reward earning that was fulfilled and at what date.
 x-tagGroups:
   - name: Authentication (oauth)
     tags:
@@ -64,13 +70,16 @@ x-tagGroups:
       - organization
       - group
       - coach
-      - reward budget
+      - reward program
   - name: Patient Health Data
     tags:
       - patient
       - plan
       - metric
-      - reward allocation
+      - reward program activation
+      - reward
+      - reward earning
+      - reward earning fulfillment
 paths:
   /oauth/token:
     post:
@@ -303,24 +312,24 @@ paths:
             $ref: '#/definitions/FetchErrorResponse'
 
 
-  /reward_budget:
+  /reward_program:
     post:
       tags:
-        - reward budget
-      summary: Create a reward budget
-      description: Create a reward budget for a group.
-      operationId: createRewardBudget
+        - reward program
+      summary: Create a reward program
+      description: Create a reward program for a group.
+      operationId: createRewardProgram
       parameters:
         - name: body
           in: body
           required: true
           schema:
-            $ref: '#/definitions/CreateRewardBudgetRequest'
+            $ref: '#/definitions/CreateRewardProgramRequest'
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/CreateRewardBudgetResponse'
+            $ref: '#/definitions/CreateRewardProgramResponse'
         '401':
           description: Unauthorized
           schema:
@@ -335,10 +344,10 @@ paths:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
     get:
       tags:
-        - reward budget
-      summary: List reward budgets
-      description: Get a list of reward budgets matching the specified filters.
-      operationId: fetchRewardBudgets
+        - reward program
+      summary: List reward programs
+      description: Get a list of reward programs matching the specified filters.
+      operationId: fetchRewardPrograms
       parameters:
         - name: filter[groups]
           in: query
@@ -349,7 +358,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/FetchRewardBudgetsResponse'
+            $ref: '#/definitions/FetchRewardProgramsResponse'
         '401':
           description: Unauthorized
           schema:
@@ -359,24 +368,24 @@ paths:
           schema:
             $ref: '#/definitions/FetchErrorResponse'
 
-  /reward_budget/{id}:
+  /reward_program/{id}:
     get:
       tags:
-        - reward budget
-      summary: Get a reward budget
-      description: Get a reward budget record by id.
-      operationId: fetchRewardBudget
+        - reward program
+      summary: Get a reward program
+      description: Get a reward program record by id.
+      operationId: fetchRewardProgram
       parameters:
         - name: id
           in: path
-          description: Reward budget identifier
+          description: Reward program identifier
           required: true
           type: string
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/FetchRewardBudgetResponse'
+            $ref: '#/definitions/FetchRewardProgramResponse'
         '401':
           description: Unauthorized
           schema:
@@ -386,17 +395,17 @@ paths:
           schema:
             $ref: '#/definitions/FetchErrorResponse'
 
-  /reward_budget/{id}/group:
+  /reward_program/{id}/group:
     get:
       tags:
-        - reward budget
-      summary: Get group for a reward budget
-      description: Get the group related to a reward budget.
-      operationId: fetchRewardBudgetGroup
+        - reward program
+      summary: Get group for a reward program
+      description: Get the group related to a reward program.
+      operationId: fetchRewardProgramGroup
       parameters:
         - name: id
           in: path
-          description: Reward budget identifier
+          description: Reward program identifier
           required: true
           type: string
       responses:
@@ -886,24 +895,24 @@ paths:
           schema:
             $ref: '#/definitions/FetchErrorResponse'
 
-  /reward_allocation:
+  /reward_program_activation:
     post:
       tags:
-        - reward allocation
-      summary: Create a reward allocation
-      description: Create a reward allocation for a patient.
-      operationId: createReward
+        - reward program activation
+      summary: Create a reward program activation
+      description: Create a reward program activation for a patient.
+      operationId: createRewardProgramActivation
       parameters:
         - name: body
           in: body
           required: true
           schema:
-            $ref: '#/definitions/CreateRewardAllocationRequest'
+            $ref: '#/definitions/CreateRewardProgramActivationRequest'
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/CreateRewardAllocationResponse'
+            $ref: '#/definitions/CreateRewardProgramActivationResponse'
         '401':
           description: Unauthorized
           schema:
@@ -918,10 +927,10 @@ paths:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
     get:
       tags:
-        - reward allocation
-      summary: List reward allocations
-      description: Get a list of reward allocations matching the specified filters.
-      operationId: fetchRewardAllocations
+        - reward program activation
+      summary: List reward program activations
+      description: Get a list of reward program activations matching the specified filters.
+      operationId: fetchRewards
       parameters:
         - name: filter[patient]
           in: query
@@ -932,7 +941,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/FetchRewardAllocationsResponse'
+            $ref: '#/definitions/FetchRewardProgramActivationsResponse'
         '401':
           description: Unauthorized
           schema:
@@ -942,24 +951,24 @@ paths:
           schema:
             $ref: '#/definitions/FetchErrorResponse'
 
-  /reward_allocation/{id}:
+  /reward_program_activation/{id}:
       get:
         tags:
-          - reward allocation
-        summary: Get a reward allocation
-        description: Get a reward allocation record by id.
-        operationId: fetchRewardAllocation
+          - reward program activation
+        summary: Get a reward program activation
+        description: Get a reward program activationrecord by id.
+        operationId: fetchRewardProgramActivation
         parameters:
           - name: id
             in: path
-            description: Reward allocation identifier
+            description: Reward program activation identifier
             required: true
             type: string
         responses:
           '200':
             description: OK
             schema:
-              $ref: '#/definitions/FetchRewardAllocationResponse'
+              $ref: '#/definitions/FetchRewardProgramActivationResponse'
           '401':
             description: Unauthorized
             schema:
@@ -969,6 +978,282 @@ paths:
             schema:
               $ref: '#/definitions/FetchErrorResponse'
 
+  /reward:
+    post:
+      tags:
+        - reward
+      summary: Create a reward
+      description: Create a reward for a patient.
+      operationId: createReward
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateRewardRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateRewardResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+    get:
+      tags:
+        - reward
+      summary: List rewards
+      description: Get a list of rewards matching the specified filters.
+      operationId: fetchRewards
+      parameters:
+        - name: filter[patient]
+          in: query
+          description: Patient identifier
+          required: true
+          type: string
+        - name: filter[reward_program_activation]
+          in: query
+          description: Reward program activation identifier
+          type: string
+        - name: filter[thread]
+          in: query
+          description: Thread identifier
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchRewardsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /reward/{id}:
+      get:
+        tags:
+          - reward
+        summary: Get a reward
+        description: Get a reward record by id.
+        operationId: fetchReward
+        parameters:
+          - name: id
+            in: path
+            description: Reward identifier
+            required: true
+            type: string
+        responses:
+          '200':
+            description: OK
+            schema:
+              $ref: '#/definitions/FetchRewardResponse'
+          '401':
+            description: Unauthorized
+            schema:
+              $ref: '#/definitions/FetchErrorResponse'
+          '403':
+            description: Forbidden
+            schema:
+              $ref: '#/definitions/FetchErrorResponse'
+
+  /reward_earning:
+    post:
+      tags:
+        - reward earning
+      summary: Create a reward earning
+      description: Create a reward earning for a reward.
+      operationId: createRewardEarning
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateRewardEarningRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateRewardEarningResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+    get:
+      tags:
+        - reward earning
+      summary: List reward earnings
+      description: Get a list of reward earnings matching the specified filters.
+      operationId: fetchRewardEarnings
+      parameters:
+        - name: filter[group]
+          in: query
+          description: Group identifier
+          required: true
+          type: string
+        - name: filter[patient]
+          in: query
+          description: Patient identifier
+          required: true
+          type: string
+        - name: filter[reward]
+          in: query
+          description: Reward identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchRewardEarningsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /reward_earning/{id}:
+      get:
+        tags:
+          - reward earning
+        summary: Get a reward earning
+        description: Get a reward earning record by id.
+        operationId: fetchRewardEarning
+        parameters:
+          - name: id
+            in: path
+            description: Reward earning identifier
+            required: true
+            type: string
+        responses:
+          '200':
+            description: OK
+            schema:
+              $ref: '#/definitions/FetchRewardEarningResponse'
+          '401':
+            description: Unauthorized
+            schema:
+              $ref: '#/definitions/FetchErrorResponse'
+          '403':
+            description: Forbidden
+            schema:
+              $ref: '#/definitions/FetchErrorResponse'
+
+  /reward_earning_fulfillment:
+    post:
+      tags:
+        - reward earning fulfillment
+      summary: Create a reward earning fulfillment
+      description: Create a reward earning fulfillment for a reward earning.
+      operationId: createRewardEarningFulfillment
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateRewardEarningFulfillmentRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateRewardEarningFulfillmentResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+    get:
+      tags:
+        - reward earning fulfillment
+      summary: List reward earning fulfillments
+      description: Get a list of reward earning fulfillments matching the specified filters.
+      operationId: fetchRewardEarningFulfillments
+      parameters:
+        - name: filter[group]
+          in: query
+          description: Group identifier
+          required: true
+          type: string
+        - name: filter[patient]
+          in: query
+          description: Patient identifier
+          required: true
+          type: string
+        - name: filter[reward]
+          in: query
+          description: Reward identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchRewardEarningFulfillmentsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /reward_earning_fulfillment/{id}:
+      get:
+        tags:
+          - reward earning fulfillment
+        summary: Get a reward earning fulfillment
+        description: Get a reward earning fulfillment record by id.
+        operationId: fetchRewardEarningFulfillment
+        parameters:
+          - name: id
+            in: path
+            description: Reward earning fulfillment identifier
+            required: true
+            type: string
+        responses:
+          '200':
+            description: OK
+            schema:
+              $ref: '#/definitions/FetchRewardEarningFulfillmentResponse'
+          '401':
+            description: Unauthorized
+            schema:
+              $ref: '#/definitions/FetchErrorResponse'
+          '403':
+            description: Forbidden
+            schema:
+              $ref: '#/definitions/FetchErrorResponse'
 
 definitions:
 
@@ -2800,7 +3085,7 @@ definitions:
         items:
           $ref: '#/definitions/PatientHealthMetricResource'
 
-  RewardBudgetResource:
+  RewardProgramResource:
     type: object
     required:
       - type
@@ -2812,41 +3097,42 @@ definitions:
       attributes:
         type: object
         required:
+          - name
           - start_at
           - end_at
-          - value
-          - unit
-          - duration_active
-          - fulfill_as_earned
-          - frozen
+          - budget_value
         properties:
           start_at:
-            description: 'Date at which the budget period for the reward program starts.'
+            description: 'Date at which the reward program starts.'
             type: string
             format: dateTime
           end_at:
-            description: 'Date at which the budget period for the reward program ends.'
+            description: 'Date at which the reward program ends. (Must be after the start_at)'
             type: string
             format: dateTime
-          value:
-            description: 'Value of the budget. (Must be greater than 0)'
+          budget_value:
+            description: 'Value of the budget for the reward program. (Must be greater than 0)'
             type: number
-          unit:
-            description: 'Unit of the budget.'
+          budget_unit:
+            description: 'Unit of the budget for the reard program.'
             type: string
             enum:
               - dollar
               - point
               - credit
+            default: dollar
           duration_active:
-            description: 'Number of days that a budget can be active after it has been activated for a patient. (Must be greater than 0)'
+            description: 'Number of days that a program can be active after it has been activated for a patient. (Must be greater than 0)'
             type: number
+            default: 540
           fulfill_as_earned:
-            description: 'If true, the reward allocations made against an activated budget can be fulfulled as they are earned. If false, the reward allocations should only be fulfilled when a budget that has been activated for a patient is closed.'
+            description: 'If true, the rewards created for a patient for the program can be fulfulled as they are earned. If false, the rewards should only be fulfilled when the program is deactivated.'
             type: boolean
+            default: false
           frozen:
-            description: 'If true, the reward budget cannot be activated for a patient.'
+            description: 'If true, the reward program cannot be activated for a patient and new rewards cannot be created for the program.'
             type: boolean
+            default: false
       relationships:
         type: object
         required:
@@ -2868,7 +3154,7 @@ definitions:
                   id:
                     type: string
 
-  FetchRewardBudgetResponse:
+  FetchRewardProgramResponse:
     type: object
     required:
       - data
@@ -2876,9 +3162,9 @@ definitions:
       meta:
         $ref: '#/definitions/FetchMetaResponse'
       data:
-        $ref: '#/definitions/RewardBudgetResource'
+        $ref: '#/definitions/RewardProgramResource'
 
-  FetchRewardBudgetsResponse:
+  FetchRewardProgramsResponse:
       type: object
       required:
         - data
@@ -2888,17 +3174,17 @@ definitions:
         data:
           type: array
           items:
-            $ref: '#/definitions/RewardBudgetResource'
+            $ref: '#/definitions/RewardProgramResource'
 
-  CreateRewardBudgetRequest:
+  CreateRewardProgramRequest:
     type: object
     required:
       - data
     properties:
       data:
-        $ref: '#/definitions/RewardBudgetResource'
+        $ref: '#/definitions/RewardProgramResource'
         
-  CreateRewardBudgetResponse:
+  CreateRewardProgramResponse:
     type: object
     required:
       - data
@@ -2906,42 +3192,47 @@ definitions:
       meta:
         $ref: '#/definitions/CreateOrUpdateMetaResponse'
       data:
-        $ref: '#/definitions/RewardBudgetResource'
-          
-  RewardAllocationResource:
+        $ref: '#/definitions/RewardProgramResource'
+
+  RewardProgramActivationResource:
     type: object
     required:
       - type
-      - id
     properties:
       type:
         type: string
-      id: 
+      id:
         type: string
       attributes:
         type: object
+        required:
+          - activated_at
         properties:
-          description:
-            type: string
-          start_at:
-            type: string
-            format: dateTime
-          end_at:
-            type: string
-            format: dateTime
-          amount:
-            type: number
-          available:
-            type: string
-          awarded:
+          active:
+            description: 'If true, the reward program is currently active.'
             type: boolean
-          awarded_amount:
-            type: number
-          awarded_at:
+            default: true
+          activated_at:
+            description: 'Date at which the reward program was activated for the patient. (Must be between the start_at and end_at dates for the reward program)'
             type: string
             format: dateTime
-          thread:
+          deactivated_at:
+            description: 'Date at which the reward program was deactivated.'
             type: string
+            format: dateTime
+          expires_at:
+            description: 'Date at which the reward program activation expires. (Read-only property set by adding the days_active from the reward program to the activated_at date)'
+            type: string
+            format: dateTime
+            readOnly: true
+          allocated_budget_value:
+            description: 'Value of the reward program budget that has been allocated. (Read-only property set by adding the allocated_value for all of the rewards related to the reward program activation)'
+            type: number
+            readOnly: true
+          allocated_budget_unit:
+            description: 'Unit of the reward program budget. (Read-only property)'
+            type: string
+            readOnly: true
       relationships:
         type: object
         properties:
@@ -2955,7 +3246,126 @@ definitions:
                     type: string
                   id:
                     type: string
-          budget:
+          reward_program:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+
+  FetchRewardProgramActivationResponse:
+      type: object
+      required:
+        - data
+      properties:
+        meta:
+          $ref: '#/definitions/FetchMetaResponse'
+        data:
+          $ref: '#/definitions/RewardProgramActivationResource'
+
+  FetchRewardProgramActivationsResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/RewardProgramActivationResource'
+
+  CreateRewardProgramActivationRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/RewardProgramActivationResource'
+
+  CreateRewardProgramActivationResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/RewardProgramActivationResource'
+
+  RewardResource:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        type: string
+      id: 
+        type: string
+      attributes:
+        type: object
+        required:
+          - description
+          - allocated_value
+          - allocated_at
+        properties:
+          thread:
+            description: 'Unique string identifying the health action with which the reward is associated.'
+            type: string
+          description:
+            description: 'Description of the reward.'
+            type: string
+          allocated_value:
+            description: 'Value of the reward program budget allocated for the reward.'
+            type: number
+          allocated_unit:
+            description: 'Unit of the reward program. (Read-only property)'
+            type: string
+            readOnly: true
+          allocated_at:
+            description: 'Date at which the reward was allocated.'
+            type: string
+            format: dateTime
+          target_at:
+            description: 'Date at which the patient aspires to achieve the reward. (Read-only property)'
+            type: string
+            format: dateTime
+          earned_value:
+            description: 'Value of the reward that has been earned. (Read-only property)'
+            type: number
+            readOnly: true
+          earned_at:
+            description: 'Date at which the reward was earned. (Read-only property)'
+            type: string
+            format: dateTime
+            readOnly: true
+          fulfilled_value:
+            description: 'Value of the earned reward that has been fulfilled. (Read-only property)'
+            type: number
+            readOnly: true
+          fulfilled_at:
+            description: 'Date at which the reward earning was fulfilled. (Read-only property)'
+            type: string
+            format: dateTime
+            readOnly: true
+      relationships:
+        type: object
+        properties:
+          patient:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+          reward_program_activation:
             type: object
             properties:
               data: 
@@ -2966,7 +3376,7 @@ definitions:
                   id:
                     type: string
 
-  FetchRewardAllocationResponse:
+  FetchRewardResponse:
       type: object
       required:
         - data
@@ -2974,9 +3384,9 @@ definitions:
         meta:
           $ref: '#/definitions/FetchMetaResponse'
         data:
-          $ref: '#/definitions/RewardAllocationResource'
+          $ref: '#/definitions/RewardResource'
 
-  FetchRewardAllocationsResponse:
+  FetchRewardsResponse:
     type: object
     required:
       - data
@@ -2986,17 +3396,17 @@ definitions:
       data:
         type: array
         items:
-          $ref: '#/definitions/RewardAllocationResource'
+          $ref: '#/definitions/RewardResource'
 
-  CreateRewardAllocationRequest:
+  CreateRewardRequest:
     type: object
     required:
       - data
     properties:
       data:
-        $ref: '#/definitions/RewardAllocationResource'
+        $ref: '#/definitions/RewardResource'
 
-  CreateRewardAllocationResponse:
+  CreateRewardResponse:
     type: object
     required:
       - data
@@ -3004,4 +3414,207 @@ definitions:
       meta:
         $ref: '#/definitions/CreateOrUpdateMetaResponse'
       data:
-        $ref: '#/definitions/RewardAllocationResource'          
+        $ref: '#/definitions/RewardResource'
+
+  RewardEarningResource:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        required:
+          - earned_value
+          - earned_unit
+          - earned_at
+        properties:
+          earned_value:
+            description: 'Value of the reward that has been earned.'
+            type: number
+          earned_unit:
+            description: 'Unit of the reward that has been earned.'
+            type: string
+          earned_at:
+            description: 'Date at which the reward was earned.'
+            type: string
+            format: dateTime
+          ready_for_fulfillment:
+            description: 'If true, the reward earning is ready to be fulfilled, either because the reward program activation was fulfill_as_earned or because the reward program activation has been deactivated. (Read-only property)'
+            type: boolen
+            readOnly: true
+          fulfilled_value:
+            description: 'Value of the earned reward that has been fulfilled. (Read-only property)'
+            type: number
+            readOnly: true
+          fulfilled_at:
+            description: 'Date at which the reward earning was fulfilled. (Read-only property)'
+            type: string
+            format: dateTime
+            readOnly: true
+      relationships:
+        type: object
+        properties:
+          group:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+          patient:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+          reward:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+
+  FetchRewardEarningResponse:
+      type: object
+      required:
+        - data
+      properties:
+        meta:
+          $ref: '#/definitions/FetchMetaResponse'
+        data:
+          $ref: '#/definitions/RewardEarningResource'
+
+  FetchRewardEarningsResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/RewardEarningResource'
+
+  CreateRewardEarningRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/RewardEarningResource'
+
+  CreateRewardEarningResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/RewardEarningResource'
+
+  RewardEarningFulfillmentResource:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        required:
+          - earned_value
+          - earned_unit
+          - earned_at
+        properties:
+          fulfilled_value:
+            description: 'Value of the earned reward that has been fulfilled.'
+            type: number
+          fulfilled_unit:
+            description: 'Unit of the earned reward that has been fulfilled.'
+            type: string
+          fulfilled_at:
+            description: 'Date at which the reward earning was fulfilled.'
+            type: string
+            format: dateTime
+      relationships:
+        type: object
+        properties:
+          patient:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+          reward_earning:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+
+  FetchRewardEarningFulfillmentResponse:
+      type: object
+      required:
+        - data
+      properties:
+        meta:
+          $ref: '#/definitions/FetchMetaResponse'
+        data:
+          $ref: '#/definitions/RewardEarningFulfillmentResource'
+
+  FetchRewardEarningFulfillmentsResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/RewardEarningFulfillmentResource'
+
+  CreateRewardEarningFulfillmentRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/RewardEarningFulfillmentResource'
+
+  CreateRewardEarningFulfillmentResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/RewardEarningFulfillmentResource'
