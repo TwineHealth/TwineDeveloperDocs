@@ -1119,7 +1119,6 @@ paths:
         - name: filter[reward]
           in: query
           description: Reward identifier
-          required: true
           type: string
       responses:
         '200':
@@ -1199,20 +1198,14 @@ paths:
       description: Get a list of reward earning fulfillments matching the specified filters.
       operationId: fetchRewardEarningFulfillments
       parameters:
-        - name: filter[group]
-          in: query
-          description: Group identifier
-          required: true
-          type: string
         - name: filter[patient]
           in: query
           description: Patient identifier
           required: true
           type: string
-        - name: filter[reward]
+        - name: filter[reward_earning]
           in: query
-          description: Reward identifier
-          required: true
+          description: Reward earning identifier
           type: string
       responses:
         '200':
@@ -3225,6 +3218,10 @@ definitions:
             type: string
             format: dateTime
             readOnly: true
+          fulfill_as_earned:
+            description: 'If true, the rewards created for a patient for the program can be fulfulled as they are earned. If false, the rewards should only be fulfilled when the program is deactivated. (Read-only property denormalized from the reward program)'
+            type: boolean
+            readOnly: true
           allocated_budget_value:
             description: 'Value of the reward program budget that has been allocated. (Read-only property set by adding the allocated_value for all of the rewards related to the reward program activation)'
             type: number
@@ -3235,6 +3232,9 @@ definitions:
             readOnly: true
       relationships:
         type: object
+        required:
+          - patient
+          - reward_program
         properties:
           patient:
             type: object
@@ -3354,9 +3354,12 @@ definitions:
             readOnly: true
       relationships:
         type: object
+        required:
+          - reward_program_activation
         properties:
           patient:
             type: object
+            readOnly: true
             properties:
               data:
                 type: object
@@ -3429,7 +3432,6 @@ definitions:
         type: object
         required:
           - earned_value
-          - earned_unit
           - earned_at
         properties:
           earned_value:
@@ -3438,6 +3440,7 @@ definitions:
           earned_unit:
             description: 'Unit of the reward that has been earned.'
             type: string
+            readOnly: true
           earned_at:
             description: 'Date at which the reward was earned.'
             type: string
@@ -3457,9 +3460,12 @@ definitions:
             readOnly: true
       relationships:
         type: object
+        required:
+          - reward
         properties:
           group:
             type: object
+            readOnly: true
             properties:
               data:
                 type: object
@@ -3470,6 +3476,7 @@ definitions:
                     type: string
           patient:
             type: object
+            readOnly: true
             properties:
               data:
                 type: object
@@ -3541,9 +3548,8 @@ definitions:
       attributes:
         type: object
         required:
-          - earned_value
-          - earned_unit
-          - earned_at
+          - fulfilled_value
+          - fulfilled_at
         properties:
           fulfilled_value:
             description: 'Value of the earned reward that has been fulfilled.'
@@ -3551,15 +3557,19 @@ definitions:
           fulfilled_unit:
             description: 'Unit of the earned reward that has been fulfilled.'
             type: string
+            readOnly: true
           fulfilled_at:
             description: 'Date at which the reward earning was fulfilled.'
             type: string
             format: dateTime
       relationships:
         type: object
+        required:
+          - reward_earning
         properties:
           patient:
             type: object
+            readOnly: true
             properties:
               data:
                 type: object
