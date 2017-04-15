@@ -3222,11 +3222,23 @@ definitions:
             description: 'If true, the rewards created for a patient for the program can be fulfulled as they are earned. If false, the rewards should only be fulfilled when the program is deactivated. (Read-only property denormalized from the reward program)'
             type: boolean
             readOnly: true
-          allocated_budget_value:
-            description: 'Value of the reward program budget that has been allocated. (Read-only property set by adding the allocated_value for all of the rewards related to the reward program activation)'
+          allocated_count:
+            description: 'Number of rewards allocated. (Read-only property)'
             type: number
             readOnly: true
-          allocated_budget_unit:
+          total_allocated_value:
+            description: 'Total value of reward allocated. (Read-only property)'
+            type: number
+            readOnly: true
+          earned_count:
+            description: 'Number of reward earnings. (Read-only property)'
+            type: number
+            readOnly: true
+          total_earned_value:
+            description: 'Total value of reward earnings. (Read-only property)'
+            type: number
+            readOnly: true
+          budget_unit:
             description: 'Unit of the reward program budget. (Read-only property)'
             type: string
             readOnly: true
