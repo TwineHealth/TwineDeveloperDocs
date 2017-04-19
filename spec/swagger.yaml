@@ -930,7 +930,7 @@ paths:
         - reward program activation
       summary: List reward program activations
       description: Get a list of reward program activations matching the specified filters.
-      operationId: fetchRewards
+      operationId: fetchRewardProgramActivations
       parameters:
         - name: filter[patient]
           in: query
@@ -3095,6 +3095,9 @@ definitions:
           - end_at
           - budget_value
         properties:
+          name:
+            description: Name of the reward program
+            type: string
           start_at:
             description: 'Date at which the reward program starts.'
             type: string
@@ -3459,7 +3462,7 @@ definitions:
             format: dateTime
           ready_for_fulfillment:
             description: 'If true, the reward earning is ready to be fulfilled, either because the reward program activation was fulfill_as_earned or because the reward program activation has been deactivated. (Read-only property)'
-            type: boolen
+            type: boolean
             readOnly: true
           fulfilled_value:
             description: 'Value of the earned reward that has been fulfilled. (Read-only property)'
