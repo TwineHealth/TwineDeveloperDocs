@@ -1074,7 +1074,7 @@ paths:
       tags:
         - reward earning
       summary: Create a reward earning
-      description: Create a reward earning for a reward. There can only be one earning for a reward.
+      description: Create a reward earning for a reward. There can only be one earning for a reward. It is possilble to create multiple reward earnings simultaneously by providing and array of reward earnings in the data property.
       operationId: createRewardEarning
       parameters:
         - name: body
