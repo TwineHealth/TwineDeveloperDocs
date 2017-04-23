@@ -900,7 +900,7 @@ paths:
       tags:
         - reward program activation
       summary: Create a reward program activation
-      description: Create a reward program activation for a patient.
+      description: Create a reward program activation for a patient. There can only be one activation for a patient for a given reward program.
       operationId: createRewardProgramActivation
       parameters:
         - name: body
@@ -1074,7 +1074,7 @@ paths:
       tags:
         - reward earning
       summary: Create a reward earning
-      description: Create a reward earning for a reward.
+      description: Create a reward earning for a reward. There can only be one earning for a reward.
       operationId: createRewardEarning
       parameters:
         - name: body
@@ -1106,9 +1106,9 @@ paths:
       description: Get a list of reward earnings matching the specified filters.
       operationId: fetchRewardEarnings
       parameters:
-        - name: filter[group]
+        - name: filter[groups]
           in: query
-          description: Group identifier
+          description: Group identifiers
           required: true
           type: string
         - name: filter[patient]
@@ -1116,10 +1116,10 @@ paths:
           description: Patient identifier
           required: true
           type: string
-        - name: filter[reward]
+        - name: filter[ready_for_fulfillment]
           in: query
-          description: Reward identifier
-          type: string
+          description: If true, only returns those reward earnings for which ready_for_fulfillment is true and fulfilled_at is null. If false, only returns those reward earnings for which ready_for_fulfillment is false and fulfilled_at is null.
+          type: boolean
       responses:
         '200':
           description: OK
@@ -1166,7 +1166,7 @@ paths:
       tags:
         - reward earning fulfillment
       summary: Create a reward earning fulfillment
-      description: Create a reward earning fulfillment for a reward earning.
+      description: Create a reward earning fulfillment for a reward earning. There can only be one fulfillment for each earning.
       operationId: createRewardEarningFulfillment
       parameters:
         - name: body
@@ -1202,10 +1202,6 @@ paths:
           in: query
           description: Patient identifier
           required: true
-          type: string
-        - name: filter[reward_earning]
-          in: query
-          description: Reward earning identifier
           type: string
       responses:
         '200':
@@ -3096,7 +3092,7 @@ definitions:
           - budget_value
         properties:
           name:
-            description: Name of the reward program
+            description: 'Name of the reward program'
             type: string
           start_at:
             description: 'Date at which the reward program starts.'
@@ -3213,7 +3209,7 @@ definitions:
             type: string
             format: dateTime
           deactivated_at:
-            description: 'Date at which the reward program was deactivated.'
+            description: 'Date at which the reward program was deactivated. (Must be after the activated_at date)'
             type: string
             format: dateTime
           expires_at:
@@ -3335,18 +3331,18 @@ definitions:
             description: 'Description of the reward.'
             type: string
           allocated_value:
-            description: 'Value of the reward program budget allocated for the reward.'
+            description: 'Value of the reward program budget allocated for the reward. (Must not exceed the remaining budget for the reward program activation)'
             type: number
           allocated_unit:
             description: 'Unit of the reward program. (Read-only property)'
             type: string
             readOnly: true
           allocated_at:
-            description: 'Date at which the reward was allocated.'
+            description: 'Date at which the reward was allocated. (Must be after the reward program is activated and before it is deactivated or expires)'
             type: string
             format: dateTime
           target_at:
-            description: 'Date at which the patient aspires to achieve the reward. (Read-only property)'
+            description: 'Date at which the patient aspires to achieve the reward. (Must be the same or after the allocated_at date)'
             type: string
             format: dateTime
           earned_value:
@@ -3450,14 +3446,14 @@ definitions:
           - earned_at
         properties:
           earned_value:
-            description: 'Value of the reward that has been earned.'
+            description: 'Value of the reward that has been earned. (Must not exceed the allocated value for the reward)'
             type: number
           earned_unit:
-            description: 'Unit of the reward that has been earned.'
+            description: 'Unit of the reward that has been earned. (Read-only property)'
             type: string
             readOnly: true
           earned_at:
-            description: 'Date at which the reward was earned.'
+            description: 'Date at which the reward was earned. (Must be after the reward was allocated and before the reward program activation was deactivated or expired)'
             type: string
             format: dateTime
           ready_for_fulfillment:
@@ -3490,6 +3486,17 @@ definitions:
                   id:
                     type: string
           patient:
+            type: object
+            readOnly: true
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+          reward_program_activation:
             type: object
             readOnly: true
             properties:
