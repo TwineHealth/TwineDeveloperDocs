@@ -3324,7 +3324,7 @@ definitions:
           - allocated_value
           - allocated_at
         properties:
-          thread:
+          _thread:
             description: 'Unique string identifying the health action with which the reward is associated.'
             type: string
           description:
