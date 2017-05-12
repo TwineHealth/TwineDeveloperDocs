@@ -139,7 +139,7 @@ paths:
         - twine_auth:
           - 'group'
           - 'organization'
-  /oauth/token/{id}/group:
+  /oauth/token/{id}/groups:
     get:
       tags:
         - oauth
@@ -595,7 +595,7 @@ paths:
           description: Invalid Request
           schema:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
-  /patient/{id}/group:
+  /patient/{id}/groups:
     get:
       tags:
         - patient
@@ -621,7 +621,7 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-  /patient/{id}/coach:
+  /patient/{id}/coaches:
     get:
       tags:
         - patient
