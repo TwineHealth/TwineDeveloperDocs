@@ -2781,6 +2781,10 @@ definitions:
         type: string
       attributes:
         type: object
+        required:
+          - type
+          - title
+          - effective_from
         properties:
           type:
             type: string
