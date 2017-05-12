@@ -1405,8 +1405,8 @@ definitions:
                   properties:
                     related:
                       type: string
-                      pattern: '/oauth/token/[0-9a-z]+/group'
-                      example: '/oauth/token/57b36d8804ad8c2224f2af37/group'
+                      pattern: '/oauth/token/[0-9a-z]+/groups'
+                      example: '/oauth/token/57b36d8804ad8c2224f2af37/groups'
             organization:
               required:
                 - links
@@ -1517,7 +1517,7 @@ definitions:
                 "id": "5755db2a3db4179179999acf"
               }],
               "links": {
-                "related": "/pub/oauth/token/5817a24d678a7c2cbf5df3ee/group"
+                "related": "/pub/oauth/token/5817a24d678a7c2cbf5df3ee/groups"
               }
             }
           }
@@ -1605,7 +1605,7 @@ definitions:
           "count":1
         },
         "links": {
-          "self": "/pub/oauth/token/5817a24d678a7c2cbf5df3ee/group"
+          "self": "/pub/oauth/token/5817a24d678a7c2cbf5df3ee/groups"
         },
         "data": [{
           "type":"group",
@@ -1870,8 +1870,8 @@ definitions:
                 properties:
                   related:
                     type: string
-                    pattern: '/patient/[0-9a-z]+/group'
-                    example: '/patient/57b36ef304ad8c2224f2af3a/group'
+                    pattern: '/patient/[0-9a-z]+/groups'
+                    example: '/patient/57b36ef304ad8c2224f2af3a/groups'
   PatientCreateResource:
     type: object
     required:
@@ -2037,8 +2037,8 @@ definitions:
                 properties:
                   related:
                     type: string
-                    pattern: '/patient/[0-9a-z]+/group'
-                    example: '/patient/57b36ef304ad8c2224f2af3a/group'
+                    pattern: '/patient/[0-9a-z]+/coaches'
+                    example: '/patient/57b36ef304ad8c2224f2af3a/coaches'
   
   FetchPatientsResponse:
     type: object
@@ -2105,7 +2105,7 @@ definitions:
                   }
                 ],
                 "links": {
-                  "related": "/pub/patient/58163112237d84a94035f78b/group"
+                  "related": "/pub/patient/58163112237d84a94035f78b/groups"
                 }
               },
               "coaches": {
@@ -2119,7 +2119,7 @@ definitions:
                   }
                 ],
                 "links": {
-                  "related": "/pub/patient/58163112237d84a94035f78b/coach"
+                  "related": "/pub/patient/58163112237d84a94035f78b/coaches"
                 }
               }
             }
@@ -2161,7 +2161,7 @@ definitions:
                   }
                 ],
                 "links": {
-                  "related": "/pub/patient/58163103237d84a94035f0b3/group"
+                  "related": "/pub/patient/58163103237d84a94035f0b3/groups"
                 }
               },
               "coaches": {
@@ -2175,7 +2175,7 @@ definitions:
                   }
                 ],
                 "links": {
-                  "related": "/pub/patient/58163103237d84a94035f0b3/coach"
+                  "related": "/pub/patient/58163103237d84a94035f0b3/coaches"
                 }
               }
             }
@@ -2217,7 +2217,7 @@ definitions:
                   }
                 ],
                 "links": {
-                  "related": "/pub/patient/58163103237d84a94035f043/group"
+                  "related": "/pub/patient/58163103237d84a94035f043/groups"
                 }
               },
               "coaches": {
@@ -2231,7 +2231,7 @@ definitions:
                   }
                 ],
                 "links": {
-                  "related": "/pub/patient/58163103237d84a94035f043/coach"
+                  "related": "/pub/patient/58163103237d84a94035f043/coaches"
                 }
               }
             }
@@ -2293,7 +2293,7 @@ definitions:
                 }
               ],
               "links": {
-                "related": "/pub/patient/58163112237d84a94035f78b/group"
+                "related": "/pub/patient/58163112237d84a94035f78b/groups"
               }
             },
             "coaches": {
@@ -2307,7 +2307,7 @@ definitions:
                 }
               ],
               "links": {
-                "related": "/pub/patient/58163112237d84a94035f78b/coach"
+                "related": "/pub/patient/58163112237d84a94035f78b/coaches"
               }
             }
           }
@@ -2379,13 +2379,13 @@ definitions:
                 "id": "5755db2a3db4179179999acf"
               }],
               "links": {
-                "related": "/pub/patient/5817ead56f5316c0d05ba8bf/group"
+                "related": "/pub/patient/5817ead56f5316c0d05ba8bf/groups"
               }
             },
             "coaches": {
               "data": [],
               "links": {
-                "related":"/pub/patient/5817ead56f5316c0d05ba8bf/coach"
+                "related":"/pub/patient/5817ead56f5316c0d05ba8bf/coaches"
               }
             }
           }
@@ -2447,13 +2447,13 @@ definitions:
                 "id": "5755db2a3db4179179999acf"
               }],
               "links": {
-                "related": "/pub/patient/5817ead56f5316c0d05ba8bf/group"
+                "related": "/pub/patient/5817ead56f5316c0d05ba8bf/groups"
               }
             },
             "coaches": {
               "data": [],
               "links": {
-                "related":"/pub/patient/5817ead56f5316c0d05ba8bf/coach"
+                "related":"/pub/patient/5817ead56f5316c0d05ba8bf/coaches"
               }
             }
           }
@@ -2544,7 +2544,7 @@ definitions:
           "count": 1
         },
         "links": {
-          "self": "/pub/patient/58163112237d84a94035f78b/coach"
+          "self": "/pub/patient/58163112237d84a94035f78b/coaches"
         },
         "data": [{
           "type":"coach",
