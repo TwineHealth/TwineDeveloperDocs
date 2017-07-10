@@ -61,6 +61,8 @@ tags:
     description: A reward earning specifies the portion of a reward that was earned and at what date.
   - name: reward earning fulfillment
     description: A reward earning fulfillment specifies the portion of a reward earning that was fulfilled and at what date.
+  - name: email history
+    description: Email history represents a single email that was sent using twine
 x-tagGroups:
   - name: Authentication (oauth)
     tags:
@@ -80,7 +82,83 @@ x-tagGroups:
       - reward
       - reward earning
       - reward earning fulfillment
+      - email history
 paths:
+  /email_history:
+    get:
+      tags:
+        - email history
+      summary: List email histories
+      description: Get a list of email histories
+      operationId: fetchEmailHistories
+      parameters:
+        - name: filter[receiver]
+          in: query
+          type: string
+          description: Twine patient id of email recipient. Required if filter[sender] is not defined.
+        - name: filter[sender]
+          in: query
+          type: string
+          description: Twine patient id of email sender. Required if filter[receiver] is not defined.
+        - name: filter[emailType]
+          in: query
+          type: string
+          description: Type of email
+        - name: sort
+          in: query
+          description: >
+            valid sorts:
+              * send_time - ascending by send_time
+              * -send_time - descending by send_time
+          type: string
+          enum: 
+            - send_time
+            - -send_time
+      responses: 
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchEmailHistoriesResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /email_history/{id}:
+    get:
+      tags: 
+        - email history
+      summary: Get an email history
+      description: Get an email history by id
+      operationId: fetchEmailHistory
+      parameters: 
+        - name: id
+          in: path
+          description: EmailHistory identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchEmailHistoryResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
   /oauth/token:
     post:
       tags:
@@ -2883,6 +2961,8 @@ definitions:
         
   # END /patient_plan_summary definitions
   
+  # BEGIN reward resource definitions
+  
   PatientHealthMetricResource:
     type: object
     required:
@@ -3654,3 +3734,157 @@ definitions:
         $ref: '#/definitions/CreateOrUpdateMetaResponse'
       data:
         $ref: '#/definitions/RewardEarningFulfillmentResource'
+        
+  # END reward resource definitions
+  
+  EmailHistoryResource:
+    type: object
+    required:
+        - type
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          twine_email_id:
+            description: 'Unique identifier for this email.'
+            type: string
+          email_address:
+            description: 'Address email was sent to.'
+            type: string
+          email_type:
+            description: 'Type of email.'
+            type: string
+          send_time:
+            description: 'Time email was sent.'
+            type: string
+            format: dateTime
+          status_times:
+            description: 'Status of email. Multiple statuses may be defined. The current status is the one with the most recent date.'
+            type: object
+            properties:
+              processed:
+                description: 'Time email was processed.'
+                type: string
+                format: dateTime
+              dropped:
+                description: 'Time email was dropped.'
+                type: string
+                format: dateTime
+              deferred:
+                description: 'Time email was dropped.'
+                type: string
+                format: dateTime
+              bounce:
+                description: 'Time email was bounced.'
+                type: string
+                format: dateTime
+              open:
+                description: 'Time email was opened.'
+                type: string
+                format: dateTime
+              spamreport:
+                description: 'Time email was reported as spam.'
+                type: string
+                format: dateTime
+              unsubscribe:
+                description: 'Time email was unsubscribed.'
+                type: string
+                format: dateTime
+              click:
+                description: 'Time email was clicked.'
+                type: string
+                format: dateTime
+              delivered:
+                description: 'Time email was delivered.'
+                type: string
+                format: dateTime
+      relationships:
+        type: object
+        properties:
+          sender:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+          receiver:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+    example:
+      {
+        "type": "email_history",
+        "id": "595fddec28c5041b84467592",
+        "attributes": {
+            "created_at": "2017-07-07T19:15:56.229Z",
+            "created_by": "595fd88ef4be5b1a797ff19b",
+            "email_address": "tony@example.com",
+            "email_type": "invite",
+            "send_time": "2017-02-25T13:35:01.000Z",
+            "status_times": {
+                "delivered": "2017-02-25T13:35:03.000Z",
+                "open": "2017-02-25T14:20:00.000Z",
+                "processed": "2017-02-25T13:35:02.000Z"
+            },
+            "twine_email_id": "576226e5-7e25-4469-b10d-2bc6a725bfbc",
+            "updated_at": "2017-07-07T19:15:56.229Z",
+            "updated_by": "595fd88ef4be5b1a797ff19b"
+        },
+        "relationships": {
+            "receiver": {
+                "data": {
+                    "id": "595fddea28c5041b84466bbe",
+                    "type": "patient"
+                },
+                "links": {
+                    "related": "/pub/email_history/595fddec28c5041b84467592/receiver"
+                }
+            },
+            "sender": {
+                "links": {
+                    "related": "/pub/email_history/595fddec28c5041b84467592/sender"
+                }
+            }
+        },
+        "links": {
+            "self": "/pub/email_history/595fddec28c5041b84467592"
+        },
+      }
+                    
+  FetchEmailHistoryResponse:
+    type: object
+    required:
+      - data
+    properties:
+        meta:
+          $ref: '#/definitions/FetchMetaResponse'
+        data:
+          $ref: '#/definitions/EmailHistoryResource'
+          
+  FetchEmailHistoriesResponse:
+    type: object
+    required:
+      - data
+    properties:
+        meta:
+          $ref: '#/definitions/FetchMetaResponse'
+        data:
+          type: array
+          items:
+            $ref: '#/definitions/EmailHistoryResource'
+        
+      
