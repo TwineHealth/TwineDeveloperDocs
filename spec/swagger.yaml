@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 1.1.0-reward-enhancements-3868
+  version: 7.18.0
   title: Twine API
   x-logo:
     url: '/images/twinehealth_hz_4color.png'
