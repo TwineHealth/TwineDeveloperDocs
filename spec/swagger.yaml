@@ -886,7 +886,7 @@ paths:
     get:
       tags:
         - bundle
-      summary: Get an bundle
+      summary: Get a bundle
       description: Get a bundle from a patient's plan.
       operationId: fetchBundle
       parameters:
@@ -911,7 +911,7 @@ paths:
     patch:
       tags:
         - bundle
-      summary: Update an bundle
+      summary: Update a bundle
       description: Updte a bundle from a patient's plan.
       operationId: updateBundle
       parameters:
