@@ -95,11 +95,11 @@ paths:
         - name: filter[receiver]
           in: query
           type: string
-          description: Twine patient id of email recipient. Required if filter[sender] is not defined.
+          description: Twine user id of email recipient. Required if filter[sender] is not defined.
         - name: filter[sender]
           in: query
           type: string
-          description: Twine patient id of email sender. Required if filter[receiver] is not defined.
+          description: Twine user id of email sender. Required if filter[receiver] is not defined.
         - name: filter[emailType]
           in: query
           type: string
@@ -3775,7 +3775,7 @@ definitions:
                 type: string
                 format: dateTime
               deferred:
-                description: 'Time email was dropped.'
+                description: 'Time email was deferred.'
                 type: string
                 format: dateTime
               bounce:
@@ -3791,7 +3791,7 @@ definitions:
                 type: string
                 format: dateTime
               unsubscribe:
-                description: 'Time email was unsubscribed.'
+                description: 'Time email was unsubscribed from.'
                 type: string
                 format: dateTime
               click:
