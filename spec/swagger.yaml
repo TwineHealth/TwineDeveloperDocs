@@ -829,6 +829,11 @@ paths:
           description: Action identifier
           required: true
           type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateActionRequest'
       responses:
         '200':
           description: OK
@@ -915,6 +920,11 @@ paths:
           description: Bundle identifier
           required: true
           type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateBundleRequest'
       responses:
         '200':
           description: OK
