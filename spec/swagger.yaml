@@ -4417,14 +4417,14 @@ definitions:
           - fulfilled_at
         properties:
           fulfilled_value:
-            description: 'Value of the earned reward that has been fulfilled.'
+            description: 'Value of the earned reward that has been fulfilled. (Must be greater than or equal to 0)'
             type: number
           fulfilled_unit:
-            description: 'Unit of the earned reward that has been fulfilled.'
+            description: 'Unit of the earned reward that has been fulfilled. (Read-only property)'
             type: string
             readOnly: true
           fulfilled_at:
-            description: 'Date at which the reward earning was fulfilled.'
+            description: 'Date at which the reward earning was fulfilled. (Must be at the same time or after the reward was earned)'
             type: string
             format: dateTime
       relationships:
