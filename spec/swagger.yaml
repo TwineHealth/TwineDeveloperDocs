@@ -51,6 +51,10 @@ tags:
     description: A patient is the core user of Twine.
   - name: plan
     description: A plan is the set of actions and associated goals for a patient.
+  - name: action
+    description: An action is an actionable item in a patient's plan.
+  - name: bundle
+    description: A bundle is a collection of actions (an action plan) in a patient's plan summary.
   - name: metric
     description: A metric is a quantitative result for a patient. For example, vital signs, lab results, etc. are all metrics.
   - name: reward program activation
@@ -75,6 +79,8 @@ x-tagGroups:
     tags:
       - patient
       - plan
+      - action
+      - bundle
       - metric
       - reward program activation
       - reward
@@ -648,32 +654,6 @@ paths:
           schema:
             $ref: '#/definitions/FetchErrorResponse'
 
-  /patient_plan_summary/{id}:
-    get: 
-      tags:
-        - plan
-      summary: Get the plan summary for a patient
-      description: Get the plan summary for a patient.
-      operationId: fetchPatientPlanSummary
-      parameters:
-        - name: id
-          in: path
-          description: Plan summary identifier
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchPatientPlanSummaryResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
   /patient_plan_summary:
     get:
       tags:
@@ -687,6 +667,16 @@ paths:
           type: string
           description: Patient id to fetch plan summary for
           required: true
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - actions
+            - bundles
+            - patient
+            - current_results
       responses:
         '200':
           description: OK
@@ -700,11 +690,81 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
+  /patient_plan_summary/{id}:
+    get:
+      tags:
+        - plan
+      summary: Get the plan summary for a patient
+      description: Get the plan summary for a patient.
+      operationId: fetchPatientPlanSummary
+      parameters:
+        - name: id
+          in: path
+          description: Plan summary identifier
+          required: true
+          type: string
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - actions
+            - bundles
+            - patient
+            - current_results
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchPatientPlanSummaryResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+    patch:
+      tags:
+        - plan
+      summary: Update a plan summary
+      description: Update a plan summary record for a patient.
+      operationId: updatePatientPlanSummary
+      parameters:
+        - name: id
+          in: path
+          description: Plan summary identifier
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdatePatientPlanSummaryRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UpdatePatientPlanSummaryResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
 
   /action:
     post:
       tags:
-        - plan
+        - action
       summary: Create action
       description: Create a plan action
       operationId: createAction
@@ -727,6 +787,147 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+  /action/{id}:
+    get:
+      tags:
+        - action
+      summary: Get an action
+      description: Get a health action from a patient's plan.
+      operationId: fetchAction
+      parameters:
+        - name: id
+          in: path
+          description: Action identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchActionResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+    patch:
+      tags:
+        - action
+      summary: Update an action
+      description: Updte a health action from a patient's plan.
+      operationId: updateAction
+      parameters:
+        - name: id
+          in: path
+          description: Action identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UpdateActionResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+
+  /bundle:
+    post:
+      tags:
+        - bundle
+      summary: Create bundle
+      description: Create a bundle in a patient's plan
+      operationId: createBundle
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateBundleRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateBundleResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+  /bundle/{id}:
+    get:
+      tags:
+        - bundle
+      summary: Get an bundle
+      description: Get a bundle from a patient's plan.
+      operationId: fetchBundle
+      parameters:
+        - name: id
+          in: path
+          description: Bundle identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchBundleResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+    patch:
+      tags:
+        - bundle
+      summary: Update an bundle
+      description: Updte a bundle from a patient's plan.
+      operationId: updateBundle
+      parameters:
+        - name: id
+          in: path
+          description: Bundle identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UpdateBundleResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
         '409':
           description: Invalid Request
           schema:
@@ -1245,6 +1446,18 @@ paths:
               $ref: '#/definitions/FetchErrorResponse'
 
 definitions:
+  Resource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
 
   CreateOrUpdateMetaResponse:
     type: object
@@ -2636,6 +2849,45 @@ definitions:
           enum:
             - patient_plan_summary
           example: patient_plan_summary
+        attributes:
+          type: object
+          properties:
+            adherence:
+              readOnly: true
+              type: object
+            critical:
+              type: array
+              items:
+                type: object
+            time_zone:
+              type: string
+            window_order:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  _actions:
+                    type: array
+                    items:
+                      type: string
+            effective_from:
+              readOnly: true
+              type: string
+              format: dateTime
+            window_notification_times:
+              readOnly: true
+              type: object
+              properties:
+                morning:
+                  type: integer
+                afternoon:
+                  type: integer
+                evening:
+                  type: integer
+                night:
+                  type: integer
         relationships:
           type: object
           required:
@@ -2678,6 +2930,11 @@ definitions:
                         type: string
                       id:
                         type: string
+                  links:
+                    type: object
+                    properties:
+                      related:
+                        type: string
             patient:
               type: object
               properties:
@@ -2688,7 +2945,23 @@ definitions:
                         type: string
                       id:
                         type: string
+            current_results:
+              type: array
+              items:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - type
+                      - id
+                    properties:
+                      type:
+                        type: string
+                      id:
+                        type: string
         links:
+          type: object
           readOnly: true
           required:
             - self
@@ -2697,7 +2970,7 @@ definitions:
               type: string
               pattern: '/patient_plan_summary/[0-9a-z]+'
               example: '/patient_plan_summary/57b36e3c04ad8c2224f2af38'
-  
+
   FetchPatientPlanSummaryResponse:
     type: object
     required:
@@ -2707,6 +2980,142 @@ definitions:
         $ref: '#/definitions/FetchMetaResponse'
       data:
         $ref: '#/definitions/PatientPlanSummaryResource'
+      included:
+        description: |
+          Related resources which are included in the repoonse based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [action](#operation/fetchAction), [bundle](#operation/fetchBundle) and [patient](#operation/fetchPatient)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+    example:
+      {
+        "data": {
+          "type": "patient_plan_summary",
+          "id": "5964f831f65725bf25558b50",
+          "attributes": {
+            "adherence": {
+              "due": 0,
+              "complete": 0,
+              "streak": {
+                "count": 0
+              }
+            },
+            "window_order": [],
+            "effective_from": "2017-07-01T04:00:00.000Z",
+            "window_notification_times": {
+              "morning": 25200,
+              "afternoon": 43200,
+              "evening": 64800,
+              "night": 75600
+            }
+          },
+          "links": {
+            "self": "/patient_plan_summary/5964f831f65725bf25558b50"
+          },
+          "relationships": {
+            "bundles": {
+              "links": {
+                "related": "/patient_plan_summary/5964f831f65725bf25558b50/bundles"
+              },
+              "data": []
+            },
+            "actions": {
+              "links": {
+                "related": "/patient_plan_summary/5964f831f65725bf25558b50/actions"
+              },
+              "data": [
+                {
+                  "id": "5964f831f65725bf25558b4b",
+                  "type": "action"
+                }
+              ]
+            },
+            "patient": {
+              "links": {
+                "related": "/patient_plan_summary/5964f831f65725bf25558b50/patient"
+              },
+              "data": {
+                "type": "patient",
+                "id": "5964f831f65725bf25558b4f"
+              }
+            },
+            "current_results": {
+              "links": {
+                "related": "/patient_plan_summary/5964f831f65725bf25558b50/current_results"
+              },
+              "data": []
+            }
+          }
+        },
+        "included": [
+          {
+            "type": "action",
+            "id": "5964f831f65725bf25558b4b",
+            "attributes": {
+              "_thread": "blood_pressure",
+              "adherence": {
+                "due": 0,
+                "complete": 0,
+                "streak": {
+                  "count": 0
+                }
+              },
+              "effective_from": "2017-07-01T04:00:00.000Z",
+              "frequency_goal": {
+                "count": 7
+              },
+              "frequency_goal_prorated": 0,
+              "identifiers": [],
+              "metric_required": false,
+              "metrics": [
+                {
+                  "metric_type": "blood_pressure",
+                  "unit": "mmHg",
+                  "goal": {
+                    "data": {
+                      "systolic": {
+                        "value": 150,
+                        "unit": "mmHg"
+                      },
+                      "diastolic": {
+                        "value": 95,
+                        "unit": "mmHg"
+                      }
+                    }
+                  },
+                  "_id": "5964f831f65725bf25558b51",
+                  "accepted_values": []
+                }
+              ],
+              "title": "Record Blood Pressure",
+              "tracking": true,
+              "windows": [],
+              "type": "blood_pressure",
+              "options": []
+            },
+            "links": {
+              "self": "/action/5964f831f65725bf25558b4b"
+            },
+            "relationships": {
+              "plan": {
+                "links": {
+                  "related": "/action/5964f831f65725bf25558b4b/plan"
+                }
+              },
+              "bundles": {
+                "links": {
+                  "related": "/action/5964f831f65725bf25558b4b/bundles"
+                },
+                "data": []
+              }
+            }
+          }
+        ],
+        "meta": {
+          "req_id": "e0e78ef5-c0fd-415b-9b9f-a1b5c77c1198"
+        }
+      }
   FetchPatientPlanSummariesResponse:
     type: object
     required:
@@ -2718,7 +3127,32 @@ definitions:
         type: array
         items: 
           $ref: '#/definitions/PatientPlanSummaryResource'
-        
+      included:
+        description: |
+          Related resources which are included in the repoonse based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [action](#operation/fetchAction), [bundle](#operation/fetchBundle) and [patient](#operation/fetchPatient)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+
+  UpdatePatientPlanSummaryRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/PatientPlanSummaryResource'
+  UpdatePatientPlanSummaryResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/PatientPlanSummaryResource'
+
   Identifier:
     type: object
     required:
@@ -2870,6 +3304,54 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/ActionResource'
+    example:
+      {
+        "data": {
+          "type": "action",
+          "attributes": {
+            "effective_from": "2017-02-20T11:12:13.000Z",
+            "title": "Record Blood Pressure",
+            "type": "blood_pressure",
+            "frequency_goal": {
+              "count": 1
+            },
+            "metrics": [
+              {
+                "metric_type": "blood_pressure",
+                "unit": "mmHg",
+                "goal": {
+                  "data": {
+                    "systolic": {
+                      "value": 150,
+                      "unit": "mmHg"
+                    },
+                    "diastolic": {
+                      "value": 95,
+                      "unit": "mmHg"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "relationships": {
+            "plan": {
+              "data": {
+                "type": "patient_plan_summary",
+                "id": "58aacf0d076adcef394bac35"
+              }
+            },
+            "bundles": {
+              "data": [
+                {
+                  "type": "bundle",
+                  "id": "58aacf0d076adcef394bac30"
+                }
+              ]
+            }
+          }
+        }
+      }
         
   CreateActionResponse:
     type: object
@@ -2880,7 +3362,354 @@ definitions:
         $ref: '#/definitions/CreateOrUpdateMetaResponse'
       data:
         $ref: '#/definitions/ActionResource'
+    example:
+      {
+        "data": {
+          "type": "action",
+          "id": "58aacf0d076adcef394bac36",
+          "attributes": {
+            "_thread": "blood_pressure",
+            "adherence": {
+              "due": 0,
+              "complete": 0,
+              "streak": {
+                "count": 0
+              }
+            },
+            "effective_from": "2017-02-20T11:12:13.000Z",
+            "frequency_goal": {
+              "count": 1
+            },
+            "frequency_goal_prorated": 0,
+            "identifiers": [],
+            "metric_required": false,
+            "metrics": [
+              {
+                "metric_type": "blood_pressure",
+                "unit": "mmHg",
+                "goal": {
+                  "data": {
+                    "diastolic": {
+                      "unit": "mmHg",
+                      "value": 95
+                    },
+                    "systolic": {
+                      "unit": "mmHg",
+                      "value": 150
+                    }
+                  }
+                },
+                "_id": "58aacf0d076adcef394bac37",
+                "accepted_values": []
+              }
+            ],
+            "title": "Record Blood Pressure",
+            "tracking": true,
+            "windows": [],
+            "type": "blood_pressure",
+            "options": [],
+            "created_at": "2017-02-20T11:12:13.000Z",
+            "created_by": "596541ec076adcef394bac2d",
+            "updated_at": "2017-02-20T11:12:13.000Z",
+            "updated_by": "596541ec076adcef394bac2d"
+          },
+          "links": {
+            "self": "/action/58aacf0d076adcef394bac36"
+          },
+          "relationships": {
+            "plan": {
+              "links": {
+                "related": "/action/58aacf0d076adcef394bac36/plan"
+              },
+              "data": {
+                "type": "patient_plan_summary",
+                "id": "58aacf0d076adcef394bac35"
+              }
+            },
+            "bundles": {
+              "links": {
+                "related": "/action/58aacf0d076adcef394bac36/bundles"
+              },
+              "data": [
+                {
+                  "type": "bundle",
+                  "id": "58aacf0d076adcef394bac30"
+                }
+              ]
+            }
+          }
+        },
+        "included": [],
+        "meta": {
+          "req_id": "014ea6d2-4717-4915-b4bc-98454180614e"
+        }
+      }
+
+  UpdateActionRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/ActionResource'
+
+  UpdateActionResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/ActionResource'
+
+  FetchActionResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/ActionResource'
+    example:
+      {
+        "data": {
+          "type": "action",
+          "id": "59653f699fc8be3938f04491",
+          "attributes": {
+            "_thread": "weight",
+            "adherence": {
+              "due": 1,
+              "complete": 1,
+              "streak": {
+                "count": 1,
+                "updated_at": "2017-07-11T21:13:13.215Z"
+              }
+            },
+            "effective_from": "2017-07-10T21:13:13.212Z",
+            "effective_to": "2017-07-11T21:13:13.215Z",
+            "frequency_goal": {
+              "count": 1
+            },
+            "frequency_goal_prorated": 0,
+            "identifiers": [
+              {
+                "label": "Super Health Actions",
+                "system": "http://super.health.example.com",
+                "value": "action-0123",
+                "_id": "59653f699fc8be3938f04494"
+              }
+            ],
+            "details": {
+              "some": "mixed value"
+            },
+            "metric_required": true,
+            "metrics": [
+              {
+                "metric_type": "weight",
+                "unit": "lb",
+                "goal": {
+                  "data": {
+                    "unit": "lb",
+                    "value": 210
+                  }
+                },
+                "_id": "59653f699fc8be3938f04493",
+                "accepted_values": [],
+                "validations": {
+                  "maximum": {
+                    "unit": "lb",
+                    "value": 999
+                  },
+                  "minimum": {
+                    "unit": "lb",
+                    "value": 0
+                  }
+                }
+              }
+            ],
+            "title": "Measure Weight",
+            "tracking": true,
+            "windows": [
+              {
+                "title": "Morning",
+                "type": "morning",
+                "_id": "59653f699fc8be3938f04492"
+              }
+            ],
+            "type": "weight",
+            "options": []
+          },
+          "links": {
+            "self": "/action/59653f699fc8be3938f04491"
+          },
+          "relationships": {
+            "plan": {
+              "links": {
+                "related": "/action/59653f699fc8be3938f04491/plan"
+              }
+            },
+            "bundles": {
+              "links": {
+                "related": "/action/59653f699fc8be3938f04491/bundles"
+              },
+              "data": []
+            }
+          }
+        },
+        "included": [],
+        "meta": {
+          "req_id": "63bf4340-f256-400e-b391-d801d2a251f6"
+        }
+      }
+
+  BundleResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id: 
+        type: string
+      attributes:
+        type: object
+        required:
+          - type
+          - title
+          - effective_from
+        properties:
+          type:
+            type: string
+          title:
+            type: string
+          effective_from:
+            type: string
+            format: dateTime
+          effective_to:
+            type: string
+            format: dateTime
+          _thread:
+            type: string
+
+      relationships:
+        type: object
+        properties:
+          plan:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+          actions:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+
+  UpdateBundleRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/BundleResource'
         
+  UpdateBundleResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/BundleResource'
+
+  CreateBundleRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/BundleResource'
+        
+  CreateBundleResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/BundleResource'
+
+  FetchBundleResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/BundleResource'
+    example:
+      {
+        "data": {
+          "type": "bundle",
+          "id": "596535d9608f63d531b7e34a",
+          "attributes": {
+            "type": "weight",
+            "title": "Weight",
+            "_actions": [
+              "596535d9608f63d531b7e344"
+            ],
+            "effective_from": "2017-07-11T20:31:25.000Z",
+            "effective_to": "2017-07-11T20:32:25.000Z",
+            "_thread": "123"
+          },
+          "links": {
+            "self": "/bundle/596535d9608f63d531b7e34a"
+          },
+          "relationships": {
+            "plan": {
+              "links": {
+                "related": "/bundle/596535d9608f63d531b7e34a/plan"
+              }
+            },
+            "actions": {
+              "links": {
+                "related": "/bundle/596535d9608f63d531b7e34a/actions"
+              },
+              "data": [
+                {
+                  "type": "action",
+                  "id": "596535d9608f63d531b7e344"
+                }
+              ]
+            }
+          }
+        },
+        "included": [],
+        "meta": {
+          "req_id": "c0f8d53a-d763-4beb-b0b1-9ec6da146a14"
+        }
+      }
+
   # END /patient_plan_summary definitions
   
   PatientHealthMetricResource:
