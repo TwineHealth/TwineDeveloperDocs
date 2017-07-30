@@ -4017,6 +4017,12 @@ definitions:
           name:
             description: 'Name of the reward program'
             type: string
+          tagline:
+            description: 'Tagline of the reward program - designed to be one line'
+            type: string
+          description:
+            description: 'Description of the reward program - designed to be a comprehensive text description'
+            type: string
           start_at:
             description: 'Date at which the reward program starts.'
             type: string
