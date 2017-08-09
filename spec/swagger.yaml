@@ -3151,7 +3151,9 @@ definitions:
               },
               "effective_from": "2017-07-01T04:00:00.000Z",
               "frequency_goal": {
-                "count": 7
+                "weeks": {
+                  "days": [0, 1, 2, 3, 4, 5, 6]
+                }
               },
               "frequency_goal_prorated": 0,
               "identifiers": [],
@@ -3344,10 +3346,12 @@ definitions:
                     type: string
                     format: dateTime
           frequency_goal:
-            type: object
-            properties:
-              count:
-                type: integer
+            type: array
+            items:
+              description: 'Days of week that the action is scheduled for. Zero-indexed, ex 0 represents Sunday, etc.'
+              type: integer
+              maxItems: 7
+              enum: [0, 1, 2, 3, 4, 5, 6]
           identifiers:
             type: array
             items:
@@ -3401,8 +3405,10 @@ definitions:
             "title": "Record Blood Pressure",
             "type": "blood_pressure",
             "frequency_goal": {
-              "count": 1
-            },
+                "weeks": {
+                  "days": [0]
+                }
+              },
             "metrics": [
               {
                 "metric_type": "blood_pressure",
@@ -3466,7 +3472,9 @@ definitions:
             },
             "effective_from": "2017-02-20T11:12:13.000Z",
             "frequency_goal": {
-              "count": 1
+              "weeks": {
+                "days": [0]
+              }
             },
             "frequency_goal_prorated": 0,
             "identifiers": [],
@@ -3578,7 +3586,9 @@ definitions:
             "effective_from": "2017-07-10T21:13:13.212Z",
             "effective_to": "2017-07-11T21:13:13.215Z",
             "frequency_goal": {
-              "count": 1
+              "weeks": {
+                "days": [0]
+              }
             },
             "frequency_goal_prorated": 0,
             "identifiers": [
