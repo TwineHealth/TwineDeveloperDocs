@@ -1998,6 +1998,7 @@ definitions:
         example: 'Cambridge'
       state:
         type: string
+        description: The state, province, or region of an address. Use two-letter abbreviations for USA states and Canadian provinces.
         example: 'MA'
       postal_code:
         type: string
@@ -2018,6 +2019,8 @@ definitions:
         type: string
       country:
         type: string
+        description: The ISO 3166 3 letter code for a country
+        example: 'USA'
   PatientIdentifier:
     type: object
     required:
