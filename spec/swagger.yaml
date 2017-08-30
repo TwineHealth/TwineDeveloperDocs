@@ -3346,12 +3346,18 @@ definitions:
                     type: string
                     format: dateTime
           frequency_goal:
-            type: array
-            items:
-              description: 'Days of week that the action is scheduled for. Zero-indexed, ex 0 represents Sunday, etc.'
-              type: integer
-              maxItems: 7
-              enum: [0, 1, 2, 3, 4, 5, 6]
+            type: object
+            properties:
+              weeks:
+                type: object
+                properties:
+                  days:
+                    type: array
+                    items:
+                      description: 'Days of week that the action is scheduled for. Zero-indexed, ex 0 represents Sunday, etc.'
+                      type: integer
+                      maxItems: 7
+                      enum: [0, 1, 2, 3, 4, 5, 6]
           identifiers:
             type: array
             items:
