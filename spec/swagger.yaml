@@ -589,6 +589,10 @@ paths:
           in: query
           type: string
           description: "Identifier value (example: \"12345\") - requires a \"filter[identifier][system]\" parameter"
+        - name: filter[archived]
+          in: query
+          type: boolean
+          description: The archived value of patient (either 'true' or 'false')
         - name: page[number]
           in: query
           description: Page number
