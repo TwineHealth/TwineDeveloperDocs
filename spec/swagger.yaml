@@ -592,7 +592,7 @@ paths:
         - name: filter[archived]
           in: query
           type: boolean
-          description: The archived value of patient (either 'true' or 'false')
+          description: If not specified, return all patients. If set to 'true' return only archived patients, if set to 'false', return only patients who are not archived.
         - name: page[number]
           in: query
           description: Page number
@@ -2034,6 +2034,22 @@ definitions:
         type: string
       value: 
         type: string
+  ArchiveHistory:
+    type: object
+    properties:
+      archived:
+        type: boolean
+        example: true
+      modified_at:
+        type: string
+        format: dateTime
+        example: '2016-06-03T13:15:22.000Z'
+      reason:
+        type: string
+        example: 'Opted out of coaching'
+      notes:
+        type: string
+        example: 'Patient called requesting opt out of coaching'
   PatientResource:
     type: object
     required:
@@ -2108,6 +2124,14 @@ definitions:
             format: dateTime
             example: '2016-07-11T17:50:49.400Z'
             readOnly: true
+          archived:
+            type: boolean
+            example: true
+            readOnly: true
+          archive_history:
+            type: array
+            items:
+              $ref: '#/definitions/ArchiveHistory'
       links:
         type: object
         readOnly: true
