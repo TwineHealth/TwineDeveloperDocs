@@ -2419,7 +2419,9 @@ definitions:
                   "system": "twine-filler-patient",
                   "value": "filler-92"
                 }
-              ]
+              ],
+              "archived": false,
+              "archive_history": []
             },
             "links": {
               "twine_web_app": "http://10.0.1.55:9000/#/coach/admin/coaches/58163112237d84a94035f78b/profile",
@@ -2607,7 +2609,9 @@ definitions:
                 "system": "twine-filler-patient",
                 "value": "filler-92"
               }
-            ]
+            ],
+            "archived": false,
+            "archive_history": []
           },
           "links": {
             "twine_web_app": "http://10.0.1.55:9000/#/coach/admin/coaches/58163112237d84a94035f78b/profile",
@@ -2695,7 +2699,9 @@ definitions:
             "updated_at": "2016-11-01T01:07:33.121Z",
             "addresses": [],
             "phone_numbers": [],
-            "identifiers":[]
+            "identifiers":[],
+            "archived": false,
+            "archive_history": []
           },
           "links": {
             "twine_web_app": "http://10.0.1.55:9000/#/coach/patient/5817ead56f5316c0d05ba8bf",
@@ -2763,7 +2769,9 @@ definitions:
             "updated_at": "2016-11-01T01:07:33.121Z",
             "addresses": [],
             "phone_numbers": [],
-            "identifiers":[]
+            "identifiers":[],
+            "archived": false,
+            "archive_history": []
           },
           "links": {
             "twine_web_app": "http://10.0.1.55:9000/#/coach/patient/5817ead56f5316c0d05ba8bf",
