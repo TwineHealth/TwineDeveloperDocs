@@ -3,7 +3,7 @@ info:
   version: 7.18.0
   title: Twine API
   x-logo:
-    url: '/images/twinehealth_hz_4color.png'
+    url: 'http://developer.twinehealth.com/images/twinehealth_hz_4color.png'
   contact:
     email: apiteam@twinehealth.com
   description: |
