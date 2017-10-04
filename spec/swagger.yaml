@@ -98,6 +98,9 @@ x-tagGroups:
       - reward earning fulfillment
       - email history
       - health profile
+      - health profile question
+      - health profile answer
+      - health question definition
 paths:
   /email_history:
     get:
@@ -1547,25 +1550,25 @@ paths:
               $ref: '#/definitions/FetchErrorResponse'
 
   /health_profile:
-      get:
-        tags:
-          - health profile
-        summary: List health profiles
-        description: Get a list of health profiles
-        operationId: fetchHealthProfiles
-        parameters:
-          - name: filter[patient]
-            in: query
-            type: string
-            description: Patient id to fetch healt profile (either a patient, group or organization filter is required)
-          - name: filter[groups]
-            in: query
-            type: string
-            description: Comma-separated list of Twine group ids (either a patient, group or organization filter is required)
-          - name: filter[organization]
-            in: query
-            type: string
-            description: Twine organization id (either a patient, group or organization filter is required)
+    get:
+      tags:
+        - health profile
+      summary: List health profiles
+      description: Get a list of health profiles
+      operationId: fetchHealthProfiles
+      parameters:
+        - name: filter[patient]
+          in: query
+          type: string
+          description: Patient id to fetch healt profile (either a patient, group or organization filter is required)
+        - name: filter[groups]
+          in: query
+          type: string
+          description: Comma-separated list of Twine group ids (either a patient, group or organization filter is required)
+        - name: filter[organization]
+          in: query
+          type: string
+          description: Twine organization id (either a patient, group or organization filter is required)
         - name: page[number]
           in: query
           description: Page number
@@ -1579,23 +1582,24 @@ paths:
           type: integer
           default: 10
           maximum: 50
-        responses:
-          '200':
-            description: OK
-            schema:
-              $ref: '#/definitions/FetchHealthProfilesResponse'
-          '401':
-            description: Unauthorized
-            schema:
-              $ref: '#/definitions/FetchErrorResponse'
-          '403':
-            description: Forbidden
-            schema:
-              $ref: '#/definitions/FetchErrorResponse'
-          '409':
-            description: Invalid Request
-            schema:
-              $ref: '#/definitions/FetchErrorResponse'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthProfilesResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
   /health_profile/{id}:
     get:
       tags:
@@ -1738,7 +1742,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/FetchHealthProfileDefinitionsResponse'
+            $ref: '#/definitions/FetchHealthQuestionDefinitionsResponse'
         '401':
           description: Unauthorized
           schema:
@@ -1768,7 +1772,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/FetchHealthProfileAnswerResponse'
+            $ref: '#/definitions/FetchHealthQuestionDefinitionResponse'
         '401':
           description: Unauthorized
           schema:
@@ -5044,9 +5048,13 @@ definitions:
             type: array
             items:
               description: 'The category, answered and total counts for questions in the health profile'
-              category: string
-              answered: number
-              total: number
+              properties:
+                category:
+                  type: string
+                answered:
+                  type: number
+                total:
+                  type: number
       links:
         type: object
         readOnly: true
@@ -5086,10 +5094,11 @@ definitions:
               data:
                 type: array
                 items:
-                  type:
-                    type: string
-                  id:
-                    type: string
+                  properties:
+                    type:
+                      type: string
+                    id:
+                      type: string
               links:
                 type: object
                 readOnly: true
@@ -5224,17 +5233,15 @@ definitions:
                     example: '/pub/health_profile_question/59d435931d078505ba744e88/answer'
           profile:
             type: object
-            links:
-              readOnly: true
-              properties:
-                links:
-                  type: object
-                  readOnly: true
-                  properties:
-                    related:
-                      type: string
-                      pattern: '/pub/health_profile_question/[0-9a-z]+/profile'
-                      example: '/pub/health_profile_question/59d435931d078505ba744e88/profile'
+            properties:
+              links:
+                type: object
+                readOnly: true
+                properties:
+                  related:
+                    type: string
+                    pattern: '/pub/health_profile_question/[0-9a-z]+/profile'
+                    example: '/pub/health_profile_question/59d435931d078505ba744e88/profile'
           question_definition:
             type: object
             properties:
@@ -5299,14 +5306,14 @@ definitions:
           $ref: '#/definitions/FetchMetaResponse'
         data:
           $ref: '#/definitions/HealthProfileQuestionResource'
-      included:
-        description: |
-          Related resources which are included in the response based on the `include` param.
-          Attributes of each resource will vary depending on the type.
-          See [action](#operation/fetchHealthProfileQuestion), [bundle](#operation/fetchHealthProfileAnswer)
-        type: array
-        items:
-          $ref: '#/definitions/Resource'
+        included:
+          description: |
+            Related resources which are included in the response based on the `include` param.
+            Attributes of each resource will vary depending on the type.
+            See [action](#operation/fetchHealthProfileQuestion), [bundle](#operation/fetchHealthProfileAnswer)
+          type: array
+          items:
+            $ref: '#/definitions/Resource'
 
   HealthProfileAnswerResource:
     type: object
@@ -5325,20 +5332,27 @@ definitions:
             type: array
             items:
               description: 'The details of previous answers for a health profile question'
-              answered_at: date,
-                type: string
-                format: dateTime
-              value: string
-              _created_by: string
+              properties:
+                answered_at:
+                  type: string
+                  format: dateTime
+                value:
+                  type: string
+                _created_by:
+                  type: string
           latest:
             type: object
-              description: 'The details of the latest answer for a health profile question'
-                answered_at: date,
+            description: 'The details of the latest answer for a health profile question'
+            properties:
+              answered_at:
                 type: string
                 format: dateTime
-              value: string
-              _created_by: string
-          question_id: string
+              value:
+                type: string
+              _created_by:
+                type: string
+          question_id:
+            type: string
       links:
         type: object
         readOnly: true
@@ -5470,22 +5484,35 @@ definitions:
               data:
                 type: array
                 items:
+                  type: object
                   description: 'The label, value and icon for the answer choices for the question'
-                  data:
-                     label: string
-                     value: string
-                     icon: string
-              type: string
+                  properties:
+                    label:
+                      type: string
+                    value:
+                      type: string
+                    icon:
+                      type: string
+              type:
+                type: string
           requirements:
             type: array
             items:
+              type: object
               description: 'The age and gender requirements for the question to be included'
-              property: string
-              shouldBeEqual: boolean
-              shouldBeGreaterThan: number
-              shouldBeLessThan: number
-              value: string
-          text: string
+              properties:
+                property:
+                  type: string
+                shouldBeEqual:
+                  type: boolean
+                shouldBeGreaterThan:
+                  type: number
+                shouldBeLessThan:
+                  type: number
+                value:
+                  type: string
+          text:
+            type: string
       links:
         type: object
         readOnly: true
