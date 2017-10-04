@@ -73,8 +73,8 @@ tags:
     description: Health profile question contains a health question and the answer for a patient.
   - name: health profile answer
     description: Health profile answer contain the answer of a question for a patient.
-  - name: health profile definition
-    description: Health profile definition contains a set of health questions and answer choices.
+  - name: health question definition
+    description: Health question definition contains a set of health questions and answer choices.
 x-tagGroups:
   - name: Authentication (oauth)
     tags:
@@ -1731,13 +1731,13 @@ paths:
           schema:
             $ref: '#/definitions/FetchErrorResponse'
 
-  /health_profile_definition:
+  /health_question_definition:
     get:
       tags:
-        - health profile definition
-      summary: List health profile definitions
-      description: Get a list of all health profile definitions
-      operationId: fetchHealthProfileDefinitions
+        - health question definition
+      summary: List health question definitions
+      description: Get a list of all health question definitions
+      operationId: fetchHealthQuestionDefinitions
       responses:
         '200':
           description: OK
@@ -1755,17 +1755,17 @@ paths:
           description: Invalid Request
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-  /health_profile_definition/{id}:
+  /health_question_definition/{id}:
     get:
       tags:
-        - health profile definition
-      summary: Get a health profile definition
-      description: Get a health profile definition by id
-      operationId: fetchHealthProfileDefinition
+        - health question definition
+      summary: Get a health question definition
+      description: Get a health question definition by id
+      operationId: fetchHealthQuestionDefinition
       parameters:
         - name: id
           in: path
-          description: Health profile definition identifier
+          description: Health question definition identifier
           required: true
           type: string
       responses:
