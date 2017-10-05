@@ -68,13 +68,13 @@ tags:
   - name: email history
     description: Email history represents a single email that was sent using twine.
   - name: health profile
-    description: Health profile contains a set of health questions and answers for a patient.
+    description: A health profile contains a set of health questions and answers for a patient.
   - name: health profile question
-    description: Health profile question contains a health question and the answer for a patient.
+    description: A health profile question contains a health question and the corresponding answer for a patient.
   - name: health profile answer
-    description: Health profile answer contain the answer of a question for a patient.
+    description: A health profile answer is the answer to a question for a patient.
   - name: health question definition
-    description: Health question definition contains a set of health questions and answer choices.
+    description: A health question definition specifies a health question and the corresponding answer choices.
 x-tagGroups:
   - name: Authentication (oauth)
     tags:
@@ -1582,6 +1582,14 @@ paths:
           type: integer
           default: 10
           maximum: 50
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - patient
+            - questions
       responses:
         '200':
           description: OK
@@ -1613,6 +1621,14 @@ paths:
           description: Health profile identifier
           required: true
           type: string
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - patient
+            - questions
       responses:
         '200':
           description: OK
@@ -1640,6 +1656,14 @@ paths:
           description: Health profile question identifier
           required: true
           type: string
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - question_definition
+            - answer
       responses:
         '200':
           description: OK
@@ -1687,6 +1711,13 @@ paths:
           type: integer
           default: 50
           maximum: 100
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - patient
       responses:
         '200':
           description: OK
@@ -1717,6 +1748,13 @@ paths:
           description: Health profile answer identifier
           required: true
           type: string
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - patient
       responses:
         '200':
           description: OK
@@ -5046,11 +5084,18 @@ definitions:
         properties:
           stats:
             type: array
+            description: 'List of category, answered and total counts for questions in the health profile'
             items:
+              type: object
               description: 'The category, answered and total counts for questions in the health profile'
               properties:
                 category:
                   type: string
+                  enum:
+                    - lifestyle_behaviors
+                    - mental_wellbeing
+                    - preventative_care
+                    - overall
                 answered:
                   type: number
                 total:
@@ -5094,6 +5139,7 @@ definitions:
               data:
                 type: array
                 items:
+                  type: object
                   properties:
                     type:
                       type: string
@@ -5161,7 +5207,7 @@ definitions:
         description: |
           Related resources which are included in the response based on the `include` param.
           Attributes of each resource will vary depending on the type.
-          See [action](#operation/fetchHealthProfileQuestion), [bundle](#operation/fetchHealthProfileAnswer)
+          See [patient](#operation/fetchPatient), [question](#operation/fetchHealthProfileQuestion)
         type: array
         items:
           $ref: '#/definitions/Resource'
@@ -5183,7 +5229,7 @@ definitions:
         description: |
           Related resources which are included in the response based on the `include` param.
           Attributes of each resource will vary depending on the type.
-          See [action](#operation/fetchHealthProfileQuestion), [bundle](#operation/fetchHealthProfileAnswer)
+          See [patient](#operation/fetchPatient), [question](#operation/fetchHealthProfileQuestion)
         type: array
         items:
           $ref: '#/definitions/Resource'
@@ -5200,6 +5246,8 @@ definitions:
         type: string
       attributes:
         type: object
+        description: |
+          A health profile question does not have any attribute since it only relates an answer to the corresponding question definition.
       links:
         type: object
         readOnly: true
@@ -5267,6 +5315,7 @@ definitions:
       {
         "type": "health_profile_question",
         "id": "52b36e3c04ad8c2224f2aa67",
+        "attribute": {},
         "relationships": {
           "answer": {
             "data": {
@@ -5310,7 +5359,7 @@ definitions:
           description: |
             Related resources which are included in the response based on the `include` param.
             Attributes of each resource will vary depending on the type.
-            See [action](#operation/fetchHealthProfileQuestion), [bundle](#operation/fetchHealthProfileAnswer)
+            See [question_definition](#operation/fetchHealthQuestionDefinition), [answer](#operation/fetchHealthProfileAnswer)
           type: array
           items:
             $ref: '#/definitions/Resource'
@@ -5330,16 +5379,21 @@ definitions:
         properties:
           history:
             type: array
+            description: 'List of details of previous answers for a health profile question'
             items:
-              description: 'The details of previous answers for a health profile question'
+              type: object
+              description: 'The details of a previous answer for a health profile question'
               properties:
                 answered_at:
                   type: string
                   format: dateTime
+                  description: 'The date when the health profile question is answered'
                 value:
                   type: string
+                  description: 'The value of the answer entered for the health profile question'
                 _created_by:
                   type: string
+                  description: 'The id of the patient or coach who answered the health profile question'
           latest:
             type: object
             description: 'The details of the latest answer for a health profile question'
@@ -5347,10 +5401,13 @@ definitions:
               answered_at:
                 type: string
                 format: dateTime
+                description: 'The date when the health profile question is answered'
               value:
                 type: string
+                description: 'The value of the answer entered for the health profile question'
               _created_by:
                 type: string
+                description: 'The id of the patient or coach who answered the health profile question'
           question_id:
             type: string
       links:
@@ -5436,7 +5493,7 @@ definitions:
         description: |
           Related resources which are included in the response based on the `include` param.
           Attributes of each resource will vary depending on the type.
-          See [action](#operation/fetchHealthProfileQuestion), [bundle](#operation/fetchHealthProfileAnswer)
+          See [patient](#operation/fetchPatient)
         type: array
         items:
           $ref: '#/definitions/Resource'
@@ -5478,8 +5535,14 @@ definitions:
         properties:
           category:
             type: string
+            enum:
+              - lifestyle_behaviors
+              - mental_wellbeing
+              - preventative_care
+            description: 'The category for the health profile definition'
           format:
             type: object
+            description: 'The list of formats for the health profile definition'
             properties:
               data:
                 type: array
@@ -5497,22 +5560,28 @@ definitions:
                 type: string
           requirements:
             type: array
+            description: 'The lsit of age and gender requirements for the question to be included'
             items:
               type: object
-              description: 'The age and gender requirements for the question to be included'
+              description: 'The age and gender requirement for the question to be included'
               properties:
                 property:
                   type: string
                 shouldBeEqual:
                   type: boolean
+                  description: 'Specifies if the value in property should be equal to the one in value'
                 shouldBeGreaterThan:
                   type: number
+                  description: 'Specifies if the value in property should be greater than the one in value'
                 shouldBeLessThan:
                   type: number
+                  description: 'Specifies if the value in property should be less than the one in value'
                 value:
                   type: string
+                  description: 'The value to be compared with the one in property, based on shouldBeEqual, shouldBeGreaterThan, or shouldBeLessThan'
           text:
             type: string
+            description: 'The question text which corresponds to the answer choices'
       links:
         type: object
         readOnly: true
