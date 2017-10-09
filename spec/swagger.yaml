@@ -5515,7 +5515,7 @@ definitions:
         description: |
           Related resources which are included in the response based on the `include` param.
           Attributes of each resource will vary depending on the type.
-          See [action](#operation/fetchHealthProfileQuestion), [bundle](#operation/fetchHealthProfileAnswer)
+          See [patient](#operation/fetchPatient)
         type: array
         items:
           $ref: '#/definitions/Resource'
