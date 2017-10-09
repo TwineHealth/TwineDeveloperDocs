@@ -66,7 +66,15 @@ tags:
   - name: reward earning fulfillment
     description: A reward earning fulfillment specifies the portion of a reward earning that was fulfilled and at what date.
   - name: email history
-    description: Email history represents a single email that was sent using twine
+    description: Email history represents a single email that was sent using twine.
+  - name: health profile
+    description: A health profile contains a set of health questions and answers for a patient.
+  - name: health profile question
+    description: A health profile question contains a health question and the corresponding answer for a patient.
+  - name: health profile answer
+    description: A health profile answer is the answer to a question for a patient.
+  - name: health question definition
+    description: A health question definition specifies a health question and the corresponding answer choices.
 x-tagGroups:
   - name: Authentication (oauth)
     tags:
@@ -89,6 +97,10 @@ x-tagGroups:
       - reward earning
       - reward earning fulfillment
       - email history
+      - health profile
+      - health profile question
+      - health profile answer
+      - health question definition
 paths:
   /email_history:
     get:
@@ -148,7 +160,7 @@ paths:
       parameters: 
         - name: id
           in: path
-          description: EmailHistory identifier
+          description: Email history identifier
           required: true
           type: string
       responses:
@@ -1536,6 +1548,277 @@ paths:
             description: Forbidden
             schema:
               $ref: '#/definitions/FetchErrorResponse'
+
+  /health_profile:
+    get:
+      tags:
+        - health profile
+      summary: List health profiles
+      description: Get a list of health profiles
+      operationId: fetchHealthProfiles
+      parameters:
+        - name: filter[patient]
+          in: query
+          type: string
+          description: Patient id to fetch healt profile (either a patient, group or organization filter is required)
+        - name: filter[groups]
+          in: query
+          type: string
+          description: Comma-separated list of Twine group ids (either a patient, group or organization filter is required)
+        - name: filter[organization]
+          in: query
+          type: string
+          description: Twine organization id (either a patient, group or organization filter is required)
+        - name: page[number]
+          in: query
+          description: Page number
+          required: false
+          type: integer
+          default: 1
+        - name: page[size]
+          in: query
+          description: Page size
+          required: false
+          type: integer
+          default: 10
+          maximum: 50
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - patient
+            - questions
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthProfilesResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /health_profile/{id}:
+    get:
+      tags:
+        - health profile
+      summary: Get a health profile
+      description: Get a health profile by id
+      operationId: fetchHealthProfile
+      parameters:
+        - name: id
+          in: path
+          description: Health profile identifier
+          required: true
+          type: string
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - patient
+            - questions
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthProfileResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /health_profile_question/{id}:
+    get:
+      tags:
+        - health profile question
+      summary: Get a health profile question
+      description: Get a health profile by id
+      operationId: fetchHealthProfileQuestion
+      parameters:
+        - name: id
+          in: path
+          description: Health profile question identifier
+          required: true
+          type: string
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - question_definition
+            - answer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthProfileQuestionResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /health_profile_answer:
+    get:
+      tags:
+        - health profile answer
+      summary: List health profile answers
+      description: Get a list of health profile answers
+      operationId: fetchHealthProfileAnswers
+      parameters:
+        - name: filter[patient]
+          in: query
+          type: string
+          description: Patient id to fetch healt profile answers (either a patient, group or organization filter is required)
+        - name: filter[groups]
+          in: query
+          type: string
+          description: Comma-separated list of Twine group ids (either a patient, group or organization filter is required)
+        - name: filter[organization]
+          in: query
+          type: string
+          description: Twine organization id (either a patient, group or organization filter is required)
+        - name: page[number]
+          in: query
+          description: Page number
+          required: false
+          type: integer
+          default: 1
+        - name: page[size]
+          in: query
+          description: Page size
+          required: false
+          type: integer
+          default: 50
+          maximum: 100
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - patient
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthProfileAnswersResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /health_profile_answer/{id}:
+    get:
+      tags:
+        - health profile answer
+      summary: Get a health profile answer
+      description: Get a health profile answer by id
+      operationId: fetchHealthProfileAnswer
+      parameters:
+        - name: id
+          in: path
+          description: Health profile answer identifier
+          required: true
+          type: string
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - patient
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthProfileAnswerResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /health_question_definition:
+    get:
+      tags:
+        - health question definition
+      summary: List health question definitions
+      description: Get a list of all health question definitions
+      operationId: fetchHealthQuestionDefinitions
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthQuestionDefinitionsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /health_question_definition/{id}:
+    get:
+      tags:
+        - health question definition
+      summary: Get a health question definition
+      description: Get a health question definition by id
+      operationId: fetchHealthQuestionDefinition
+      parameters:
+        - name: id
+          in: path
+          description: Health question definition identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthQuestionDefinitionResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
 
 definitions:
   Resource:
@@ -3106,7 +3389,7 @@ definitions:
         $ref: '#/definitions/PatientPlanSummaryResource'
       included:
         description: |
-          Related resources which are included in the repoonse based on the `include` param.
+          Related resources which are included in the response based on the `include` param.
           Attributes of each resource will vary depending on the type.
           See [action](#operation/fetchAction), [bundle](#operation/fetchBundle) and [patient](#operation/fetchPatient)
         type: array
@@ -3255,7 +3538,7 @@ definitions:
           $ref: '#/definitions/PatientPlanSummaryResource'
       included:
         description: |
-          Related resources which are included in the repoonse based on the `include` param.
+          Related resources which are included in the response based on the `include` param.
           Attributes of each resource will vary depending on the type.
           See [action](#operation/fetchAction), [bundle](#operation/fetchBundle) and [patient](#operation/fetchPatient)
         type: array
@@ -4783,5 +5066,579 @@ definitions:
           type: array
           items:
             $ref: '#/definitions/EmailHistoryResource'
-        
-      
+
+  # BEGIN health profile resource definitions
+
+  HealthProfileResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          stats:
+            type: array
+            description: 'List of category, answered and total counts for questions in the health profile'
+            items:
+              type: object
+              description: 'The category, answered and total counts for questions in the health profile'
+              properties:
+                category:
+                  type: string
+                  enum:
+                    - lifestyle_behaviors
+                    - mental_wellbeing
+                    - preventative_care
+                    - overall
+                answered:
+                  type: number
+                total:
+                  type: number
+      links:
+        type: object
+        readOnly: true
+        required:
+          - self
+        properties:
+          self:
+            type: string
+            pattern: '/health_profile/[0-9a-z]+'
+            example: '/health_profile/59d441ac21741161bbe266b5'
+      relationships:
+        type: object
+        properties:
+          patient:
+            type: object
+            readOnly: true
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+                readOnly: true
+                properties:
+                  related:
+                    type: string
+                    pattern: '/pub/health_profile/[0-9a-z]+'
+                    example: '/pub/health_profile/59d441ac21741161bbe266b5/patient'
+          questions:
+            type: object
+            readOnly: true
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    id:
+                      type: string
+              links:
+                type: object
+                readOnly: true
+                properties:
+                  related:
+                    type: string
+                    pattern: '/pub/health_profile/[0-9a-z]+'
+                    example: '/pub/health_profile/59d441ac21741161bbe266b5/questions'
+    example:
+      {
+        "type": "health_profile",
+        "id": "59d441ac21741161bbe266b5",
+        "attributes": {
+          "created_at": "2017-07-07T19:15:56.229Z",
+          "stats": [
+            {"category": "lifestyle_behaviors", "answered": 5, "total": 11},
+            {"category": "mental_wellbeing", "answered": 3, "total": 5},
+            {"category": "preventative_care", "answered": 1, "total": 3},
+            {"category": "overall", "answered": 9, "total": 19}
+          ],
+          "updated_at": "2017-07-07T19:15:56.229Z",
+        },
+        "relationships": {
+          "patient": {
+            "data": {
+              "id": "595fddea28c5041b84466bbe",
+              "type": "patient"
+            },
+            "links": {
+              "related": "/pub/health_profile/59d441ac21741161bbe266b5/patient"
+            }
+          },
+          "questions": {
+            "data": [
+              {
+                "id": "595fddea28c5041b84466bbe",
+                "type": "health_profile_question"
+              }
+            ],
+            "links": {
+              "related": "/pub/health_profile/59d441ac21741161bbe266b5/questions"
+            }
+          }
+        },
+        "links": {
+            "self": "/pub/health_profile/59d441ac21741161bbe266b5"
+        },
+      }
+
+  FetchHealthProfileResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/HealthProfileResource'
+      included:
+        description: |
+          Related resources which are included in the response based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [patient](#operation/fetchPatient), [question](#operation/fetchHealthProfileQuestion)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+
+  FetchHealthProfilesResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      links:
+        $ref: '#/definitions/CollectionResponseLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/HealthProfileResource'
+      included:
+        description: |
+          Related resources which are included in the response based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [patient](#operation/fetchPatient), [question](#operation/fetchHealthProfileQuestion)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+
+  HealthProfileQuestionResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        description: |
+          A health profile question does not have any attribute since it only relates an answer to the corresponding question definition.
+      links:
+        type: object
+        readOnly: true
+        required:
+          - self
+        properties:
+          self:
+            type: string
+            pattern: '/pub/health_profile_question/[0-9a-z]+'
+            example: '/pub/health_profile_question/59d435931d078505ba744e88'
+      relationships:
+        type: object
+        properties:
+          answer:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+                readOnly: true
+                properties:
+                  related:
+                    type: string
+                    pattern: '/pub/health_profile_question/[0-9a-z]+/answer'
+                    example: '/pub/health_profile_question/59d435931d078505ba744e88/answer'
+          profile:
+            type: object
+            properties:
+              links:
+                type: object
+                readOnly: true
+                properties:
+                  related:
+                    type: string
+                    pattern: '/pub/health_profile_question/[0-9a-z]+/profile'
+                    example: '/pub/health_profile_question/59d435931d078505ba744e88/profile'
+          question_definition:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                readOnly: true
+                properties:
+                  links:
+                    type: object
+                    readOnly: true
+                    properties:
+                      related:
+                        type: string
+                        pattern: '/pub/health_profile_question/[0-9a-z]+/question_definition'
+                        example: '/pub/health_profile_question/59d435931d078505ba744e88/question_definition'
+    example:
+      {
+        "type": "health_profile_question",
+        "id": "52b36e3c04ad8c2224f2aa67",
+        "attribute": {},
+        "relationships": {
+          "answer": {
+            "data": {
+              "id": "595fddea28c5041b84466bbe",
+              "type": "health_profile_answer"
+            },
+            "links": {
+              "related": "/pub/health_profile_question/59d435931d078505ba744e88/answer"
+            }
+          },
+          "profile": {
+            "links": {
+                "related": "/pub/health_profile_question/59d435931d078505ba744e88/profile"
+            }
+          },
+          "question_definition": {
+            "data": {
+              "id": "4",
+              "type": "health_question_definition"
+            },
+            "links": {
+              "related": "/pub/health_profile_question/59d435931d078505ba744e88/question_definition"
+            }
+          },
+        },
+        "links": {
+            "self": "/pub/health_profile_question/59d435931d078505ba744e88"
+        },
+      }
+
+  FetchHealthProfileQuestionResponse:
+    type: object
+    required:
+      - data
+    properties:
+        meta:
+          $ref: '#/definitions/FetchMetaResponse'
+        data:
+          $ref: '#/definitions/HealthProfileQuestionResource'
+        included:
+          description: |
+            Related resources which are included in the response based on the `include` param.
+            Attributes of each resource will vary depending on the type.
+            See [question_definition](#operation/fetchHealthQuestionDefinition), [answer](#operation/fetchHealthProfileAnswer)
+          type: array
+          items:
+            $ref: '#/definitions/Resource'
+
+  HealthProfileAnswerResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          history:
+            type: array
+            description: 'List of details of previous answers for a health profile question'
+            items:
+              type: object
+              description: 'The details of a previous answer for a health profile question'
+              properties:
+                answered_at:
+                  type: string
+                  format: dateTime
+                  description: 'The date when the health profile question is answered'
+                value:
+                  type: string
+                  description: 'The value of the answer entered for the health profile question'
+                _created_by:
+                  type: string
+                  description: 'The id of the patient or coach who answered the health profile question'
+          latest:
+            type: object
+            description: 'The details of the latest answer for a health profile question'
+            properties:
+              answered_at:
+                type: string
+                format: dateTime
+                description: 'The date when the health profile question is answered'
+              value:
+                type: string
+                description: 'The value of the answer entered for the health profile question'
+              _created_by:
+                type: string
+                description: 'The id of the patient or coach who answered the health profile question'
+          question_id:
+            type: string
+      links:
+        type: object
+        readOnly: true
+        required:
+          - self
+        properties:
+          self:
+            type: string
+            pattern: '/health_profile_answer/[0-9a-z]+'
+            example: '/health_profile_answer/59d441ac21741161bbe266b5'
+      relationships:
+        type: object
+        properties:
+          patient:
+            type: object
+            readOnly: true
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+                readOnly: true
+                properties:
+                  related:
+                    type: string
+                    pattern: '/pub/health_profile_answer/[0-9a-z]+'
+                    example: '/pub/health_profile_answer/59d441ac21741161bbe266b5/patient'
+    example:
+      {
+        "type": "health_profile_answer",
+        "id": "59d441ac21741161bbe266b5",
+        "attributes": {
+          "created_at": "2017-07-07T19:15:56.229Z",
+          "history": [
+            {
+              "answered_at": "2017-10-03T12:45:16.720Z",
+              "value": "2",
+              "_created_by": "59d4d7dcd843ee01be71fcf8",
+              "_id": "59d4d7dcd843ee01be71fcfb"
+            }
+          ],
+          "latest": {
+            "answered_at": "2017-10-04T12:45:16.720Z",
+            "value": "1",
+            "_created_by": "59d4d7dcd843ee01be71fcf8"
+          },
+          "question_id": "4",
+          "updated_at": "2017-07-07T19:15:56.229Z",
+        },
+        "relationships": {
+          "patient": {
+            "data": {
+              "id": "595fddea28c5041b84466bbe",
+              "type": "patient"
+            },
+            "links": {
+              "related": "/pub/health_profile_answer/59d441ac21741161bbe266b5/patient"
+            }
+          }
+        },
+        "links": {
+            "self": "/pub/health_profile_answer/59d441ac21741161bbe266b5"
+        },
+      }
+
+  FetchHealthProfileAnswerResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/HealthProfileAnswerResource'
+      included:
+        description: |
+          Related resources which are included in the response based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [patient](#operation/fetchPatient)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+
+  FetchHealthProfileAnswersResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      links:
+        $ref: '#/definitions/CollectionResponseLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/HealthProfileAnswerResource'
+      included:
+        description: |
+          Related resources which are included in the response based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [patient](#operation/fetchPatient)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+
+  HealthQuestionDefinitionResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          category:
+            type: string
+            enum:
+              - lifestyle_behaviors
+              - mental_wellbeing
+              - preventative_care
+            description: 'The category for the health profile definition'
+          format:
+            type: object
+            description: 'The list of formats for the health profile definition'
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: 'The label, value and icon for the answer choices for the question'
+                  properties:
+                    label:
+                      type: string
+                    value:
+                      type: string
+                    icon:
+                      type: string
+              type:
+                type: string
+          requirements:
+            type: array
+            description: 'The lsit of age and gender requirements for the question to be included'
+            items:
+              type: object
+              description: 'The age and gender requirement for the question to be included'
+              properties:
+                property:
+                  type: string
+                shouldBeEqual:
+                  type: boolean
+                  description: 'Specifies if the value in property should be equal to the one in value'
+                shouldBeGreaterThan:
+                  type: number
+                  description: 'Specifies if the value in property should be greater than the one in value'
+                shouldBeLessThan:
+                  type: number
+                  description: 'Specifies if the value in property should be less than the one in value'
+                value:
+                  type: string
+                  description: 'The value to be compared with the one in property, based on shouldBeEqual, shouldBeGreaterThan, or shouldBeLessThan'
+          text:
+            type: string
+            description: 'The question text which corresponds to the answer choices'
+      links:
+        type: object
+        readOnly: true
+        required:
+          - self
+        properties:
+          self:
+            type: string
+            pattern: '/health_question_definition/[0-9]+'
+            example: '/health_question_definition/4'
+      relationships:
+        type: object
+    example:
+      {
+        "type": "health_question_definition",
+        "id": "21",
+        "attributes": {
+          "category": "preventative_care",
+          "format": {
+            "data":[
+              {"label": "I Don't know", "value": "0"},
+              {"label": "I've never had a colonoscopy", "value": "1"},
+            ],
+            "type": "last_occurrence"
+          },
+          "requirements": [
+            {"property": "age", "shouldBeGreaterThan": 49, "shouldBeLessThan": 76}
+          ],
+          "text": "When was your last colonoscopy?"
+        },
+        "links": {
+            "self": "/pub/health_question_definition/21"
+        },
+      }
+
+  FetchHealthQuestionDefinitionResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/HealthQuestionDefinitionResource'
+
+  FetchHealthQuestionDefinitionsResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      links:
+        $ref: '#/definitions/CollectionResponseLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/HealthQuestionDefinitionResource'
+
+  # END health profile resource definitions
