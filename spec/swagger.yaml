@@ -129,10 +129,10 @@ paths:
               * send_time - ascending by send_time
               * -send_time - descending by send_time
           type: string
-          enum: 
+          enum:
             - send_time
             - -send_time
-      responses: 
+      responses:
         '200':
           description: OK
           schema:
@@ -152,12 +152,12 @@ paths:
 
   /email_history/{id}:
     get:
-      tags: 
+      tags:
         - email history
       summary: Get an email history
       description: Get an email history by id
       operationId: fetchEmailHistory
-      parameters: 
+      parameters:
         - name: id
           in: path
           description: Email history identifier
@@ -2311,7 +2311,7 @@ definitions:
       - system
       - value
     properties:
-      label: 
+      label:
         type: string
       system: 
         type: string
@@ -2382,6 +2382,10 @@ definitions:
               - female
               - other
             example: female
+          note:
+            type: string
+            example: Relies on daughter to get around
+            description: Coach's note about the patient. Not visible to the patient.
           updated_at:
             type: string
             format: dateTime
@@ -2476,7 +2480,6 @@ definitions:
                       properties:
                         primary:
                           type: boolean
-
               links:
                 readOnly: true
                 properties:
@@ -2486,172 +2489,93 @@ definitions:
                     example: '/patient/57b36ef304ad8c2224f2af3a/groups'
   PatientCreateResource:
     type: object
-    required:
-      - type
-      - attributes
-    properties:
-      id:
-        type: string
-        example: '57b36ef304ad8c2224f2af3a'
-      type:
-        type: string
-        enum:
-          - patient
-        example: patient
-      attributes:
-        type: object
-        properties:
-          first_name:
-            type: string
-            example: Fiona
-          last_name:
-            type: string
-            example: Reeves
-          email_address:
-            type: string
-            example: fiona@example.com
-          phone_numbers:
-            type: array
-            items:
-              $ref: '#/definitions/PhoneNumber'
-          addresses:
-            type: array
-            items:
-              $ref: '#/definitions/Address'
-          identifiers:
-            type: array
-            items:
-              $ref: '#/definitions/PatientIdentifier'
-          birth_date:
-            type: string
-            format: date
-            example: '1944-03-06'
-          gender:
-            type: string
-            enum:
-              - male
-              - female
-              - other
-            example: female
-          updated_at:
-            type: string
-            format: dateTime
-            example: '2016-07-11T17:13:57.027Z'
-            readOnly: true
-          first_access_at:
-            type: string
-            format: dateTime
-            example: '2016-06-03T13:15:22.000Z'
-            readOnly: true
-          invited_at:
-            type: string
-            format: dateTime
-            example: '2016-06-01T16:20:16.000Z'
-            readOnly: true
-          enrolled_at:
-            type: string
-            format: dateTime
-            example: '2016-05-26T15:25:54.000Z'
-            readOnly: true
-          last_access_at:
-            type: string
-            format: dateTime
-            example: '2016-07-11T17:50:49.400Z'
-            readOnly: true
-      links:
-        type: object
-        readOnly: true
-        properties:
-          self:
-            type: string
-            pattern: '/patient/[0-9a-z]+'
-            example: '/patient/57b36ef304ad8c2224f2af3a'
-          twine_web_app:
-            type: string
-            example: 'https://app.twinehealth.com/#/coach/patient/5367c6300b7bb6e94188c02c/overview'
-            description: 'A link to the patient record in the Twine web application.'
-      relationships:
-        type: object
-        required: 
-          - groups
-        properties:
-          groups:
+    allOf:
+      - $ref: "#/definitions/PatientResource"
+      - description: |
+          Note that `data` can either be a single object or an array of objects matching the schema specified here
+          (bulk create).
+      - properties:
+          relationships:
             type: object
             required:
-              - data
+              - groups
             properties:
-              data: 
-                type: array
-                items:
-                  type: object
-                  required:
-                    - type
-                  properties:
-                    type:
-                      type: string
-                      enum: 
-                        - group
-                      example: group
-                    id:
-                      type: string
-                      description: Required if the `meta.query` is not defined.
-                      example: '57b3708b04ad8c2224f2af3b'
-                    meta:
-                      type: object
-                      description: Allows the specification of a query for a group rather than providing a group id directly
-                      required:
-                        - query
-                      properties:
-                        query:
-                          type: object
-                          description: |
-                           1. If the query does not return any groups, a group with the specified name will be created and related to the patient.
-                           2. If the query returns one group, that group will be related to the patient.
-                           3. If the query returns more than one group, the creation of the patient will fail.
-                          required:
-                            - organization
-                            - name
-                          properties:
-                            organization:
-                              type: string
-                            name:
-                              type: string
-
-          coaches:
-            type: object
-            required:
-              - data
-            properties:
-              data:
-                type: array
-                items: 
-                  type: object
-                  required:
-                    - type
-                    - id
-                  properties:
-                    type: 
-                      type: string
-                      enum:
-                        - coach
-                      example: coach
-                    id:
-                      type: string
-                      example: '57fee2a66b49113551658505'
-                    meta:
-                      type: object
-                      properties:
-                        primary:
-                          type: boolean
-                    
-              links:
-                readOnly: true
+              groups:
+                type: object
+                required:
+                  - data
                 properties:
-                  related:
-                    type: string
-                    pattern: '/patient/[0-9a-z]+/coaches'
-                    example: '/patient/57b36ef304ad8c2224f2af3a/coaches'
-  
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - type
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                            - group
+                          example: group
+                        id:
+                          type: string
+                          description: Required if the `meta.query` is not defined.
+                          example: '57b3708b04ad8c2224f2af3b'
+                        meta:
+                          type: object
+                          description: Allows the specification of a query for a group rather than providing a group id directly
+                          required:
+                            - query
+                          properties:
+                            query:
+                              type: object
+                              description: |
+                               1. If the query does not return any groups, a group with the specified name will be created and related to the patient.
+                               2. If the query returns one group, that group will be related to the patient.
+                               3. If the query returns more than one group, the creation of the patient will fail.
+                              required:
+                                - organization
+                                - name
+                              properties:
+                                organization:
+                                  type: string
+                                name:
+                                  type: string
+              coaches:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - type
+                        - id
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                            - coach
+                          example: coach
+                        id:
+                          type: string
+                          example: '57fee2a66b49113551658505'
+                        meta:
+                          type: object
+                          properties:
+                            primary:
+                              type: boolean
+
+                  links:
+                    readOnly: true
+                    properties:
+                      related:
+                        type: string
+                        pattern: '/patient/[0-9a-z]+/coaches'
+                        example: '/patient/57b36ef304ad8c2224f2af3a/coaches'
+
   FetchPatientsResponse:
     type: object
     required:
@@ -4135,16 +4059,11 @@ definitions:
 
   # END /patient_plan_summary definitions
   
-  # BEGIN reward resource definitions
-  
   PatientHealthMetricResource:
     type: object
     required:
       - type
       - id
-    description: |
-      Note that `data` can either be a single object or an array of objects matching the schema specified here
-      (bulk create). When bulk creating multiple, the relationships in every item **must** be the same.
     properties:
       type:
         type: string
@@ -4292,6 +4211,14 @@ definitions:
         }
       }
 
+  PatientHealthMetricCreateResource:
+    type: object
+    allOf:
+      - $ref: "#/definitions/PatientHealthMetricResource"
+      - description: |
+          Note that `data` can either be a single object or an array of objects matching the schema specified here
+          (bulk create). When bulk creating multiple, the relationships in every item **must** be the same.
+
   CreatePatientHealthMetricRequest:
     type: object
     required:
@@ -4306,7 +4233,7 @@ definitions:
               If `true`, the patient health metric will be ignored if there is an existing patient health metric for
               the same patient, with the same `type` and same `occurred_at`.
       data:
-        $ref: '#/definitions/PatientHealthMetricResource'
+        $ref: '#/definitions/PatientHealthMetricCreateResource'
 
   CreatePatientHealthMetricResponse:
     type: object
@@ -4332,6 +4259,7 @@ definitions:
         items:
           $ref: '#/definitions/PatientHealthMetricResource'
 
+  # BEGIN reward resource definitions
   RewardProgramResource:
     type: object
     required:
@@ -4914,9 +4842,9 @@ definitions:
         $ref: '#/definitions/CreateOrUpdateMetaResponse'
       data:
         $ref: '#/definitions/RewardEarningFulfillmentResource'
-        
+
   # END reward resource definitions
-  
+
   EmailHistoryResource:
     type: object
     required:
@@ -5044,7 +4972,7 @@ definitions:
             "self": "/pub/email_history/595fddec28c5041b84467592"
         },
       }
-                    
+
   FetchEmailHistoryResponse:
     type: object
     required:
@@ -5054,7 +4982,7 @@ definitions:
           $ref: '#/definitions/FetchMetaResponse'
         data:
           $ref: '#/definitions/EmailHistoryResource'
-          
+
   FetchEmailHistoriesResponse:
     type: object
     required:
