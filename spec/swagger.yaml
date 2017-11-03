@@ -4217,7 +4217,7 @@ definitions:
       - $ref: "#/definitions/PatientHealthMetricResource"
       - description: |
           Note that `data` can either be a single object or an array of objects matching the schema specified here
-          (bulk create). When bulk creating multiple, the relationships in every item **must** be the same.
+          (bulk create).
 
   CreatePatientHealthMetricRequest:
     type: object
