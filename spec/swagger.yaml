@@ -85,22 +85,22 @@ x-tagGroups:
       - group
       - coach
       - reward program
-  - name: Patient Health Data
+  - name: Patient Data
     tags:
-      - patient
-      - plan
       - action
       - bundle
+      - email history
+      - health profile
+      - health profile answer
+      - health profile question
+      - health question definition
       - metric
-      - reward program activation
+      - patient
+      - plan
       - reward
       - reward earning
       - reward earning fulfillment
-      - email history
-      - health profile
-      - health profile question
-      - health profile answer
-      - health question definition
+      - reward program activation
 paths:
   /email_history:
     get:
