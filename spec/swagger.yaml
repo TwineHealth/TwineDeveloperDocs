@@ -678,11 +678,11 @@ paths:
         - name: filter[type]
           in: query
           type: string
-          description: Calendar event type - requires a \"filter[patient]\", \"filter[groups]\", \"filter[organization]\", or \"filter[attendees]\" parameter.  Valid values are `plan-check-in`, `reminder`, `telephone-call`, `office-visit` and `video-call`. Requires either a `patient`, `groups`, `organization`, or `attendees` filter.
+          description: Calendar event type. Valid values are `plan-check-in`, `reminder`, `telephone-call`, `office-visit` and `video-call`.
         - name: filter[completed]
           in: query
           type: boolean
-          description: If not specified, return all calendar events  - requires a \"filter[patient]\", \"filter[groups]\", \"filter[organization]\", or \"filter[attendees]\" parameter. If set to 'true' return only calendar marked as completed, if set to 'false', return only calendar which have not benen marked as completed.  Requires either a `patient`, `groups`, `organization`, or `attendees` filter.
+          description: If not specified, return all calendar events. If set to 'true' return only events marked as completed, otherwise if set to 'false', return only events not marked as completed yet.
         - name: filter[start_at]
           in: query
           type: string
