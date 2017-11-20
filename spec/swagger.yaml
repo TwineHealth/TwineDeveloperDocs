@@ -1920,6 +1920,7 @@ paths:
               $ref: '#/definitions/FetchErrorResponse'
 
 definitions:
+  # BEGIN resource definitions
   Resource:
     type: object
     required:
@@ -1932,7 +1933,6 @@ definitions:
         type: string
       attributes:
         type: object
-
   CreateOrUpdateMetaResponse:
     type: object
     properties:
@@ -1960,7 +1960,9 @@ definitions:
         type: string
       last:
         type: string
-        
+  # END resource definitions
+
+  # BEGIN error definitions
   Error:
     type: object
     properties:
@@ -2025,7 +2027,8 @@ definitions:
           }
         ]
       }
-        
+  # END error definitions
+
   # BEGIN /oauth/token definitions
   TokenResource:
       type: object
@@ -2210,9 +2213,67 @@ definitions:
           }
         }
       }
-      
   # END /oauth/token definitions
   
+  # BEGIN /organization definitions
+  OrganizationResource:
+      type: object
+      required:
+        - id
+        - type
+        - attributes
+      properties:
+        id:
+          type: string
+          example: '57b36e3c04ad8c2224f2af38'
+        type:
+          type: string
+          enum:
+            - organization
+          example: organization
+        attributes:
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              example: Health Activation Partners
+        links:
+          readOnly: true
+          required:
+            - self
+          properties:
+            self:
+              type: string
+              pattern: '/organization/[0-9a-z]+'
+              example: '/organization/57b36e3c04ad8c2224f2af38'
+  FetchOrganizationResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/OrganizationResource'
+    example:
+      {
+        "meta": {
+          "req_id": "aeb94ed8-d7f9-4e72-a78f-e276c4f52c2a"
+        },
+        "data": {
+          "type": "organization",
+          "id": "5873b63605376e337a89d64a",
+          "attributes": {
+            "name": "Health Activation Partners"
+          },
+          "links": {
+            "self": "/pub/organization/5873b63605376e337a89d64a"
+          }
+        }
+      }
+  # END /organization definitions
+
   # BEGIN /group definitions
   GroupResource:
       type: object
@@ -2247,7 +2308,6 @@ definitions:
               type: string
               pattern: '/group/[0-9a-z]+'
               example: '/group/57b36e3c04ad8c2224f2af38'
- 
   FetchGroupResponse:
     type: object
     required:
@@ -2273,7 +2333,6 @@ definitions:
           }
         }
       }
-      
   FetchGroupsResponse:
     type: object
     required:
@@ -2305,7 +2364,6 @@ definitions:
           }
         }]
       }
- 
   CreateGroupRequest:
     type: object
     required:
@@ -2322,7 +2380,6 @@ definitions:
           }
         }
       }
-
   CreateGroupResponse:
     type: object
     required:
@@ -2348,9 +2405,1869 @@ definitions:
           }
         }
       }
-
-    
   # END /group definitions
+
+  # BEGIN /coach definitions
+  CoachResource:
+      type: object
+      required:
+        - id
+        - type
+        - attributes
+      properties:
+        id:
+          type: string
+          example: '57b36e3c04ad8c2224f2af38'
+        type:
+          type: string
+          enum:
+            - coach
+          example: coach
+        attributes:
+          type: object
+          properties:
+            first_name:
+              type: string
+              example: Clarisa
+            last_name:
+              type: string
+              example: Rivera
+        links:
+          type: object
+          readOnly: true
+          required:
+            - self
+          properties:
+            self:
+              type: string
+              pattern: '/coach/[0-9a-z]+'
+              example: '/coach/57b36e3c04ad8c2224f2af38'
+  FetchCoachResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/CoachResource'
+    example:
+      {
+        "meta": {
+          "req_id": "b928037e-98ed-434f-b0c4-d74b1a38a560"
+        },
+        "data": {
+          "type": "coach",
+          "id": "581630c3237d84a9403533c6",
+          "attributes": {
+            "first_name": "Clarisa",
+            "last_name": "Rivera"
+          },
+          "links": {
+            "self": "/pub/coach/581630c3237d84a9403533c6"
+          }
+        },
+        "included": []
+      }
+  FetchCoachesResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/CoachResource'
+    example:
+      {
+        "meta": {
+          "req_id": "48c47326-0c8b-4c5e-85da-7fc0d00f1e4d",
+          "count": 1
+        },
+        "links": {
+          "self": "/pub/patient/58163112237d84a94035f78b/coaches"
+        },
+        "data": [{
+          "type":"coach",
+          "id":"581630c3237d84a9403533c6",
+          "attributes": {
+            "first_name": "Clarisa",
+            "last_name":"Rivera"
+          },
+          "links": {
+            "self":"/pub/coach/581630c3237d84a9403533c6"
+          }
+        }],
+        "included": []
+      }
+  # END /coach definitions
+
+  # BEGIN /reward_program definitions
+  RewardProgramResource:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        required:
+          - name
+          - start_at
+          - end_at
+          - budget_value
+        properties:
+          name:
+            description: 'Name of the reward program'
+            type: string
+          tagline:
+            description: 'Tagline of the reward program - designed to be one line'
+            type: string
+          description:
+            description: 'Description of the reward program - designed to be a comprehensive text description'
+            type: string
+          start_at:
+            description: 'Date at which the reward program starts.'
+            type: string
+            format: dateTime
+          end_at:
+            description: 'Date at which the reward program ends. (Must be after the start_at)'
+            type: string
+            format: dateTime
+          budget_value:
+            description: 'Value of the budget for the reward program. (Must be greater than 0)'
+            type: number
+          budget_unit:
+            description: 'Unit of the budget for the reard program.'
+            type: string
+            enum:
+              - dollar
+              - point
+              - credit
+            default: dollar
+          duration_active:
+            description: 'Number of days that a program can be active after it has been activated for a patient. (Must be greater than 0)'
+            type: number
+            default: 540
+          fulfill_as_earned:
+            description: 'If true, the rewards created for a patient for the program can be fulfulled as they are earned. If false, the rewards should only be fulfilled when the program is deactivated.'
+            type: boolean
+            default: false
+          frozen:
+            description: 'If true, the reward program cannot be activated for a patient and new rewards cannot be created for the program.'
+            type: boolean
+            default: false
+      relationships:
+        type: object
+        required:
+          - group
+        properties:
+          group:
+            type: object
+            required:
+              - data
+            properties:
+              data:
+                type: object
+                required:
+                  - type
+                  - id
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+  FetchRewardProgramResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/RewardProgramResource'
+  FetchRewardProgramsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        meta:
+          $ref: '#/definitions/FetchMetaResponse'
+        data:
+          type: array
+          items:
+            $ref: '#/definitions/RewardProgramResource'
+  CreateRewardProgramRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/RewardProgramResource'
+  CreateRewardProgramResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/RewardProgramResource'
+  # END /reward_program definitions
+
+  # BEGIN /action definitions
+  Identifier:
+    type: object
+    required:
+      - system
+      - value
+    properties:
+      label:
+        type: string
+      system:
+        type: string
+      value:
+        type: string
+  ActionMetric:
+    type: object
+    properties:
+      metric_type:
+        type: string
+      unit:
+        type: string
+      goal:
+        type: object
+      validations:
+        type: object
+        properties:
+          minimum:
+            type: object
+            properties:
+              value:
+                type: number
+              unit:
+                type: string
+          maximum:
+            type: object
+            properties:
+              value:
+                type: number
+              unit:
+                type: string
+  ActionWindow:
+    type: object
+    required:
+      - type
+    properties:
+      title:
+        type: string
+      type:
+        type: string
+      _id:
+        type: string
+  ActionResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        required:
+          - type
+          - title
+          - effective_from
+        properties:
+          type:
+            type: string
+            enum:
+              - other_lifestyle
+          title:
+            type: string
+          static_title:
+            type: string
+            readOnly: true
+          effective_from:
+            type: string
+            format: dateTime
+          effective_to:
+            type: string
+            format: dateTime
+          tracking:
+            type: boolean
+          _thread:
+            type: string
+          adherence:
+            type: object
+            readOnly: true
+            properties:
+              due:
+                type: integer
+              complete:
+                type: integer
+              streak:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  updated_at:
+                    type: string
+                    format: dateTime
+          frequency_goal:
+            type: object
+            properties:
+              weeks:
+                type: object
+                properties:
+                  days:
+                    type: array
+                    items:
+                      description: 'Days of week that the action is scheduled for. Zero-indexed, ex 0 represents Sunday, etc.'
+                      type: integer
+                      maxItems: 7
+                      enum: [0, 1, 2, 3, 4, 5, 6]
+          identifiers:
+            type: array
+            items:
+              $ref: '#/definitions/Identifier'
+          details:
+            type: object
+            additionalProperties: true
+          intake:
+            type: object
+            additionalProperties: true
+          metric_required:
+            type: boolean
+          metrics:
+            type: array
+            items:
+              $ref: '#/definitions/ActionMetric'
+          windows:
+            type: array
+            items:
+              $ref: '#/definitions/ActionWindow'
+
+      relationships:
+        type: object
+        properties:
+          plan:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+  CreateActionRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/ActionResource'
+    example:
+      {
+        "data": {
+          "type": "action",
+          "attributes": {
+            "effective_from": "2017-02-20T11:12:13.000Z",
+            "title": "Record Blood Pressure",
+            "type": "blood_pressure",
+            "frequency_goal": {
+                "weeks": {
+                  "days": [0]
+                }
+              },
+            "metrics": [
+              {
+                "metric_type": "blood_pressure",
+                "unit": "mmHg",
+                "goal": {
+                  "data": {
+                    "systolic": {
+                      "value": 150,
+                      "unit": "mmHg"
+                    },
+                    "diastolic": {
+                      "value": 95,
+                      "unit": "mmHg"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "relationships": {
+            "plan": {
+              "data": {
+                "type": "patient_plan_summary",
+                "id": "58aacf0d076adcef394bac35"
+              }
+            },
+            "bundles": {
+              "data": [
+                {
+                  "type": "bundle",
+                  "id": "58aacf0d076adcef394bac30"
+                }
+              ]
+            }
+          }
+        }
+      }
+  CreateActionResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/ActionResource'
+    example:
+      {
+        "data": {
+          "type": "action",
+          "id": "58aacf0d076adcef394bac36",
+          "attributes": {
+            "_thread": "blood_pressure",
+            "adherence": {
+              "due": 0,
+              "complete": 0,
+              "streak": {
+                "count": 0
+              }
+            },
+            "effective_from": "2017-02-20T11:12:13.000Z",
+            "frequency_goal": {
+              "weeks": {
+                "days": [0]
+              }
+            },
+            "frequency_goal_prorated": 0,
+            "identifiers": [],
+            "metric_required": false,
+            "metrics": [
+              {
+                "metric_type": "blood_pressure",
+                "unit": "mmHg",
+                "goal": {
+                  "data": {
+                    "diastolic": {
+                      "unit": "mmHg",
+                      "value": 95
+                    },
+                    "systolic": {
+                      "unit": "mmHg",
+                      "value": 150
+                    }
+                  }
+                },
+                "_id": "58aacf0d076adcef394bac37",
+                "accepted_values": []
+              }
+            ],
+            "title": "Record Blood Pressure",
+            "tracking": true,
+            "windows": [],
+            "type": "blood_pressure",
+            "options": [],
+            "created_at": "2017-02-20T11:12:13.000Z",
+            "created_by": "596541ec076adcef394bac2d",
+            "updated_at": "2017-02-20T11:12:13.000Z",
+            "updated_by": "596541ec076adcef394bac2d"
+          },
+          "links": {
+            "self": "/action/58aacf0d076adcef394bac36"
+          },
+          "relationships": {
+            "plan": {
+              "links": {
+                "related": "/action/58aacf0d076adcef394bac36/plan"
+              },
+              "data": {
+                "type": "patient_plan_summary",
+                "id": "58aacf0d076adcef394bac35"
+              }
+            },
+            "bundles": {
+              "links": {
+                "related": "/action/58aacf0d076adcef394bac36/bundles"
+              },
+              "data": [
+                {
+                  "type": "bundle",
+                  "id": "58aacf0d076adcef394bac30"
+                }
+              ]
+            }
+          }
+        },
+        "included": [],
+        "meta": {
+          "req_id": "014ea6d2-4717-4915-b4bc-98454180614e"
+        }
+      }
+  UpdateActionRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/ActionResource'
+  UpdateActionResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/ActionResource'
+  FetchActionResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/ActionResource'
+    example:
+      {
+        "data": {
+          "type": "action",
+          "id": "59653f699fc8be3938f04491",
+          "attributes": {
+            "_thread": "weight",
+            "adherence": {
+              "due": 1,
+              "complete": 1,
+              "streak": {
+                "count": 1,
+                "updated_at": "2017-07-11T21:13:13.215Z"
+              }
+            },
+            "effective_from": "2017-07-10T21:13:13.212Z",
+            "effective_to": "2017-07-11T21:13:13.215Z",
+            "frequency_goal": {
+              "weeks": {
+                "days": [0]
+              }
+            },
+            "frequency_goal_prorated": 0,
+            "identifiers": [
+              {
+                "label": "Super Health Actions",
+                "system": "http://super.health.example.com",
+                "value": "action-0123",
+                "_id": "59653f699fc8be3938f04494"
+              }
+            ],
+            "details": {
+              "some": "mixed value"
+            },
+            "metric_required": true,
+            "metrics": [
+              {
+                "metric_type": "weight",
+                "unit": "lb",
+                "goal": {
+                  "data": {
+                    "unit": "lb",
+                    "value": 210
+                  }
+                },
+                "_id": "59653f699fc8be3938f04493",
+                "accepted_values": [],
+                "validations": {
+                  "maximum": {
+                    "unit": "lb",
+                    "value": 999
+                  },
+                  "minimum": {
+                    "unit": "lb",
+                    "value": 0
+                  }
+                }
+              }
+            ],
+            "title": "Measure Weight",
+            "tracking": true,
+            "windows": [
+              {
+                "title": "Morning",
+                "type": "morning",
+                "_id": "59653f699fc8be3938f04492"
+              }
+            ],
+            "type": "weight",
+            "options": []
+          },
+          "links": {
+            "self": "/action/59653f699fc8be3938f04491"
+          },
+          "relationships": {
+            "plan": {
+              "links": {
+                "related": "/action/59653f699fc8be3938f04491/plan"
+              }
+            },
+            "bundles": {
+              "links": {
+                "related": "/action/59653f699fc8be3938f04491/bundles"
+              },
+              "data": []
+            }
+          }
+        },
+        "included": [],
+        "meta": {
+          "req_id": "63bf4340-f256-400e-b391-d801d2a251f6"
+        }
+      }
+  # END /action definitions
+
+  # BEGIN /bundle definitions
+  BundleResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        required:
+          - type
+          - title
+          - effective_from
+        properties:
+          type:
+            type: string
+          title:
+            type: string
+          effective_from:
+            type: string
+            format: dateTime
+          effective_to:
+            type: string
+            format: dateTime
+          _thread:
+            type: string
+
+      relationships:
+        type: object
+        properties:
+          plan:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+          actions:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+  UpdateBundleRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/BundleResource'
+  UpdateBundleResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/BundleResource'
+  CreateBundleRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/BundleResource'
+  CreateBundleResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/BundleResource'
+  FetchBundleResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/BundleResource'
+    example:
+      {
+        "data": {
+          "type": "bundle",
+          "id": "596535d9608f63d531b7e34a",
+          "attributes": {
+            "type": "weight",
+            "title": "Weight",
+            "_actions": [
+              "596535d9608f63d531b7e344"
+            ],
+            "effective_from": "2017-07-11T20:31:25.000Z",
+            "effective_to": "2017-07-11T20:32:25.000Z",
+            "_thread": "123"
+          },
+          "links": {
+            "self": "/bundle/596535d9608f63d531b7e34a"
+          },
+          "relationships": {
+            "plan": {
+              "links": {
+                "related": "/bundle/596535d9608f63d531b7e34a/plan"
+              }
+            },
+            "actions": {
+              "links": {
+                "related": "/bundle/596535d9608f63d531b7e34a/actions"
+              },
+              "data": [
+                {
+                  "type": "action",
+                  "id": "596535d9608f63d531b7e344"
+                }
+              ]
+            }
+          }
+        },
+        "included": [],
+        "meta": {
+          "req_id": "c0f8d53a-d763-4beb-b0b1-9ec6da146a14"
+        }
+      }
+  # END /bundle definitions
+
+  # BEGIN /calendar_event definitions
+  CalendarEventResource:
+     type: object
+     required:
+       - type
+     properties:
+       type:
+         type: string
+       id:
+         type: string
+       attributes:
+         type: object
+         properties:
+          _completed_by:
+            type: object
+            description: 'The coach who marked the calendar event as completed'
+          completed_at:
+            type: string
+            format: ISODate
+            example: '2017-11-03T06:00:00.000Z'
+            description: 'The date and time when the calendar event is marked as completed'
+          type:
+            type: string
+            description: 'The type of calendar event'
+            example: 'plan-check-in'
+          time_zone:
+            type: string
+            description: 'The time zone in which the dates for the calendar event are specified'
+            example: 'America/New_York'
+          all_day:
+            type: boolean
+            description: 'true if the calendar event is an all day event, false otherwise'
+          start_at:
+            type: string
+            format: ISODate
+            description: 'The date and time when the calendar event starts'
+            example: '2017-11-03T04:00:00.000Z'
+          end_at:
+            type: string
+            format: ISODate
+            description: 'The date and time when the calendar event ends'
+            example: '2017-11-03T08:00:00.000Z'
+          title:
+            type: string
+            description: 'The title of the calendar event'
+          location:
+            type: string
+          description:
+            type: string
+          _attendees:
+            type: array
+            description: 'List of attendees for the calendar event'
+            items:
+              type: object
+              properties:
+                _user:
+                  type: object
+                response_status:
+                  type: string
+                  description: 'Status of responses from attendees'
+                  enum:
+                    - needsAction
+                    - declined
+                    - tentative
+                    - accepted
+       links:
+         type: object
+         readOnly: true
+         required:
+           - self
+         properties:
+           self:
+             type: string
+             pattern: '/calendar_event/[0-9a-z]+'
+             example: '/calendar_event/5a0c8e2aa9d454cc1509a142'
+       relationships:
+         type: object
+         properties:
+           owner:
+             type: object
+             readOnly: true
+             properties:
+               data:
+                 type: object
+                 properties:
+                   type:
+                     type: string
+                   id:
+                     type: string
+               links:
+                 type: object
+                 readOnly: true
+                 properties:
+                   related:
+                     type: string
+                     pattern: '/pub/calendar_event/[0-9a-z]+'
+                     example: '/pub/calendar_event/5a0c8e2aa9d454cc1509a142/owner'
+     example:
+       {
+           "type": "calendar_event",
+           "id": "5a0c8e2aa9d454cc1509a142",
+           "attributes": {
+               "completed_at": "2017-11-03T04:00:00.000Z",
+               "type": "plan-check-in",
+               "time_zone": "America/New_York",
+               "all_day": true,
+               "start_at": "2017-11-03T04:00:00.000Z",
+               "title": "Plan Check-In",
+               "_attendees": [
+                   {
+                       "_user": "5a0c8e27a9d454cc150997c9",
+                       "response_status": "accepted"
+                   }
+               ],
+               "created_at": "2017-10-20T10:59:40.000Z",
+               "created_by": "5a0c8e27a9d454cc150997c9",
+               "updated_at": "2017-10-20T10:59:40.000Z",
+               "updated_by": "5a0c8e27a9d454cc150997c9"
+           },
+           "relationships": {
+               "owner": {
+                   "links": {
+                       "related": "/pub/calendar_event/5a0c8e2aa9d454cc1509a142/owner"
+                   },
+                   "data": {
+                       "type": "patient",
+                       "id": "5a0c8e27a9d454cc150997f7"
+                   }
+               }
+           },
+           "links": {
+               "self": "/pub/calendar_event/5a0c8e2aa9d454cc1509a142"
+           },
+       }
+  FetchCalendarEventResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/CalendarEventResource'
+      included:
+        description: |
+          Related resources which are included in the response based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [patient](#operation/fetchPatient)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+  FetchCalendarEventsResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      links:
+        $ref: '#/definitions/CollectionResponseLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/CalendarEventResource'
+      included:
+        description: |
+          Related resources which are included in the response based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [patient](#operation/fetchPatient)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+  # END /calendar_event definitions
+
+  # BEGIN /email_history definitions
+  EmailHistoryResource:
+    type: object
+    required:
+        - type
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          twine_email_id:
+            description: 'Unique identifier for this email.'
+            type: string
+          email_address:
+            description: 'Address email was sent to.'
+            type: string
+          email_type:
+            description: 'Type of email.'
+            type: string
+          send_time:
+            description: 'Time email was sent.'
+            type: string
+            format: dateTime
+          status_times:
+            description: 'Status of email. Multiple statuses may be defined. The current status is the one with the most recent date.'
+            type: object
+            properties:
+              processed:
+                description: 'Time email was processed.'
+                type: string
+                format: dateTime
+              dropped:
+                description: 'Time email was dropped.'
+                type: string
+                format: dateTime
+              deferred:
+                description: 'Time email was deferred.'
+                type: string
+                format: dateTime
+              bounce:
+                description: 'Time email was bounced.'
+                type: string
+                format: dateTime
+              open:
+                description: 'Time email was opened.'
+                type: string
+                format: dateTime
+              spamreport:
+                description: 'Time email was reported as spam.'
+                type: string
+                format: dateTime
+              unsubscribe:
+                description: 'Time email was unsubscribed from.'
+                type: string
+                format: dateTime
+              click:
+                description: 'Time email was clicked.'
+                type: string
+                format: dateTime
+              delivered:
+                description: 'Time email was delivered.'
+                type: string
+                format: dateTime
+      relationships:
+        type: object
+        properties:
+          sender:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+          receiver:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+    example:
+      {
+        "type": "email_history",
+        "id": "595fddec28c5041b84467592",
+        "attributes": {
+            "created_at": "2017-07-07T19:15:56.229Z",
+            "created_by": "595fd88ef4be5b1a797ff19b",
+            "email_address": "tony@example.com",
+            "email_type": "invite",
+            "send_time": "2017-02-25T13:35:01.000Z",
+            "status_times": {
+                "delivered": "2017-02-25T13:35:03.000Z",
+                "open": "2017-02-25T14:20:00.000Z",
+                "processed": "2017-02-25T13:35:02.000Z"
+            },
+            "twine_email_id": "576226e5-7e25-4469-b10d-2bc6a725bfbc",
+            "updated_at": "2017-07-07T19:15:56.229Z",
+            "updated_by": "595fd88ef4be5b1a797ff19b"
+        },
+        "relationships": {
+            "receiver": {
+                "data": {
+                    "id": "595fddea28c5041b84466bbe",
+                    "type": "patient"
+                },
+                "links": {
+                    "related": "/pub/email_history/595fddec28c5041b84467592/receiver"
+                }
+            },
+            "sender": {
+                "links": {
+                    "related": "/pub/email_history/595fddec28c5041b84467592/sender"
+                }
+            }
+        },
+        "links": {
+            "self": "/pub/email_history/595fddec28c5041b84467592"
+        },
+      }
+  FetchEmailHistoryResponse:
+    type: object
+    required:
+      - data
+    properties:
+        meta:
+          $ref: '#/definitions/FetchMetaResponse'
+        data:
+          $ref: '#/definitions/EmailHistoryResource'
+  FetchEmailHistoriesResponse:
+    type: object
+    required:
+      - data
+    properties:
+        meta:
+          $ref: '#/definitions/FetchMetaResponse'
+        data:
+          type: array
+          items:
+            $ref: '#/definitions/EmailHistoryResource'
+  # END /email_history definitions
+
+  # BEGIN /health_profile definitions
+  HealthProfileResource:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          stats:
+            type: array
+            description: 'List of category, answered and total counts for questions in the health profile'
+            items:
+              type: object
+              description: 'The category, answered and total counts for questions in the health profile'
+              properties:
+                category:
+                  type: string
+                  enum:
+                    - lifestyle_behaviors
+                    - mental_wellbeing
+                    - preventative_care
+                    - overall
+                answered:
+                  type: number
+                total:
+                  type: number
+      links:
+        type: object
+        readOnly: true
+        required:
+          - self
+        properties:
+          self:
+            type: string
+            pattern: '/health_profile/[0-9a-z]+'
+            example: '/health_profile/59d441ac21741161bbe266b5'
+      relationships:
+        type: object
+        properties:
+          patient:
+            type: object
+            readOnly: true
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+                readOnly: true
+                properties:
+                  related:
+                    type: string
+                    pattern: '/pub/health_profile/[0-9a-z]+'
+                    example: '/pub/health_profile/59d441ac21741161bbe266b5/patient'
+          questions:
+            type: object
+            readOnly: true
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    id:
+                      type: string
+              links:
+                type: object
+                readOnly: true
+                properties:
+                  related:
+                    type: string
+                    pattern: '/pub/health_profile/[0-9a-z]+'
+                    example: '/pub/health_profile/59d441ac21741161bbe266b5/questions'
+    example:
+      {
+        "type": "health_profile",
+        "id": "59d441ac21741161bbe266b5",
+        "attributes": {
+          "created_at": "2017-07-07T19:15:56.229Z",
+          "stats": [
+            {"category": "lifestyle_behaviors", "answered": 5, "total": 11},
+            {"category": "mental_wellbeing", "answered": 3, "total": 5},
+            {"category": "preventative_care", "answered": 1, "total": 3},
+            {"category": "overall", "answered": 9, "total": 19}
+          ],
+          "updated_at": "2017-07-07T19:15:56.229Z",
+        },
+        "relationships": {
+          "patient": {
+            "data": {
+              "id": "595fddea28c5041b84466bbe",
+              "type": "patient"
+            },
+            "links": {
+              "related": "/pub/health_profile/59d441ac21741161bbe266b5/patient"
+            }
+          },
+          "questions": {
+            "data": [
+              {
+                "id": "595fddea28c5041b84466bbe",
+                "type": "health_profile_question"
+              }
+            ],
+            "links": {
+              "related": "/pub/health_profile/59d441ac21741161bbe266b5/questions"
+            }
+          }
+        },
+        "links": {
+            "self": "/pub/health_profile/59d441ac21741161bbe266b5"
+        },
+      }
+  FetchHealthProfileResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/HealthProfileResource'
+      included:
+        description: |
+          Related resources which are included in the response based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [patient](#operation/fetchPatient), [question](#operation/fetchHealthProfileQuestion)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+  FetchHealthProfilesResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      links:
+        $ref: '#/definitions/CollectionResponseLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/HealthProfileResource'
+      included:
+        description: |
+          Related resources which are included in the response based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [patient](#operation/fetchPatient), [question](#operation/fetchHealthProfileQuestion)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+  HealthProfileQuestionResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        description: |
+          A health profile question does not have any attribute since it only relates an answer to the corresponding question definition.
+      links:
+        type: object
+        readOnly: true
+        required:
+          - self
+        properties:
+          self:
+            type: string
+            pattern: '/pub/health_profile_question/[0-9a-z]+'
+            example: '/pub/health_profile_question/59d435931d078505ba744e88'
+      relationships:
+        type: object
+        properties:
+          answer:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+                readOnly: true
+                properties:
+                  related:
+                    type: string
+                    pattern: '/pub/health_profile_question/[0-9a-z]+/answer'
+                    example: '/pub/health_profile_question/59d435931d078505ba744e88/answer'
+          profile:
+            type: object
+            properties:
+              links:
+                type: object
+                readOnly: true
+                properties:
+                  related:
+                    type: string
+                    pattern: '/pub/health_profile_question/[0-9a-z]+/profile'
+                    example: '/pub/health_profile_question/59d435931d078505ba744e88/profile'
+          question_definition:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                readOnly: true
+                properties:
+                  links:
+                    type: object
+                    readOnly: true
+                    properties:
+                      related:
+                        type: string
+                        pattern: '/pub/health_profile_question/[0-9a-z]+/question_definition'
+                        example: '/pub/health_profile_question/59d435931d078505ba744e88/question_definition'
+    example:
+      {
+        "type": "health_profile_question",
+        "id": "52b36e3c04ad8c2224f2aa67",
+        "attribute": {},
+        "relationships": {
+          "answer": {
+            "data": {
+              "id": "595fddea28c5041b84466bbe",
+              "type": "health_profile_answer"
+            },
+            "links": {
+              "related": "/pub/health_profile_question/59d435931d078505ba744e88/answer"
+            }
+          },
+          "profile": {
+            "links": {
+                "related": "/pub/health_profile_question/59d435931d078505ba744e88/profile"
+            }
+          },
+          "question_definition": {
+            "data": {
+              "id": "4",
+              "type": "health_question_definition"
+            },
+            "links": {
+              "related": "/pub/health_profile_question/59d435931d078505ba744e88/question_definition"
+            }
+          },
+        },
+        "links": {
+            "self": "/pub/health_profile_question/59d435931d078505ba744e88"
+        },
+      }
+  FetchHealthProfileQuestionResponse:
+    type: object
+    required:
+      - data
+    properties:
+        meta:
+          $ref: '#/definitions/FetchMetaResponse'
+        data:
+          $ref: '#/definitions/HealthProfileQuestionResource'
+        included:
+          description: |
+            Related resources which are included in the response based on the `include` param.
+            Attributes of each resource will vary depending on the type.
+            See [question_definition](#operation/fetchHealthQuestionDefinition), [answer](#operation/fetchHealthProfileAnswer)
+          type: array
+          items:
+            $ref: '#/definitions/Resource'
+  HealthProfileAnswerResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          history:
+            type: array
+            description: 'List of details of previous answers for a health profile question'
+            items:
+              type: object
+              description: 'The details of a previous answer for a health profile question'
+              properties:
+                answered_at:
+                  type: string
+                  format: dateTime
+                  description: 'The date when the health profile question is answered'
+                value:
+                  type: string
+                  description: 'The value of the answer entered for the health profile question'
+                _created_by:
+                  type: string
+                  description: 'The id of the patient or coach who answered the health profile question'
+          latest:
+            type: object
+            description: 'The details of the latest answer for a health profile question'
+            properties:
+              answered_at:
+                type: string
+                format: dateTime
+                description: 'The date when the health profile question is answered'
+              value:
+                type: string
+                description: 'The value of the answer entered for the health profile question'
+              _created_by:
+                type: string
+                description: 'The id of the patient or coach who answered the health profile question'
+          question_id:
+            type: string
+      links:
+        type: object
+        readOnly: true
+        required:
+          - self
+        properties:
+          self:
+            type: string
+            pattern: '/health_profile_answer/[0-9a-z]+'
+            example: '/health_profile_answer/59d441ac21741161bbe266b5'
+      relationships:
+        type: object
+        properties:
+          patient:
+            type: object
+            readOnly: true
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+                readOnly: true
+                properties:
+                  related:
+                    type: string
+                    pattern: '/pub/health_profile_answer/[0-9a-z]+'
+                    example: '/pub/health_profile_answer/59d441ac21741161bbe266b5/patient'
+    example:
+      {
+        "type": "health_profile_answer",
+        "id": "59d441ac21741161bbe266b5",
+        "attributes": {
+          "created_at": "2017-07-07T19:15:56.229Z",
+          "history": [
+            {
+              "answered_at": "2017-10-03T12:45:16.720Z",
+              "value": "2",
+              "_created_by": "59d4d7dcd843ee01be71fcf8",
+              "_id": "59d4d7dcd843ee01be71fcfb"
+            }
+          ],
+          "latest": {
+            "answered_at": "2017-10-04T12:45:16.720Z",
+            "value": "1",
+            "_created_by": "59d4d7dcd843ee01be71fcf8"
+          },
+          "question_id": "4",
+          "updated_at": "2017-07-07T19:15:56.229Z",
+        },
+        "relationships": {
+          "patient": {
+            "data": {
+              "id": "595fddea28c5041b84466bbe",
+              "type": "patient"
+            },
+            "links": {
+              "related": "/pub/health_profile_answer/59d441ac21741161bbe266b5/patient"
+            }
+          }
+        },
+        "links": {
+            "self": "/pub/health_profile_answer/59d441ac21741161bbe266b5"
+        },
+      }
+  FetchHealthProfileAnswerResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/HealthProfileAnswerResource'
+      included:
+        description: |
+          Related resources which are included in the response based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [patient](#operation/fetchPatient)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+  FetchHealthProfileAnswersResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      links:
+        $ref: '#/definitions/CollectionResponseLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/HealthProfileAnswerResource'
+      included:
+        description: |
+          Related resources which are included in the response based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [patient](#operation/fetchPatient)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+  HealthQuestionDefinitionResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          category:
+            type: string
+            enum:
+              - lifestyle_behaviors
+              - mental_wellbeing
+              - preventative_care
+            description: 'The category for the health profile definition'
+          format:
+            type: object
+            description: 'The list of formats for the health profile definition'
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: 'The label, value and icon for the answer choices for the question'
+                  properties:
+                    label:
+                      type: string
+                    value:
+                      type: string
+                    icon:
+                      type: string
+              type:
+                type: string
+          requirements:
+            type: array
+            description: 'The lsit of age and gender requirements for the question to be included'
+            items:
+              type: object
+              description: 'The age and gender requirement for the question to be included'
+              properties:
+                property:
+                  type: string
+                shouldBeEqual:
+                  type: boolean
+                  description: 'Specifies if the value in property should be equal to the one in value'
+                shouldBeGreaterThan:
+                  type: number
+                  description: 'Specifies if the value in property should be greater than the one in value'
+                shouldBeLessThan:
+                  type: number
+                  description: 'Specifies if the value in property should be less than the one in value'
+                value:
+                  type: string
+                  description: 'The value to be compared with the one in property, based on shouldBeEqual, shouldBeGreaterThan, or shouldBeLessThan'
+          text:
+            type: string
+            description: 'The question text which corresponds to the answer choices'
+      links:
+        type: object
+        readOnly: true
+        required:
+          - self
+        properties:
+          self:
+            type: string
+            pattern: '/health_question_definition/[0-9]+'
+            example: '/health_question_definition/4'
+      relationships:
+        type: object
+    example:
+      {
+        "type": "health_question_definition",
+        "id": "21",
+        "attributes": {
+          "category": "preventative_care",
+          "format": {
+            "data":[
+              {"label": "I Don't know", "value": "0"},
+              {"label": "I've never had a colonoscopy", "value": "1"},
+            ],
+            "type": "last_occurrence"
+          },
+          "requirements": [
+            {"property": "age", "shouldBeGreaterThan": 49, "shouldBeLessThan": 76}
+          ],
+          "text": "When was your last colonoscopy?"
+        },
+        "links": {
+            "self": "/pub/health_question_definition/21"
+        },
+      }
+  FetchHealthQuestionDefinitionResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/HealthQuestionDefinitionResource'
+  FetchHealthQuestionDefinitionsResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      links:
+        $ref: '#/definitions/CollectionResponseLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/HealthQuestionDefinitionResource'
+  # END health_profile definitions
+
+  # BEGIN patient_health_metric definitions
+  PatientHealthMetricResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          type:
+            type: string
+            enum:
+              - blood_pressure_systolic
+              - blood_pressure_diastolic
+              - hemoglobin_a1c
+              - hdl_cholesterol
+              - ldl_cholesterol
+              - total_cholesterol
+              - triglycerides
+              - blood_urea_nitrogen
+              - creatinine
+              - hemoglobin
+              - hematocrit
+              - total_serum_iron
+              - thyroid_stimulating_hormone
+              - free_thyroxine
+              - free_triiodothyronine
+              - total_triiodothyronine
+              - cd4_cell_count
+              - hiv_viral_load
+              - inr
+              - free_testosterone
+              - total_testosterone
+              - c_reactive_protein
+              - prostate_specific_antigen
+              - cotinine
+              - c_peptide
+              - blood_pressure
+              - blood_glucose
+              - weight
+              - heart_rate
+              - body_fat_percentage
+              - body_mass_index
+              - body_temperature
+              - forced_expiratory_volume1
+              - forced_vital_capacity
+              - lean_body_mass
+              - nausea_level
+              - oxygen_saturation
+              - pain_level
+              - peak_expiratory_flow_rate
+              - peripheral_perfusion_index
+              - respiratory_rate
+              - sleep_analysis_asleep
+              - sleep_analysis_in_bed
+              - inhaler_usage
+          code:
+            type: object
+            required:
+              - system
+              - value
+            properties:
+              system:
+                type: string
+              value:
+                type: string
+          value:
+            type: number
+          systolic:
+            type: number
+          diastolic:
+            type: number
+          unit:
+            type: string
+          occurred_at:
+            type: string
+            format: dateTime
+
+      relationships:
+        type: object
+        properties:
+          patient:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+                    description: Required if the `meta.query` is not defined.
+                    example: '5817ead56f5316c0d05ba8bf'
+                  meta:
+                    type: object
+                    description: Allows the specification of a query for a patient rather than providing a patient id directly
+                    required:
+                      - query
+                    properties:
+                      query:
+                        type: object
+                        description: The query must return one and only one patient.
+                        required:
+                          - identifier
+                        properties:
+                          groups:
+                            type: array
+                            items:
+                              type: string
+                          organization:
+                            type: string
+                          identifier:
+                            type: object
+                            required:
+                              - system
+                              - value
+                            properties:
+                              system:
+                                type: string
+                              value:
+                                type: string
+              links:
+                type: object
+    example:
+      {
+        "data": {
+          "type": "patient_health_metric",
+           "attributes": {
+             "code": {
+               "system": "LOINC",
+               "value": "13457-7"
+             },
+             "type": "ldl_cholesterol",
+             "occurred_at": "2017-03-14T11:00:57.000Z",
+             "value": "121",
+             "unit": "mg/dl"
+          },
+          "relationships": {
+            "patient": {
+              "data": {
+                "type": "patient",
+                "id": ""
+              }
+            }
+          }
+        }
+      }
+  PatientHealthMetricCreateResource:
+    type: object
+    allOf:
+      - $ref: "#/definitions/PatientHealthMetricResource"
+      - description: |
+          Note that `data` can either be a single object or an array of objects matching the schema specified here
+          (bulk create).
+  CreatePatientHealthMetricRequest:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        type: object
+        properties:
+          ignore_duplicates:
+            type: boolean
+            description: |
+              If `true`, the patient health metric will be ignored if there is an existing patient health metric for
+              the same patient, with the same `type` and same `occurred_at`.
+      data:
+        $ref: '#/definitions/PatientHealthMetricCreateResource'
+  CreatePatientHealthMetricResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/PatientHealthMetricResource'
+  FetchPatientHealthMetricResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      links:
+        $ref: '#/definitions/CollectionResponseLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/PatientHealthMetricResource'
+  # END patient_health_metric definitions
 
   # BEGIN /patient definitions
   PhoneNumber:
@@ -2674,7 +4591,6 @@ definitions:
                         type: string
                         pattern: '/patient/[0-9a-z]+/coaches'
                         example: '/patient/57b36ef304ad8c2224f2af3a/coaches'
-
   FetchPatientsResponse:
     type: object
     required:
@@ -2875,7 +4791,6 @@ definitions:
           }
         ]
       }
-
   FetchPatientResponse:
     type: object
     required:
@@ -2953,9 +4868,6 @@ definitions:
         },
         "included": []
       }
-   
-
-  
   CreatePatientRequest:
     type: object
     required:
@@ -2981,7 +4893,6 @@ definitions:
           }
         }
       }
-
   CreatePatientResponse:
     type: object
     required:
@@ -3033,7 +4944,6 @@ definitions:
         },
         "included": []
       }
-    
   UpdatePatientRequest:
     type: object
     required:
@@ -3051,7 +4961,6 @@ definitions:
           }
         }
       }
-    
   UpdatePatientResponse:
     type: object
     required:
@@ -3103,166 +5012,7 @@ definitions:
         },
         "included": []
       }
-   
   # END /patient definitions        
-  
-  # BEGIN /coach definitions
-  CoachResource:
-      type: object
-      required:
-        - id
-        - type
-        - attributes
-      properties:
-        id:
-          type: string
-          example: '57b36e3c04ad8c2224f2af38'
-        type:
-          type: string
-          enum:
-            - coach
-          example: coach
-        attributes:
-          type: object
-          properties:
-            first_name:
-              type: string
-              example: Clarisa
-            last_name:
-              type: string
-              example: Rivera
-        links:
-          type: object
-          readOnly: true
-          required:
-            - self
-          properties:
-            self:
-              type: string
-              pattern: '/coach/[0-9a-z]+'
-              example: '/coach/57b36e3c04ad8c2224f2af38'
-  FetchCoachResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      data:
-        $ref: '#/definitions/CoachResource'
-    example:
-      { 
-        "meta": {
-          "req_id": "b928037e-98ed-434f-b0c4-d74b1a38a560"
-        },
-        "data": {
-          "type": "coach",
-          "id": "581630c3237d84a9403533c6",
-          "attributes": {
-            "first_name": "Clarisa",
-            "last_name": "Rivera"
-          },
-          "links": {
-            "self": "/pub/coach/581630c3237d84a9403533c6"
-          }
-        }, 
-        "included": []
-      }
-  
-  FetchCoachesResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      data:
-        type: array
-        items:
-          $ref: '#/definitions/CoachResource'
-    example:
-      { 
-        "meta": {
-          "req_id": "48c47326-0c8b-4c5e-85da-7fc0d00f1e4d",
-          "count": 1
-        },
-        "links": {
-          "self": "/pub/patient/58163112237d84a94035f78b/coaches"
-        },
-        "data": [{
-          "type":"coach",
-          "id":"581630c3237d84a9403533c6",
-          "attributes": {
-            "first_name": "Clarisa",
-            "last_name":"Rivera"
-          },
-          "links": {
-            "self":"/pub/coach/581630c3237d84a9403533c6"
-          }
-        }],
-        "included": []
-      }
-  # END /coach definitions
-  
-  # BEGIN /organization definitions
-  OrganizationResource:
-      type: object
-      required:
-        - id
-        - type
-        - attributes
-      properties:
-        id:
-          type: string
-          example: '57b36e3c04ad8c2224f2af38'
-        type:
-          type: string
-          enum:
-            - organization
-          example: organization
-        attributes:
-          required:
-            - name
-          properties:
-            name:
-              type: string
-              example: Health Activation Partners
-        links:
-          readOnly: true
-          required:
-            - self
-          properties:
-            self:
-              type: string
-              pattern: '/organization/[0-9a-z]+'
-              example: '/organization/57b36e3c04ad8c2224f2af38'
-  
-  FetchOrganizationResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      data:
-        $ref: '#/definitions/OrganizationResource'
-    example:
-      { 
-        "meta": {
-          "req_id": "aeb94ed8-d7f9-4e72-a78f-e276c4f52c2a"
-        },
-        "data": {
-          "type": "organization",
-          "id": "5873b63605376e337a89d64a",
-          "attributes": {
-            "name": "Health Activation Partners"
-          },
-          "links": {
-            "self": "/pub/organization/5873b63605376e337a89d64a"
-          }
-        }
-      }
-  # END /organization definitions
   
   # BEGIN /patient_plan_summary definitions
   PatientPlanSummaryResource:
@@ -3400,7 +5150,6 @@ definitions:
               type: string
               pattern: '/patient_plan_summary/[0-9a-z]+'
               example: '/patient_plan_summary/57b36e3c04ad8c2224f2af38'
-
   FetchPatientPlanSummaryResponse:
     type: object
     required:
@@ -3567,7 +5316,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Resource'
-
   UpdatePatientPlanSummaryRequest:
     type: object
     required:
@@ -3584,899 +5332,9 @@ definitions:
         $ref: '#/definitions/CreateOrUpdateMetaResponse'
       data:
         $ref: '#/definitions/PatientPlanSummaryResource'
-
-  Identifier:
-    type: object
-    required:
-      - system
-      - value
-    properties:
-      label:
-        type: string
-      system:
-        type: string
-      value:
-        type: string
-  ActionMetric:
-    type: object
-    properties:
-      metric_type:
-        type: string
-      unit:
-        type: string
-      goal:
-        type: object
-      validations:
-        type: object
-        properties:
-          minimum:
-            type: object
-            properties:
-              value:
-                type: number
-              unit:
-                type: string
-          maximum:
-            type: object
-            properties:
-              value:
-                type: number
-              unit:
-                type: string
-  ActionWindow:
-    type: object
-    required:
-      - type
-    properties:
-      title:
-        type: string
-      type:
-        type: string
-      _id:
-        type: string
-
-  ActionResource:
-    type: object
-    required:
-      - type
-      - id
-    properties:
-      type:
-        type: string
-      id: 
-        type: string
-      attributes:
-        type: object
-        required:
-          - type
-          - title
-          - effective_from
-        properties:
-          type:
-            type: string
-            enum:
-              - other_lifestyle
-          title:
-            type: string
-          static_title:
-            type: string
-            readOnly: true
-          effective_from:
-            type: string
-            format: dateTime
-          effective_to:
-            type: string
-            format: dateTime
-          tracking:
-            type: boolean
-          _thread:
-            type: string
-          adherence:
-            type: object
-            readOnly: true
-            properties:
-              due:
-                type: integer
-              complete:
-                type: integer
-              streak:
-                type: object
-                properties:
-                  count:
-                    type: integer
-                  updated_at:
-                    type: string
-                    format: dateTime
-          frequency_goal:
-            type: object
-            properties:
-              weeks:
-                type: object
-                properties:
-                  days:
-                    type: array
-                    items:
-                      description: 'Days of week that the action is scheduled for. Zero-indexed, ex 0 represents Sunday, etc.'
-                      type: integer
-                      maxItems: 7
-                      enum: [0, 1, 2, 3, 4, 5, 6]
-          identifiers:
-            type: array
-            items:
-              $ref: '#/definitions/Identifier'
-          details:
-            type: object
-            additionalProperties: true
-          intake:
-            type: object
-            additionalProperties: true
-          metric_required:
-            type: boolean
-          metrics:
-            type: array
-            items:
-              $ref: '#/definitions/ActionMetric'
-          windows:
-            type: array
-            items:
-              $ref: '#/definitions/ActionWindow'
-
-      relationships:
-        type: object
-        properties:
-          plan:
-            type: object
-            properties:
-              data:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  id:
-                    type: string
-              links:
-                type: object
-
-  CreateActionRequest:
-    type: object
-    required:
-      - data
-    properties:
-      data:
-        $ref: '#/definitions/ActionResource'
-    example:
-      {
-        "data": {
-          "type": "action",
-          "attributes": {
-            "effective_from": "2017-02-20T11:12:13.000Z",
-            "title": "Record Blood Pressure",
-            "type": "blood_pressure",
-            "frequency_goal": {
-                "weeks": {
-                  "days": [0]
-                }
-              },
-            "metrics": [
-              {
-                "metric_type": "blood_pressure",
-                "unit": "mmHg",
-                "goal": {
-                  "data": {
-                    "systolic": {
-                      "value": 150,
-                      "unit": "mmHg"
-                    },
-                    "diastolic": {
-                      "value": 95,
-                      "unit": "mmHg"
-                    }
-                  }
-                }
-              }
-            ]
-          },
-          "relationships": {
-            "plan": {
-              "data": {
-                "type": "patient_plan_summary",
-                "id": "58aacf0d076adcef394bac35"
-              }
-            },
-            "bundles": {
-              "data": [
-                {
-                  "type": "bundle",
-                  "id": "58aacf0d076adcef394bac30"
-                }
-              ]
-            }
-          }
-        }
-      }
-        
-  CreateActionResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/CreateOrUpdateMetaResponse'
-      data:
-        $ref: '#/definitions/ActionResource'
-    example:
-      {
-        "data": {
-          "type": "action",
-          "id": "58aacf0d076adcef394bac36",
-          "attributes": {
-            "_thread": "blood_pressure",
-            "adherence": {
-              "due": 0,
-              "complete": 0,
-              "streak": {
-                "count": 0
-              }
-            },
-            "effective_from": "2017-02-20T11:12:13.000Z",
-            "frequency_goal": {
-              "weeks": {
-                "days": [0]
-              }
-            },
-            "frequency_goal_prorated": 0,
-            "identifiers": [],
-            "metric_required": false,
-            "metrics": [
-              {
-                "metric_type": "blood_pressure",
-                "unit": "mmHg",
-                "goal": {
-                  "data": {
-                    "diastolic": {
-                      "unit": "mmHg",
-                      "value": 95
-                    },
-                    "systolic": {
-                      "unit": "mmHg",
-                      "value": 150
-                    }
-                  }
-                },
-                "_id": "58aacf0d076adcef394bac37",
-                "accepted_values": []
-              }
-            ],
-            "title": "Record Blood Pressure",
-            "tracking": true,
-            "windows": [],
-            "type": "blood_pressure",
-            "options": [],
-            "created_at": "2017-02-20T11:12:13.000Z",
-            "created_by": "596541ec076adcef394bac2d",
-            "updated_at": "2017-02-20T11:12:13.000Z",
-            "updated_by": "596541ec076adcef394bac2d"
-          },
-          "links": {
-            "self": "/action/58aacf0d076adcef394bac36"
-          },
-          "relationships": {
-            "plan": {
-              "links": {
-                "related": "/action/58aacf0d076adcef394bac36/plan"
-              },
-              "data": {
-                "type": "patient_plan_summary",
-                "id": "58aacf0d076adcef394bac35"
-              }
-            },
-            "bundles": {
-              "links": {
-                "related": "/action/58aacf0d076adcef394bac36/bundles"
-              },
-              "data": [
-                {
-                  "type": "bundle",
-                  "id": "58aacf0d076adcef394bac30"
-                }
-              ]
-            }
-          }
-        },
-        "included": [],
-        "meta": {
-          "req_id": "014ea6d2-4717-4915-b4bc-98454180614e"
-        }
-      }
-
-  UpdateActionRequest:
-    type: object
-    required:
-      - data
-    properties:
-      data:
-        $ref: '#/definitions/ActionResource'
-
-  UpdateActionResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/CreateOrUpdateMetaResponse'
-      data:
-        $ref: '#/definitions/ActionResource'
-
-  FetchActionResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      data:
-        $ref: '#/definitions/ActionResource'
-    example:
-      {
-        "data": {
-          "type": "action",
-          "id": "59653f699fc8be3938f04491",
-          "attributes": {
-            "_thread": "weight",
-            "adherence": {
-              "due": 1,
-              "complete": 1,
-              "streak": {
-                "count": 1,
-                "updated_at": "2017-07-11T21:13:13.215Z"
-              }
-            },
-            "effective_from": "2017-07-10T21:13:13.212Z",
-            "effective_to": "2017-07-11T21:13:13.215Z",
-            "frequency_goal": {
-              "weeks": {
-                "days": [0]
-              }
-            },
-            "frequency_goal_prorated": 0,
-            "identifiers": [
-              {
-                "label": "Super Health Actions",
-                "system": "http://super.health.example.com",
-                "value": "action-0123",
-                "_id": "59653f699fc8be3938f04494"
-              }
-            ],
-            "details": {
-              "some": "mixed value"
-            },
-            "metric_required": true,
-            "metrics": [
-              {
-                "metric_type": "weight",
-                "unit": "lb",
-                "goal": {
-                  "data": {
-                    "unit": "lb",
-                    "value": 210
-                  }
-                },
-                "_id": "59653f699fc8be3938f04493",
-                "accepted_values": [],
-                "validations": {
-                  "maximum": {
-                    "unit": "lb",
-                    "value": 999
-                  },
-                  "minimum": {
-                    "unit": "lb",
-                    "value": 0
-                  }
-                }
-              }
-            ],
-            "title": "Measure Weight",
-            "tracking": true,
-            "windows": [
-              {
-                "title": "Morning",
-                "type": "morning",
-                "_id": "59653f699fc8be3938f04492"
-              }
-            ],
-            "type": "weight",
-            "options": []
-          },
-          "links": {
-            "self": "/action/59653f699fc8be3938f04491"
-          },
-          "relationships": {
-            "plan": {
-              "links": {
-                "related": "/action/59653f699fc8be3938f04491/plan"
-              }
-            },
-            "bundles": {
-              "links": {
-                "related": "/action/59653f699fc8be3938f04491/bundles"
-              },
-              "data": []
-            }
-          }
-        },
-        "included": [],
-        "meta": {
-          "req_id": "63bf4340-f256-400e-b391-d801d2a251f6"
-        }
-      }
-
-  BundleResource:
-    type: object
-    required:
-      - type
-      - id
-    properties:
-      type:
-        type: string
-      id: 
-        type: string
-      attributes:
-        type: object
-        required:
-          - type
-          - title
-          - effective_from
-        properties:
-          type:
-            type: string
-          title:
-            type: string
-          effective_from:
-            type: string
-            format: dateTime
-          effective_to:
-            type: string
-            format: dateTime
-          _thread:
-            type: string
-
-      relationships:
-        type: object
-        properties:
-          plan:
-            type: object
-            properties:
-              data:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  id:
-                    type: string
-              links:
-                type: object
-          actions:
-            type: object
-            properties:
-              data:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  id:
-                    type: string
-              links:
-                type: object
-
-  UpdateBundleRequest:
-    type: object
-    required:
-      - data
-    properties:
-      data:
-        $ref: '#/definitions/BundleResource'
-        
-  UpdateBundleResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/CreateOrUpdateMetaResponse'
-      data:
-        $ref: '#/definitions/BundleResource'
-
-  CreateBundleRequest:
-    type: object
-    required:
-      - data
-    properties:
-      data:
-        $ref: '#/definitions/BundleResource'
-        
-  CreateBundleResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/CreateOrUpdateMetaResponse'
-      data:
-        $ref: '#/definitions/BundleResource'
-
-  FetchBundleResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      data:
-        $ref: '#/definitions/BundleResource'
-    example:
-      {
-        "data": {
-          "type": "bundle",
-          "id": "596535d9608f63d531b7e34a",
-          "attributes": {
-            "type": "weight",
-            "title": "Weight",
-            "_actions": [
-              "596535d9608f63d531b7e344"
-            ],
-            "effective_from": "2017-07-11T20:31:25.000Z",
-            "effective_to": "2017-07-11T20:32:25.000Z",
-            "_thread": "123"
-          },
-          "links": {
-            "self": "/bundle/596535d9608f63d531b7e34a"
-          },
-          "relationships": {
-            "plan": {
-              "links": {
-                "related": "/bundle/596535d9608f63d531b7e34a/plan"
-              }
-            },
-            "actions": {
-              "links": {
-                "related": "/bundle/596535d9608f63d531b7e34a/actions"
-              },
-              "data": [
-                {
-                  "type": "action",
-                  "id": "596535d9608f63d531b7e344"
-                }
-              ]
-            }
-          }
-        },
-        "included": [],
-        "meta": {
-          "req_id": "c0f8d53a-d763-4beb-b0b1-9ec6da146a14"
-        }
-      }
-
   # END /patient_plan_summary definitions
-  
-  PatientHealthMetricResource:
-    type: object
-    required:
-      - type
-      - id
-    properties:
-      type:
-        type: string
-      id:
-        type: string
-      attributes:
-        type: object
-        properties:
-          type:
-            type: string
-            enum:
-              - blood_pressure_systolic
-              - blood_pressure_diastolic
-              - hemoglobin_a1c
-              - hdl_cholesterol
-              - ldl_cholesterol
-              - total_cholesterol
-              - triglycerides
-              - blood_urea_nitrogen
-              - creatinine
-              - hemoglobin
-              - hematocrit
-              - total_serum_iron
-              - thyroid_stimulating_hormone
-              - free_thyroxine
-              - free_triiodothyronine
-              - total_triiodothyronine
-              - cd4_cell_count
-              - hiv_viral_load
-              - inr
-              - free_testosterone
-              - total_testosterone
-              - c_reactive_protein
-              - prostate_specific_antigen
-              - cotinine
-              - c_peptide
-              - blood_pressure
-              - blood_glucose
-              - weight
-              - heart_rate
-              - body_fat_percentage
-              - body_mass_index
-              - body_temperature
-              - forced_expiratory_volume1
-              - forced_vital_capacity
-              - lean_body_mass
-              - nausea_level
-              - oxygen_saturation
-              - pain_level
-              - peak_expiratory_flow_rate
-              - peripheral_perfusion_index
-              - respiratory_rate
-              - sleep_analysis_asleep
-              - sleep_analysis_in_bed
-              - inhaler_usage
-          code:
-            type: object
-            required:
-              - system
-              - value
-            properties:
-              system:
-                type: string
-              value:
-                type: string
-          value:
-            type: number
-          systolic:
-            type: number
-          diastolic:
-            type: number
-          unit:
-            type: string
-          occurred_at:
-            type: string
-            format: dateTime
 
-      relationships:
-        type: object
-        properties:
-          patient:
-            type: object
-            properties:
-              data:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  id:
-                    type: string
-                    description: Required if the `meta.query` is not defined.
-                    example: '5817ead56f5316c0d05ba8bf'
-                  meta:
-                    type: object
-                    description: Allows the specification of a query for a patient rather than providing a patient id directly
-                    required:
-                      - query
-                    properties:
-                      query:
-                        type: object
-                        description: The query must return one and only one patient.
-                        required:
-                          - identifier
-                        properties:
-                          groups:
-                            type: array
-                            items:
-                              type: string
-                          organization:
-                            type: string
-                          identifier:
-                            type: object
-                            required:
-                              - system
-                              - value
-                            properties:
-                              system:
-                                type: string
-                              value:
-                                type: string
-              links:
-                type: object
-    example:
-      {
-        "data": {
-          "type": "patient_health_metric",
-           "attributes": {
-             "code": {
-               "system": "LOINC",
-               "value": "13457-7"
-             },
-             "type": "ldl_cholesterol",
-             "occurred_at": "2017-03-14T11:00:57.000Z",
-             "value": "121",
-             "unit": "mg/dl"
-          },
-          "relationships": {
-            "patient": {
-              "data": {
-                "type": "patient",
-                "id": ""
-              }
-            }
-          }
-        }
-      }
-
-  PatientHealthMetricCreateResource:
-    type: object
-    allOf:
-      - $ref: "#/definitions/PatientHealthMetricResource"
-      - description: |
-          Note that `data` can either be a single object or an array of objects matching the schema specified here
-          (bulk create).
-
-  CreatePatientHealthMetricRequest:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        type: object
-        properties:
-          ignore_duplicates:
-            type: boolean
-            description: |
-              If `true`, the patient health metric will be ignored if there is an existing patient health metric for
-              the same patient, with the same `type` and same `occurred_at`.
-      data:
-        $ref: '#/definitions/PatientHealthMetricCreateResource'
-
-  CreatePatientHealthMetricResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/CreateOrUpdateMetaResponse'
-      data:
-        $ref: '#/definitions/PatientHealthMetricResource'
-
-  FetchPatientHealthMetricResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      links:
-        $ref: '#/definitions/CollectionResponseLinks'
-      data:
-        type: array
-        items:
-          $ref: '#/definitions/PatientHealthMetricResource'
-
-  # BEGIN reward resource definitions
-  RewardProgramResource:
-    type: object
-    required:
-      - type
-    properties:
-      type: 
-        type: string
-      id:
-        type: string
-      attributes:
-        type: object
-        required:
-          - name
-          - start_at
-          - end_at
-          - budget_value
-        properties:
-          name:
-            description: 'Name of the reward program'
-            type: string
-          tagline:
-            description: 'Tagline of the reward program - designed to be one line'
-            type: string
-          description:
-            description: 'Description of the reward program - designed to be a comprehensive text description'
-            type: string
-          start_at:
-            description: 'Date at which the reward program starts.'
-            type: string
-            format: dateTime
-          end_at:
-            description: 'Date at which the reward program ends. (Must be after the start_at)'
-            type: string
-            format: dateTime
-          budget_value:
-            description: 'Value of the budget for the reward program. (Must be greater than 0)'
-            type: number
-          budget_unit:
-            description: 'Unit of the budget for the reard program.'
-            type: string
-            enum:
-              - dollar
-              - point
-              - credit
-            default: dollar
-          duration_active:
-            description: 'Number of days that a program can be active after it has been activated for a patient. (Must be greater than 0)'
-            type: number
-            default: 540
-          fulfill_as_earned:
-            description: 'If true, the rewards created for a patient for the program can be fulfulled as they are earned. If false, the rewards should only be fulfilled when the program is deactivated.'
-            type: boolean
-            default: false
-          frozen:
-            description: 'If true, the reward program cannot be activated for a patient and new rewards cannot be created for the program.'
-            type: boolean
-            default: false
-      relationships:
-        type: object
-        required:
-          - group
-        properties:
-          group:
-            type: object
-            required:
-              - data
-            properties: 
-              data:
-                type: object
-                required:
-                  - type
-                  - id
-                properties:
-                  type:
-                    type: string
-                  id:
-                    type: string
-
-  FetchRewardProgramResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      data:
-        $ref: '#/definitions/RewardProgramResource'
-
-  FetchRewardProgramsResponse:
-      type: object
-      required:
-        - data
-      properties:
-        meta:
-          $ref: '#/definitions/FetchMetaResponse'
-        data:
-          type: array
-          items:
-            $ref: '#/definitions/RewardProgramResource'
-
-  CreateRewardProgramRequest:
-    type: object
-    required:
-      - data
-    properties:
-      data:
-        $ref: '#/definitions/RewardProgramResource'
-        
-  CreateRewardProgramResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/CreateOrUpdateMetaResponse'
-      data:
-        $ref: '#/definitions/RewardProgramResource'
-
+  # BEGIN /reward_program_activation defintions
   RewardProgramActivationResource:
     type: object
     required:
@@ -4558,7 +5416,6 @@ definitions:
                     type: string
                   id:
                     type: string
-
   FetchRewardProgramActivationResponse:
       type: object
       required:
@@ -4568,7 +5425,6 @@ definitions:
           $ref: '#/definitions/FetchMetaResponse'
         data:
           $ref: '#/definitions/RewardProgramActivationResource'
-
   FetchRewardProgramActivationsResponse:
     type: object
     required:
@@ -4580,7 +5436,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/RewardProgramActivationResource'
-
   CreateRewardProgramActivationRequest:
     type: object
     required:
@@ -4588,7 +5443,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/RewardProgramActivationResource'
-
   CreateRewardProgramActivationResponse:
     type: object
     required:
@@ -4598,7 +5452,9 @@ definitions:
         $ref: '#/definitions/CreateOrUpdateMetaResponse'
       data:
         $ref: '#/definitions/RewardProgramActivationResource'
+  # END /reward_program_activation defintions
 
+  # BEGIN /reward definitions
   RewardResource:
     type: object
     required:
@@ -4680,7 +5536,6 @@ definitions:
                     type: string
                   id:
                     type: string
-
   FetchRewardResponse:
       type: object
       required:
@@ -4690,7 +5545,6 @@ definitions:
           $ref: '#/definitions/FetchMetaResponse'
         data:
           $ref: '#/definitions/RewardResource'
-
   FetchRewardsResponse:
     type: object
     required:
@@ -4702,7 +5556,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/RewardResource'
-
   CreateRewardRequest:
     type: object
     required:
@@ -4710,7 +5563,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/RewardResource'
-
   CreateRewardResponse:
     type: object
     required:
@@ -4720,7 +5572,9 @@ definitions:
         $ref: '#/definitions/CreateOrUpdateMetaResponse'
       data:
         $ref: '#/definitions/RewardResource'
+  # END /reward definitions
 
+  # BEGIN /reward_earning definitions
   RewardEarningResource:
     type: object
     required:
@@ -4808,7 +5662,6 @@ definitions:
                     type: string
                   id:
                     type: string
-
   FetchRewardEarningResponse:
       type: object
       required:
@@ -4818,7 +5671,6 @@ definitions:
           $ref: '#/definitions/FetchMetaResponse'
         data:
           $ref: '#/definitions/RewardEarningResource'
-
   FetchRewardEarningsResponse:
     type: object
     required:
@@ -4830,7 +5682,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/RewardEarningResource'
-
   CreateRewardEarningRequest:
     type: object
     required:
@@ -4838,7 +5689,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/RewardEarningResource'
-
   CreateRewardEarningResponse:
     type: object
     required:
@@ -4848,7 +5698,6 @@ definitions:
         $ref: '#/definitions/CreateOrUpdateMetaResponse'
       data:
         $ref: '#/definitions/RewardEarningResource'
-
   RewardEarningFulfillmentResource:
     type: object
     required:
@@ -4901,7 +5750,9 @@ definitions:
                     type: string
                   id:
                     type: string
+  # END /reward_earning definitions
 
+  # BEGIN /reward_earning_fulfillment definitions
   FetchRewardEarningFulfillmentResponse:
       type: object
       required:
@@ -4911,7 +5762,6 @@ definitions:
           $ref: '#/definitions/FetchMetaResponse'
         data:
           $ref: '#/definitions/RewardEarningFulfillmentResource'
-
   FetchRewardEarningFulfillmentsResponse:
     type: object
     required:
@@ -4923,7 +5773,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/RewardEarningFulfillmentResource'
-
   CreateRewardEarningFulfillmentRequest:
     type: object
     required:
@@ -4931,7 +5780,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/RewardEarningFulfillmentResource'
-
   CreateRewardEarningFulfillmentResponse:
     type: object
     required:
@@ -4941,909 +5789,4 @@ definitions:
         $ref: '#/definitions/CreateOrUpdateMetaResponse'
       data:
         $ref: '#/definitions/RewardEarningFulfillmentResource'
-
-  # END reward resource definitions
-
-  EmailHistoryResource:
-    type: object
-    required:
-        - type
-    properties:
-      type:
-        type: string
-      id:
-        type: string
-      attributes:
-        type: object
-        properties:
-          twine_email_id:
-            description: 'Unique identifier for this email.'
-            type: string
-          email_address:
-            description: 'Address email was sent to.'
-            type: string
-          email_type:
-            description: 'Type of email.'
-            type: string
-          send_time:
-            description: 'Time email was sent.'
-            type: string
-            format: dateTime
-          status_times:
-            description: 'Status of email. Multiple statuses may be defined. The current status is the one with the most recent date.'
-            type: object
-            properties:
-              processed:
-                description: 'Time email was processed.'
-                type: string
-                format: dateTime
-              dropped:
-                description: 'Time email was dropped.'
-                type: string
-                format: dateTime
-              deferred:
-                description: 'Time email was deferred.'
-                type: string
-                format: dateTime
-              bounce:
-                description: 'Time email was bounced.'
-                type: string
-                format: dateTime
-              open:
-                description: 'Time email was opened.'
-                type: string
-                format: dateTime
-              spamreport:
-                description: 'Time email was reported as spam.'
-                type: string
-                format: dateTime
-              unsubscribe:
-                description: 'Time email was unsubscribed from.'
-                type: string
-                format: dateTime
-              click:
-                description: 'Time email was clicked.'
-                type: string
-                format: dateTime
-              delivered:
-                description: 'Time email was delivered.'
-                type: string
-                format: dateTime
-      relationships:
-        type: object
-        properties:
-          sender:
-            type: object
-            properties:
-              data:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  id:
-                    type: string
-          receiver:
-            type: object
-            properties:
-              data:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  id:
-                    type: string
-    example:
-      {
-        "type": "email_history",
-        "id": "595fddec28c5041b84467592",
-        "attributes": {
-            "created_at": "2017-07-07T19:15:56.229Z",
-            "created_by": "595fd88ef4be5b1a797ff19b",
-            "email_address": "tony@example.com",
-            "email_type": "invite",
-            "send_time": "2017-02-25T13:35:01.000Z",
-            "status_times": {
-                "delivered": "2017-02-25T13:35:03.000Z",
-                "open": "2017-02-25T14:20:00.000Z",
-                "processed": "2017-02-25T13:35:02.000Z"
-            },
-            "twine_email_id": "576226e5-7e25-4469-b10d-2bc6a725bfbc",
-            "updated_at": "2017-07-07T19:15:56.229Z",
-            "updated_by": "595fd88ef4be5b1a797ff19b"
-        },
-        "relationships": {
-            "receiver": {
-                "data": {
-                    "id": "595fddea28c5041b84466bbe",
-                    "type": "patient"
-                },
-                "links": {
-                    "related": "/pub/email_history/595fddec28c5041b84467592/receiver"
-                }
-            },
-            "sender": {
-                "links": {
-                    "related": "/pub/email_history/595fddec28c5041b84467592/sender"
-                }
-            }
-        },
-        "links": {
-            "self": "/pub/email_history/595fddec28c5041b84467592"
-        },
-      }
-
-  FetchEmailHistoryResponse:
-    type: object
-    required:
-      - data
-    properties:
-        meta:
-          $ref: '#/definitions/FetchMetaResponse'
-        data:
-          $ref: '#/definitions/EmailHistoryResource'
-
-  FetchEmailHistoriesResponse:
-    type: object
-    required:
-      - data
-    properties:
-        meta:
-          $ref: '#/definitions/FetchMetaResponse'
-        data:
-          type: array
-          items:
-            $ref: '#/definitions/EmailHistoryResource'
-
-  # BEGIN health profile resource definitions
-
-  HealthProfileResource:
-    type: object
-    required:
-      - type
-    properties:
-      type:
-        type: string
-      id:
-        type: string
-      attributes:
-        type: object
-        properties:
-          stats:
-            type: array
-            description: 'List of category, answered and total counts for questions in the health profile'
-            items:
-              type: object
-              description: 'The category, answered and total counts for questions in the health profile'
-              properties:
-                category:
-                  type: string
-                  enum:
-                    - lifestyle_behaviors
-                    - mental_wellbeing
-                    - preventative_care
-                    - overall
-                answered:
-                  type: number
-                total:
-                  type: number
-      links:
-        type: object
-        readOnly: true
-        required:
-          - self
-        properties:
-          self:
-            type: string
-            pattern: '/health_profile/[0-9a-z]+'
-            example: '/health_profile/59d441ac21741161bbe266b5'
-      relationships:
-        type: object
-        properties:
-          patient:
-            type: object
-            readOnly: true
-            properties:
-              data:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  id:
-                    type: string
-              links:
-                type: object
-                readOnly: true
-                properties:
-                  related:
-                    type: string
-                    pattern: '/pub/health_profile/[0-9a-z]+'
-                    example: '/pub/health_profile/59d441ac21741161bbe266b5/patient'
-          questions:
-            type: object
-            readOnly: true
-            properties:
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type:
-                      type: string
-                    id:
-                      type: string
-              links:
-                type: object
-                readOnly: true
-                properties:
-                  related:
-                    type: string
-                    pattern: '/pub/health_profile/[0-9a-z]+'
-                    example: '/pub/health_profile/59d441ac21741161bbe266b5/questions'
-    example:
-      {
-        "type": "health_profile",
-        "id": "59d441ac21741161bbe266b5",
-        "attributes": {
-          "created_at": "2017-07-07T19:15:56.229Z",
-          "stats": [
-            {"category": "lifestyle_behaviors", "answered": 5, "total": 11},
-            {"category": "mental_wellbeing", "answered": 3, "total": 5},
-            {"category": "preventative_care", "answered": 1, "total": 3},
-            {"category": "overall", "answered": 9, "total": 19}
-          ],
-          "updated_at": "2017-07-07T19:15:56.229Z",
-        },
-        "relationships": {
-          "patient": {
-            "data": {
-              "id": "595fddea28c5041b84466bbe",
-              "type": "patient"
-            },
-            "links": {
-              "related": "/pub/health_profile/59d441ac21741161bbe266b5/patient"
-            }
-          },
-          "questions": {
-            "data": [
-              {
-                "id": "595fddea28c5041b84466bbe",
-                "type": "health_profile_question"
-              }
-            ],
-            "links": {
-              "related": "/pub/health_profile/59d441ac21741161bbe266b5/questions"
-            }
-          }
-        },
-        "links": {
-            "self": "/pub/health_profile/59d441ac21741161bbe266b5"
-        },
-      }
-
-  FetchHealthProfileResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      data:
-        $ref: '#/definitions/HealthProfileResource'
-      included:
-        description: |
-          Related resources which are included in the response based on the `include` param.
-          Attributes of each resource will vary depending on the type.
-          See [patient](#operation/fetchPatient), [question](#operation/fetchHealthProfileQuestion)
-        type: array
-        items:
-          $ref: '#/definitions/Resource'
-
-  FetchHealthProfilesResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      links:
-        $ref: '#/definitions/CollectionResponseLinks'
-      data:
-        type: array
-        items:
-          $ref: '#/definitions/HealthProfileResource'
-      included:
-        description: |
-          Related resources which are included in the response based on the `include` param.
-          Attributes of each resource will vary depending on the type.
-          See [patient](#operation/fetchPatient), [question](#operation/fetchHealthProfileQuestion)
-        type: array
-        items:
-          $ref: '#/definitions/Resource'
-
-  HealthProfileQuestionResource:
-    type: object
-    required:
-      - type
-      - id
-    properties:
-      type:
-        type: string
-      id:
-        type: string
-      attributes:
-        type: object
-        description: |
-          A health profile question does not have any attribute since it only relates an answer to the corresponding question definition.
-      links:
-        type: object
-        readOnly: true
-        required:
-          - self
-        properties:
-          self:
-            type: string
-            pattern: '/pub/health_profile_question/[0-9a-z]+'
-            example: '/pub/health_profile_question/59d435931d078505ba744e88'
-      relationships:
-        type: object
-        properties:
-          answer:
-            type: object
-            properties:
-              data:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  id:
-                    type: string
-              links:
-                type: object
-                readOnly: true
-                properties:
-                  related:
-                    type: string
-                    pattern: '/pub/health_profile_question/[0-9a-z]+/answer'
-                    example: '/pub/health_profile_question/59d435931d078505ba744e88/answer'
-          profile:
-            type: object
-            properties:
-              links:
-                type: object
-                readOnly: true
-                properties:
-                  related:
-                    type: string
-                    pattern: '/pub/health_profile_question/[0-9a-z]+/profile'
-                    example: '/pub/health_profile_question/59d435931d078505ba744e88/profile'
-          question_definition:
-            type: object
-            properties:
-              data:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  id:
-                    type: string
-              links:
-                readOnly: true
-                properties:
-                  links:
-                    type: object
-                    readOnly: true
-                    properties:
-                      related:
-                        type: string
-                        pattern: '/pub/health_profile_question/[0-9a-z]+/question_definition'
-                        example: '/pub/health_profile_question/59d435931d078505ba744e88/question_definition'
-    example:
-      {
-        "type": "health_profile_question",
-        "id": "52b36e3c04ad8c2224f2aa67",
-        "attribute": {},
-        "relationships": {
-          "answer": {
-            "data": {
-              "id": "595fddea28c5041b84466bbe",
-              "type": "health_profile_answer"
-            },
-            "links": {
-              "related": "/pub/health_profile_question/59d435931d078505ba744e88/answer"
-            }
-          },
-          "profile": {
-            "links": {
-                "related": "/pub/health_profile_question/59d435931d078505ba744e88/profile"
-            }
-          },
-          "question_definition": {
-            "data": {
-              "id": "4",
-              "type": "health_question_definition"
-            },
-            "links": {
-              "related": "/pub/health_profile_question/59d435931d078505ba744e88/question_definition"
-            }
-          },
-        },
-        "links": {
-            "self": "/pub/health_profile_question/59d435931d078505ba744e88"
-        },
-      }
-
-  FetchHealthProfileQuestionResponse:
-    type: object
-    required:
-      - data
-    properties:
-        meta:
-          $ref: '#/definitions/FetchMetaResponse'
-        data:
-          $ref: '#/definitions/HealthProfileQuestionResource'
-        included:
-          description: |
-            Related resources which are included in the response based on the `include` param.
-            Attributes of each resource will vary depending on the type.
-            See [question_definition](#operation/fetchHealthQuestionDefinition), [answer](#operation/fetchHealthProfileAnswer)
-          type: array
-          items:
-            $ref: '#/definitions/Resource'
-
-  HealthProfileAnswerResource:
-    type: object
-    required:
-      - type
-      - id
-    properties:
-      type:
-        type: string
-      id:
-        type: string
-      attributes:
-        type: object
-        properties:
-          history:
-            type: array
-            description: 'List of details of previous answers for a health profile question'
-            items:
-              type: object
-              description: 'The details of a previous answer for a health profile question'
-              properties:
-                answered_at:
-                  type: string
-                  format: dateTime
-                  description: 'The date when the health profile question is answered'
-                value:
-                  type: string
-                  description: 'The value of the answer entered for the health profile question'
-                _created_by:
-                  type: string
-                  description: 'The id of the patient or coach who answered the health profile question'
-          latest:
-            type: object
-            description: 'The details of the latest answer for a health profile question'
-            properties:
-              answered_at:
-                type: string
-                format: dateTime
-                description: 'The date when the health profile question is answered'
-              value:
-                type: string
-                description: 'The value of the answer entered for the health profile question'
-              _created_by:
-                type: string
-                description: 'The id of the patient or coach who answered the health profile question'
-          question_id:
-            type: string
-      links:
-        type: object
-        readOnly: true
-        required:
-          - self
-        properties:
-          self:
-            type: string
-            pattern: '/health_profile_answer/[0-9a-z]+'
-            example: '/health_profile_answer/59d441ac21741161bbe266b5'
-      relationships:
-        type: object
-        properties:
-          patient:
-            type: object
-            readOnly: true
-            properties:
-              data:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  id:
-                    type: string
-              links:
-                type: object
-                readOnly: true
-                properties:
-                  related:
-                    type: string
-                    pattern: '/pub/health_profile_answer/[0-9a-z]+'
-                    example: '/pub/health_profile_answer/59d441ac21741161bbe266b5/patient'
-    example:
-      {
-        "type": "health_profile_answer",
-        "id": "59d441ac21741161bbe266b5",
-        "attributes": {
-          "created_at": "2017-07-07T19:15:56.229Z",
-          "history": [
-            {
-              "answered_at": "2017-10-03T12:45:16.720Z",
-              "value": "2",
-              "_created_by": "59d4d7dcd843ee01be71fcf8",
-              "_id": "59d4d7dcd843ee01be71fcfb"
-            }
-          ],
-          "latest": {
-            "answered_at": "2017-10-04T12:45:16.720Z",
-            "value": "1",
-            "_created_by": "59d4d7dcd843ee01be71fcf8"
-          },
-          "question_id": "4",
-          "updated_at": "2017-07-07T19:15:56.229Z",
-        },
-        "relationships": {
-          "patient": {
-            "data": {
-              "id": "595fddea28c5041b84466bbe",
-              "type": "patient"
-            },
-            "links": {
-              "related": "/pub/health_profile_answer/59d441ac21741161bbe266b5/patient"
-            }
-          }
-        },
-        "links": {
-            "self": "/pub/health_profile_answer/59d441ac21741161bbe266b5"
-        },
-      }
-
-  FetchHealthProfileAnswerResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      data:
-        $ref: '#/definitions/HealthProfileAnswerResource'
-      included:
-        description: |
-          Related resources which are included in the response based on the `include` param.
-          Attributes of each resource will vary depending on the type.
-          See [patient](#operation/fetchPatient)
-        type: array
-        items:
-          $ref: '#/definitions/Resource'
-
-  FetchHealthProfileAnswersResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      links:
-        $ref: '#/definitions/CollectionResponseLinks'
-      data:
-        type: array
-        items:
-          $ref: '#/definitions/HealthProfileAnswerResource'
-      included:
-        description: |
-          Related resources which are included in the response based on the `include` param.
-          Attributes of each resource will vary depending on the type.
-          See [patient](#operation/fetchPatient)
-        type: array
-        items:
-          $ref: '#/definitions/Resource'
-
-  HealthQuestionDefinitionResource:
-    type: object
-    required:
-      - type
-      - id
-    properties:
-      type:
-        type: string
-      id:
-        type: string
-      attributes:
-        type: object
-        properties:
-          category:
-            type: string
-            enum:
-              - lifestyle_behaviors
-              - mental_wellbeing
-              - preventative_care
-            description: 'The category for the health profile definition'
-          format:
-            type: object
-            description: 'The list of formats for the health profile definition'
-            properties:
-              data:
-                type: array
-                items:
-                  type: object
-                  description: 'The label, value and icon for the answer choices for the question'
-                  properties:
-                    label:
-                      type: string
-                    value:
-                      type: string
-                    icon:
-                      type: string
-              type:
-                type: string
-          requirements:
-            type: array
-            description: 'The lsit of age and gender requirements for the question to be included'
-            items:
-              type: object
-              description: 'The age and gender requirement for the question to be included'
-              properties:
-                property:
-                  type: string
-                shouldBeEqual:
-                  type: boolean
-                  description: 'Specifies if the value in property should be equal to the one in value'
-                shouldBeGreaterThan:
-                  type: number
-                  description: 'Specifies if the value in property should be greater than the one in value'
-                shouldBeLessThan:
-                  type: number
-                  description: 'Specifies if the value in property should be less than the one in value'
-                value:
-                  type: string
-                  description: 'The value to be compared with the one in property, based on shouldBeEqual, shouldBeGreaterThan, or shouldBeLessThan'
-          text:
-            type: string
-            description: 'The question text which corresponds to the answer choices'
-      links:
-        type: object
-        readOnly: true
-        required:
-          - self
-        properties:
-          self:
-            type: string
-            pattern: '/health_question_definition/[0-9]+'
-            example: '/health_question_definition/4'
-      relationships:
-        type: object
-    example:
-      {
-        "type": "health_question_definition",
-        "id": "21",
-        "attributes": {
-          "category": "preventative_care",
-          "format": {
-            "data":[
-              {"label": "I Don't know", "value": "0"},
-              {"label": "I've never had a colonoscopy", "value": "1"},
-            ],
-            "type": "last_occurrence"
-          },
-          "requirements": [
-            {"property": "age", "shouldBeGreaterThan": 49, "shouldBeLessThan": 76}
-          ],
-          "text": "When was your last colonoscopy?"
-        },
-        "links": {
-            "self": "/pub/health_question_definition/21"
-        },
-      }
-
-  FetchHealthQuestionDefinitionResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      data:
-        $ref: '#/definitions/HealthQuestionDefinitionResource'
-
-  FetchHealthQuestionDefinitionsResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      links:
-        $ref: '#/definitions/CollectionResponseLinks'
-      data:
-        type: array
-        items:
-          $ref: '#/definitions/HealthQuestionDefinitionResource'
-
-  # END health profile resource definitions
-
-  # BEGIN calendar resource resource definitions
-
-  CalendarEventResource:
-     type: object
-     required:
-       - type
-     properties:
-       type:
-         type: string
-       id:
-         type: string
-       attributes:
-         type: object
-         properties:
-          _completed_by:
-            type: object
-            description: 'The coach who marked the calendar event as completed'
-          completed_at:
-            type: string
-            format: ISODate
-            example: '2017-11-03T06:00:00.000Z'
-            description: 'The date and time when the calendar event is marked as completed'
-          type:
-            type: string
-            description: 'The type of calendar event'
-            example: 'plan-check-in'
-          time_zone:
-            type: string
-            description: 'The time zone in which the dates for the calendar event are specified'
-            example: 'America/New_York'
-          all_day:
-            type: boolean
-            description: 'true if the calendar event is an all day event, false otherwise'
-          start_at:
-            type: string
-            format: ISODate
-            description: 'The date and time when the calendar event starts'
-            example: '2017-11-03T04:00:00.000Z'
-          end_at:
-            type: string
-            format: ISODate
-            description: 'The date and time when the calendar event ends'
-            example: '2017-11-03T08:00:00.000Z'
-          title:
-            type: string
-            description: 'The title of the calendar event'
-          location:
-            type: string
-          description:
-            type: string
-          _attendees:
-            type: array
-            description: 'List of attendees for the calendar event'
-            items:
-              type: object
-              properties:
-                _user:
-                  type: object
-                response_status:
-                  type: string
-                  description: 'Status of responses from attendees'
-                  enum:
-                    - needsAction
-                    - declined
-                    - tentative
-                    - accepted
-       links:
-         type: object
-         readOnly: true
-         required:
-           - self
-         properties:
-           self:
-             type: string
-             pattern: '/calendar_event/[0-9a-z]+'
-             example: '/calendar_event/5a0c8e2aa9d454cc1509a142'
-       relationships:
-         type: object
-         properties:
-           owner:
-             type: object
-             readOnly: true
-             properties:
-               data:
-                 type: object
-                 properties:
-                   type:
-                     type: string
-                   id:
-                     type: string
-               links:
-                 type: object
-                 readOnly: true
-                 properties:
-                   related:
-                     type: string
-                     pattern: '/pub/calendar_event/[0-9a-z]+'
-                     example: '/pub/calendar_event/5a0c8e2aa9d454cc1509a142/owner'
-     example:
-       {
-           "type": "calendar_event",
-           "id": "5a0c8e2aa9d454cc1509a142",
-           "attributes": {
-               "completed_at": "2017-11-03T04:00:00.000Z",
-               "type": "plan-check-in",
-               "time_zone": "America/New_York",
-               "all_day": true,
-               "start_at": "2017-11-03T04:00:00.000Z",
-               "title": "Plan Check-In",
-               "_attendees": [
-                   {
-                       "_user": "5a0c8e27a9d454cc150997c9",
-                       "response_status": "accepted"
-                   }
-               ],
-               "created_at": "2017-10-20T10:59:40.000Z",
-               "created_by": "5a0c8e27a9d454cc150997c9",
-               "updated_at": "2017-10-20T10:59:40.000Z",
-               "updated_by": "5a0c8e27a9d454cc150997c9"
-           },
-           "relationships": {
-               "owner": {
-                   "links": {
-                       "related": "/pub/calendar_event/5a0c8e2aa9d454cc1509a142/owner"
-                   },
-                   "data": {
-                       "type": "patient",
-                       "id": "5a0c8e27a9d454cc150997f7"
-                   }
-               }
-           },
-           "links": {
-               "self": "/pub/calendar_event/5a0c8e2aa9d454cc1509a142"
-           },
-       }
-
-  FetchCalendarEventResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      data:
-        $ref: '#/definitions/CalendarEventResource'
-      included:
-        description: |
-          Related resources which are included in the response based on the `include` param.
-          Attributes of each resource will vary depending on the type.
-          See [patient](#operation/fetchPatient)
-        type: array
-        items:
-          $ref: '#/definitions/Resource'
-
-  FetchCalendarEventsResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/FetchMetaResponse'
-      links:
-        $ref: '#/definitions/CollectionResponseLinks'
-      data:
-        type: array
-        items:
-          $ref: '#/definitions/CalendarEventResource'
-      included:
-        description: |
-          Related resources which are included in the response based on the `include` param.
-          Attributes of each resource will vary depending on the type.
-          See [patient](#operation/fetchPatient)
-        type: array
-        items:
-          $ref: '#/definitions/Resource'
-
-  # BEGIN calendar event resource definitions
-
+  # END reward_earning_fulfillment definitions
