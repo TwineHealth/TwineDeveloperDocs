@@ -47,34 +47,34 @@ tags:
     description: A coach is a person that supports a patient
   - name: reward program
     description: A reward program provides the details for a rewards program for a group. Different rewards programs can be created for different periods of time specified by the start_at and end_at dates. A reward program can activated for a patient any time between these dates. An activated reward program for a patient is called a reward program activation.
-  - name: patient
-    description: A patient is the core user of Twine.
-  - name: plan
-    description: A plan is the set of actions and associated goals for a patient.
   - name: action
     description: An action is an actionable item in a patient's plan.
   - name: bundle
     description: A bundle is a collection of actions (an action plan) in a patient's plan summary.
+  - name: email history
+    description: Email history represents a single email that was sent using twine.
+  - name: health profile
+    description: A health profile contains a set of health questions and answers for a patient.
+  - name: health profile answer
+    description: A health profile answer is the answer to a question for a patient.
+  - name: health profile question
+    description: A health profile question contains a health question and the corresponding answer for a patient.
+  - name: health question definition
+    description: A health question definition specifies a health question and the corresponding answer choices.
   - name: metric
     description: A metric is a quantitative result for a patient. For example, vital signs, lab results, etc. are all metrics.
-  - name: reward program activation
-    description: A reward program activation is the activation of a reward program for a specific patient.
+  - name: patient
+    description: A patient is the core user of Twine.
+  - name: plan
+    description: A plan is the set of actions and associated goals for a patient.
   - name: reward
     description: A reward allocates a portion of the budget from the reward program activation for achieving a particular goal and sets a target date.
   - name: reward earning
     description: A reward earning specifies the portion of a reward that was earned and at what date.
   - name: reward earning fulfillment
     description: A reward earning fulfillment specifies the portion of a reward earning that was fulfilled and at what date.
-  - name: email history
-    description: Email history represents a single email that was sent using twine.
-  - name: health profile
-    description: A health profile contains a set of health questions and answers for a patient.
-  - name: health profile question
-    description: A health profile question contains a health question and the corresponding answer for a patient.
-  - name: health profile answer
-    description: A health profile answer is the answer to a question for a patient.
-  - name: health question definition
-    description: A health question definition specifies a health question and the corresponding answer choices.
+  - name: reward program activation
+    description: A reward program activation is the activation of a reward program for a specific patient.
 x-tagGroups:
   - name: Authentication (oauth)
     tags:
@@ -102,81 +102,6 @@ x-tagGroups:
       - reward earning fulfillment
       - reward program activation
 paths:
-  /email_history:
-    get:
-      tags:
-        - email history
-      summary: List email histories
-      description: Get a list of email histories
-      operationId: fetchEmailHistories
-      parameters:
-        - name: filter[receiver]
-          in: query
-          type: string
-          description: Twine user id of email recipient. Required if filter[sender] is not defined.
-        - name: filter[sender]
-          in: query
-          type: string
-          description: Twine user id of email sender. Required if filter[receiver] is not defined.
-        - name: filter[emailType]
-          in: query
-          type: string
-          description: Type of email
-        - name: sort
-          in: query
-          description: >
-            valid sorts:
-              * send_time - ascending by send_time
-              * -send_time - descending by send_time
-          type: string
-          enum:
-            - send_time
-            - -send_time
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchEmailHistoriesResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-
-  /email_history/{id}:
-    get:
-      tags:
-        - email history
-      summary: Get an email history
-      description: Get an email history by id
-      operationId: fetchEmailHistory
-      parameters:
-        - name: id
-          in: path
-          description: Email history identifier
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchEmailHistoryResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-
   /oauth/token:
     post:
       tags:
@@ -379,7 +304,6 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-
   /group/{id}:
     get:
       tags:
@@ -407,6 +331,32 @@ paths:
           schema:
             $ref: '#/definitions/FetchErrorResponse'
 
+  /coach/{id}:
+    get:
+      tags:
+        - coach
+      summary: Get a coach
+      description: Get a coach record by id.
+      operationId: fetchCoach
+      parameters:
+        - name: id
+          in: path
+          description: Coach identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchCoachResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
 
   /reward_program:
     post:
@@ -463,7 +413,6 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-
   /reward_program/{id}:
     get:
       tags:
@@ -490,7 +439,6 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-
   /reward_program/{id}/group:
     get:
       tags:
@@ -509,6 +457,665 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/FetchGroupsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /action:
+    post:
+      tags:
+        - action
+      summary: Create action
+      description: Create a plan action
+      operationId: createAction
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateActionRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateActionResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+  /action/{id}:
+    get:
+      tags:
+        - action
+      summary: Get an action
+      description: Get a health action from a patient's plan.
+      operationId: fetchAction
+      parameters:
+        - name: id
+          in: path
+          description: Action identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchActionResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+    patch:
+      tags:
+        - action
+      summary: Update an action
+      description: Updte a health action from a patient's plan.
+      operationId: updateAction
+      parameters:
+        - name: id
+          in: path
+          description: Action identifier
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateActionRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UpdateActionResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+
+  /bundle:
+    post:
+      tags:
+        - bundle
+      summary: Create bundle
+      description: Create a bundle in a patient's plan
+      operationId: createBundle
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateBundleRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateBundleResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+  /bundle/{id}:
+    get:
+      tags:
+        - bundle
+      summary: Get a bundle
+      description: Get a bundle from a patient's plan.
+      operationId: fetchBundle
+      parameters:
+        - name: id
+          in: path
+          description: Bundle identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchBundleResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+    patch:
+      tags:
+        - bundle
+      summary: Update a bundle
+      description: Updte a bundle from a patient's plan.
+      operationId: updateBundle
+      parameters:
+        - name: id
+          in: path
+          description: Bundle identifier
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateBundleRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UpdateBundleResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+
+  /email_history:
+    get:
+      tags:
+        - email history
+      summary: List email histories
+      description: Get a list of email histories
+      operationId: fetchEmailHistories
+      parameters:
+        - name: filter[receiver]
+          in: query
+          type: string
+          description: Twine user id of email recipient. Required if filter[sender] is not defined.
+        - name: filter[sender]
+          in: query
+          type: string
+          description: Twine user id of email sender. Required if filter[receiver] is not defined.
+        - name: filter[emailType]
+          in: query
+          type: string
+          description: Type of email
+        - name: sort
+          in: query
+          description: >
+            valid sorts:
+              * send_time - ascending by send_time
+              * -send_time - descending by send_time
+          type: string
+          enum:
+            - send_time
+            - -send_time
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchEmailHistoriesResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /email_history/{id}:
+    get:
+      tags:
+        - email history
+      summary: Get an email history
+      description: Get an email history by id
+      operationId: fetchEmailHistory
+      parameters:
+        - name: id
+          in: path
+          description: Email history identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchEmailHistoryResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /health_profile:
+    get:
+      tags:
+        - health profile
+      summary: List health profiles
+      description: Get a list of health profiles
+      operationId: fetchHealthProfiles
+      parameters:
+        - name: filter[patient]
+          in: query
+          type: string
+          description: Patient id to fetch healt profile (either a patient, group or organization filter is required)
+        - name: filter[groups]
+          in: query
+          type: string
+          description: Comma-separated list of Twine group ids (either a patient, group or organization filter is required)
+        - name: filter[organization]
+          in: query
+          type: string
+          description: Twine organization id (either a patient, group or organization filter is required)
+        - name: page[number]
+          in: query
+          description: Page number
+          required: false
+          type: integer
+          default: 1
+        - name: page[size]
+          in: query
+          description: Page size
+          required: false
+          type: integer
+          default: 10
+          maximum: 50
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - patient
+            - questions
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthProfilesResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /health_profile/{id}:
+    get:
+      tags:
+        - health profile
+      summary: Get a health profile
+      description: Get a health profile by id
+      operationId: fetchHealthProfile
+      parameters:
+        - name: id
+          in: path
+          description: Health profile identifier
+          required: true
+          type: string
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - patient
+            - questions
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthProfileResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /health_profile_question/{id}:
+    get:
+      tags:
+        - health profile question
+      summary: Get a health profile question
+      description: Get a health profile by id
+      operationId: fetchHealthProfileQuestion
+      parameters:
+        - name: id
+          in: path
+          description: Health profile question identifier
+          required: true
+          type: string
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - question_definition
+            - answer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthProfileQuestionResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /health_profile_answer:
+    get:
+      tags:
+        - health profile answer
+      summary: List health profile answers
+      description: Get a list of health profile answers
+      operationId: fetchHealthProfileAnswers
+      parameters:
+        - name: filter[patient]
+          in: query
+          type: string
+          description: Patient id to fetch healt profile answers (either a patient, group or organization filter is required)
+        - name: filter[groups]
+          in: query
+          type: string
+          description: Comma-separated list of Twine group ids (either a patient, group or organization filter is required)
+        - name: filter[organization]
+          in: query
+          type: string
+          description: Twine organization id (either a patient, group or organization filter is required)
+        - name: page[number]
+          in: query
+          description: Page number
+          required: false
+          type: integer
+          default: 1
+        - name: page[size]
+          in: query
+          description: Page size
+          required: false
+          type: integer
+          default: 50
+          maximum: 100
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - patient
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthProfileAnswersResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /health_profile_answer/{id}:
+    get:
+      tags:
+        - health profile answer
+      summary: Get a health profile answer
+      description: Get a health profile answer by id
+      operationId: fetchHealthProfileAnswer
+      parameters:
+        - name: id
+          in: path
+          description: Health profile answer identifier
+          required: true
+          type: string
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - patient
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthProfileAnswerResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /health_question_definition:
+    get:
+      tags:
+        - health question definition
+      summary: List health question definitions
+      description: Get a list of all health question definitions
+      operationId: fetchHealthQuestionDefinitions
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthQuestionDefinitionsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /health_question_definition/{id}:
+    get:
+      tags:
+        - health question definition
+      summary: Get a health question definition
+      description: Get a health question definition by id
+      operationId: fetchHealthQuestionDefinition
+      parameters:
+        - name: id
+          in: path
+          description: Health question definition identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthQuestionDefinitionResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
+  /patient_health_metric:
+    post:
+      tags:
+        - metric
+      summary: Create patient health metrics
+      description: |
+        Create one or more patient health metrics.
+
+        Example for creating a patient health result with a patient specified using `meta.query` instead of `id`:
+
+        ```JSON
+          {
+            "data": {
+              "type": "patient_health_metric",
+               "attributes": {
+                 "code": {
+                   "system": "LOINC",
+                   "value": "13457-7"
+                 },
+                 "type": "ldl_cholesterol",
+                 "occurred_at": "2017-03-14T11:00:57.000Z",
+                 "value": "121",
+                 "unit": "mg/dl"
+              },
+              "relationships": {
+                "patient": {
+                  "data": {
+                    "type": "patient",
+                    "meta": {
+                      "query": {
+                        "identifier": {
+                          "system": "medical-record-number",
+                          "value": "121212"
+                        },
+                        "organization": "58c4554710123c5c40dbab81"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ```
+      operationId: createPatientHealthMetric
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreatePatientHealthMetricRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreatePatientHealthMetricResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+    get:
+      tags:
+        - metric
+      summary: List patient health metrics
+      description: Get a list of patient health metrics.
+      operationId: fetchPatientHealthMetrics
+      parameters:
+        - name: filter[patient]
+          in: query
+          description: Filter the patient health metrics for a specified patient
+          required: true
+          type: string
+        - name: page[number]
+          in: query
+          description: Page number
+          required: false
+          type: integer
+          default: 1
+        - name: page[size]
+          in: query
+          description: Page size
+          required: false
+          type: integer
+          default: 10
+          maximum: 50
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchPatientHealthMetricResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /patient_health_metric/{id}:
+    get:
+      tags:
+        - metric
+      summary: Get a patient health metric
+      description: Get the plan summary for a patient.
+      operationId: fetchPatientHealthMetric
+      parameters:
+        - name: id
+          in: path
+          description: Patient health metric identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchPatientHealthMetricResponse'
         '401':
           description: Unauthorized
           schema:
@@ -855,434 +1462,6 @@ paths:
           schema:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
 
-  /action:
-    post:
-      tags:
-        - action
-      summary: Create action
-      description: Create a plan action
-      operationId: createAction
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/CreateActionRequest'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/CreateActionResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-  /action/{id}:
-    get:
-      tags:
-        - action
-      summary: Get an action
-      description: Get a health action from a patient's plan.
-      operationId: fetchAction
-      parameters:
-        - name: id
-          in: path
-          description: Action identifier
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchActionResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-    patch:
-      tags:
-        - action
-      summary: Update an action
-      description: Updte a health action from a patient's plan.
-      operationId: updateAction
-      parameters:
-        - name: id
-          in: path
-          description: Action identifier
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/UpdateActionRequest'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/UpdateActionResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-
-  /bundle:
-    post:
-      tags:
-        - bundle
-      summary: Create bundle
-      description: Create a bundle in a patient's plan
-      operationId: createBundle
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/CreateBundleRequest'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/CreateBundleResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-  /bundle/{id}:
-    get:
-      tags:
-        - bundle
-      summary: Get a bundle
-      description: Get a bundle from a patient's plan.
-      operationId: fetchBundle
-      parameters:
-        - name: id
-          in: path
-          description: Bundle identifier
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchBundleResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-    patch:
-      tags:
-        - bundle
-      summary: Update a bundle
-      description: Updte a bundle from a patient's plan.
-      operationId: updateBundle
-      parameters:
-        - name: id
-          in: path
-          description: Bundle identifier
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/UpdateBundleRequest'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/UpdateBundleResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-
-  /patient_health_metric:
-    post:
-      tags:
-        - metric
-      summary: Create patient health metrics
-      description: |
-        Create one or more patient health metrics.
-
-        Example for creating a patient health result with a patient specified using `meta.query` instead of `id`:
-
-        ```JSON
-          {
-            "data": {
-              "type": "patient_health_metric",
-               "attributes": {
-                 "code": {
-                   "system": "LOINC",
-                   "value": "13457-7"
-                 },
-                 "type": "ldl_cholesterol",
-                 "occurred_at": "2017-03-14T11:00:57.000Z",
-                 "value": "121",
-                 "unit": "mg/dl"
-              },
-              "relationships": {
-                "patient": {
-                  "data": {
-                    "type": "patient",
-                    "meta": {
-                      "query": {
-                        "identifier": {
-                          "system": "medical-record-number",
-                          "value": "121212"
-                        },
-                        "organization": "58c4554710123c5c40dbab81"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        ```
-      operationId: createPatientHealthMetric
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/CreatePatientHealthMetricRequest'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/CreatePatientHealthMetricResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-    get:
-      tags:
-        - metric
-      summary: List patient health metrics
-      description: Get a list of patient health metrics.
-      operationId: fetchPatientHealthMetrics
-      parameters:
-        - name: filter[patient]
-          in: query
-          description: Filter the patient health metrics for a specified patient
-          required: true
-          type: string
-        - name: page[number]
-          in: query
-          description: Page number
-          required: false
-          type: integer
-          default: 1
-        - name: page[size]
-          in: query
-          description: Page size
-          required: false
-          type: integer
-          default: 10
-          maximum: 50
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchPatientHealthMetricResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-  /patient_health_metric/{id}:
-    get:
-      tags:
-        - metric
-      summary: Get a patient health metric
-      description: Get the plan summary for a patient.
-      operationId: fetchPatientHealthMetric
-      parameters:
-        - name: id
-          in: path
-          description: Patient health metric identifier
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchPatientHealthMetricResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-
-  /coach/{id}:
-    get:
-      tags:
-        - coach
-      summary: Get a coach
-      description: Get a coach record by id.
-      operationId: fetchCoach
-      parameters:
-        - name: id
-          in: path
-          description: Coach identifier
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchCoachResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-
-  /reward_program_activation:
-    post:
-      tags:
-        - reward program activation
-      summary: Create a reward program activation
-      description: Create a reward program activation for a patient. There can only be one activation for a patient for a given reward program.
-      operationId: createRewardProgramActivation
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/CreateRewardProgramActivationRequest'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/CreateRewardProgramActivationResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/CreateOrUpdateErrorResponse'
-    get:
-      tags:
-        - reward program activation
-      summary: List reward program activations
-      description: Get a list of reward program activations matching the specified filters.
-      operationId: fetchRewardProgramActivations
-      parameters:
-        - name: filter[patient]
-          in: query
-          description: Patient identifier
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchRewardProgramActivationsResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-
-  /reward_program_activation/{id}:
-      get:
-        tags:
-          - reward program activation
-        summary: Get a reward program activation
-        description: Get a reward program activationrecord by id.
-        operationId: fetchRewardProgramActivation
-        parameters:
-          - name: id
-            in: path
-            description: Reward program activation identifier
-            required: true
-            type: string
-        responses:
-          '200':
-            description: OK
-            schema:
-              $ref: '#/definitions/FetchRewardProgramActivationResponse'
-          '401':
-            description: Unauthorized
-            schema:
-              $ref: '#/definitions/FetchErrorResponse'
-          '403':
-            description: Forbidden
-            schema:
-              $ref: '#/definitions/FetchErrorResponse'
-
   /reward:
     post:
       tags:
@@ -1346,7 +1525,6 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-
   /reward/{id}:
       get:
         tags:
@@ -1373,7 +1551,6 @@ paths:
             description: Forbidden
             schema:
               $ref: '#/definitions/FetchErrorResponse'
-
   /reward_earning:
     post:
       tags:
@@ -1438,7 +1615,6 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-
   /reward_earning/{id}:
       get:
         tags:
@@ -1465,7 +1641,6 @@ paths:
             description: Forbidden
             schema:
               $ref: '#/definitions/FetchErrorResponse'
-
   /reward_earning_fulfillment:
     post:
       tags:
@@ -1521,7 +1696,6 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-
   /reward_earning_fulfillment/{id}:
       get:
         tags:
@@ -1548,269 +1722,53 @@ paths:
             description: Forbidden
             schema:
               $ref: '#/definitions/FetchErrorResponse'
-
-  /health_profile:
+  /reward_program_activation:
+    post:
+      tags:
+        - reward program activation
+      summary: Create a reward program activation
+      description: Create a reward program activation for a patient. There can only be one activation for a patient for a given reward program.
+      operationId: createRewardProgramActivation
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateRewardProgramActivationRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateRewardProgramActivationResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
     get:
       tags:
-        - health profile
-      summary: List health profiles
-      description: Get a list of health profiles
-      operationId: fetchHealthProfiles
+        - reward program activation
+      summary: List reward program activations
+      description: Get a list of reward program activations matching the specified filters.
+      operationId: fetchRewardProgramActivations
       parameters:
         - name: filter[patient]
           in: query
-          type: string
-          description: Patient id to fetch healt profile (either a patient, group or organization filter is required)
-        - name: filter[groups]
-          in: query
-          type: string
-          description: Comma-separated list of Twine group ids (either a patient, group or organization filter is required)
-        - name: filter[organization]
-          in: query
-          type: string
-          description: Twine organization id (either a patient, group or organization filter is required)
-        - name: page[number]
-          in: query
-          description: Page number
-          required: false
-          type: integer
-          default: 1
-        - name: page[size]
-          in: query
-          description: Page size
-          required: false
-          type: integer
-          default: 10
-          maximum: 50
-        - name: include
-          description: List of related resources to include in the response
-          in: query
-          required: false
-          type: string
-          enum:
-            - patient
-            - questions
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchHealthProfilesResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-
-  /health_profile/{id}:
-    get:
-      tags:
-        - health profile
-      summary: Get a health profile
-      description: Get a health profile by id
-      operationId: fetchHealthProfile
-      parameters:
-        - name: id
-          in: path
-          description: Health profile identifier
-          required: true
-          type: string
-        - name: include
-          description: List of related resources to include in the response
-          in: query
-          required: false
-          type: string
-          enum:
-            - patient
-            - questions
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchHealthProfileResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-
-  /health_profile_question/{id}:
-    get:
-      tags:
-        - health profile question
-      summary: Get a health profile question
-      description: Get a health profile by id
-      operationId: fetchHealthProfileQuestion
-      parameters:
-        - name: id
-          in: path
-          description: Health profile question identifier
-          required: true
-          type: string
-        - name: include
-          description: List of related resources to include in the response
-          in: query
-          required: false
-          type: string
-          enum:
-            - question_definition
-            - answer
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchHealthProfileQuestionResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-
-  /health_profile_answer:
-    get:
-      tags:
-        - health profile answer
-      summary: List health profile answers
-      description: Get a list of health profile answers
-      operationId: fetchHealthProfileAnswers
-      parameters:
-        - name: filter[patient]
-          in: query
-          type: string
-          description: Patient id to fetch healt profile answers (either a patient, group or organization filter is required)
-        - name: filter[groups]
-          in: query
-          type: string
-          description: Comma-separated list of Twine group ids (either a patient, group or organization filter is required)
-        - name: filter[organization]
-          in: query
-          type: string
-          description: Twine organization id (either a patient, group or organization filter is required)
-        - name: page[number]
-          in: query
-          description: Page number
-          required: false
-          type: integer
-          default: 1
-        - name: page[size]
-          in: query
-          description: Page size
-          required: false
-          type: integer
-          default: 50
-          maximum: 100
-        - name: include
-          description: List of related resources to include in the response
-          in: query
-          required: false
-          type: string
-          enum:
-            - patient
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchHealthProfileAnswersResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-  /health_profile_answer/{id}:
-    get:
-      tags:
-        - health profile answer
-      summary: Get a health profile answer
-      description: Get a health profile answer by id
-      operationId: fetchHealthProfileAnswer
-      parameters:
-        - name: id
-          in: path
-          description: Health profile answer identifier
-          required: true
-          type: string
-        - name: include
-          description: List of related resources to include in the response
-          in: query
-          required: false
-          type: string
-          enum:
-            - patient
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchHealthProfileAnswerResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-
-  /health_question_definition:
-    get:
-      tags:
-        - health question definition
-      summary: List health question definitions
-      description: Get a list of all health question definitions
-      operationId: fetchHealthQuestionDefinitions
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/FetchHealthQuestionDefinitionsResponse'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-        '409':
-          description: Invalid Request
-          schema:
-            $ref: '#/definitions/FetchErrorResponse'
-  /health_question_definition/{id}:
-    get:
-      tags:
-        - health question definition
-      summary: Get a health question definition
-      description: Get a health question definition by id
-      operationId: fetchHealthQuestionDefinition
-      parameters:
-        - name: id
-          in: path
-          description: Health question definition identifier
+          description: Patient identifier
           required: true
           type: string
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/FetchHealthQuestionDefinitionResponse'
+            $ref: '#/definitions/FetchRewardProgramActivationsResponse'
         '401':
           description: Unauthorized
           schema:
@@ -1819,6 +1777,32 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
+  /reward_program_activation/{id}:
+      get:
+        tags:
+          - reward program activation
+        summary: Get a reward program activation
+        description: Get a reward program activationrecord by id.
+        operationId: fetchRewardProgramActivation
+        parameters:
+          - name: id
+            in: path
+            description: Reward program activation identifier
+            required: true
+            type: string
+        responses:
+          '200':
+            description: OK
+            schema:
+              $ref: '#/definitions/FetchRewardProgramActivationResponse'
+          '401':
+            description: Unauthorized
+            schema:
+              $ref: '#/definitions/FetchErrorResponse'
+          '403':
+            description: Forbidden
+            schema:
+              $ref: '#/definitions/FetchErrorResponse'
 
 definitions:
   Resource:
