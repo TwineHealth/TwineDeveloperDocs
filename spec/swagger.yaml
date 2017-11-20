@@ -51,6 +51,8 @@ tags:
     description: An action is an actionable item in a patient's plan.
   - name: bundle
     description: A bundle is a collection of actions (an action plan) in a patient's plan summary.
+  - name: calendar event
+    description: An calendar event is created by a Twine coach or patient with optional attendees invited.
   - name: email history
     description: Email history represents a single email that was sent using twine.
   - name: health profile
@@ -89,6 +91,7 @@ x-tagGroups:
     tags:
       - action
       - bundle
+      - calendar event
       - email history
       - health profile
       - health profile answer
@@ -648,6 +651,118 @@ paths:
           schema:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
 
+  /calendar_event:
+    get:
+      tags:
+        - calendar event
+      summary: List calendar events
+      description: Get a list of calendar events
+      operationId: fetchCalendarEvents
+      parameters:
+        - name: filter[patient]
+          in: query
+          type: string
+          description: Patient id to fetch calendar event (either a patient, group, organization or attendees filter is required)
+        - name: filter[groups]
+          in: query
+          type: string
+          description: Comma-separated list of Twine group ids (either a patient, group, organization or attendees filter is required)
+        - name: filter[organization]
+          in: query
+          type: string
+          description: Twine organization id (either a patient, group, organization or attendees filter is required)
+        - name: filter[attendees]
+          in: query
+          type: string
+          description: Comma-separated list of Twine coach or patient ids (either a patient, group, organization or attendees filter is required)
+        - name: filter[type]
+          in: query
+          type: string
+          description: Calendar event type - requires a \"filter[patient]\", \"filter[groups]\", \"filter[organization]\", or \"filter[attendees]\" parameter.  Valid values are `plan-check-in`, `reminder`, `telephone-call`, `office-visit` and `video-call`. Requires either a `patient`, `groups`, `organization`, or `attendees` filter.
+        - name: filter[completed]
+          in: query
+          type: boolean
+          description: If not specified, return all calendar events  - requires a \"filter[patient]\", \"filter[groups]\", \"filter[organization]\", or \"filter[attendees]\" parameter. If set to 'true' return only calendar marked as completed, if set to 'false', return only calendar which have not benen marked as completed.  Requires either a `patient`, `groups`, `organization`, or `attendees` filter.
+        - name: filter[start_at]
+          in: query
+          type: string
+          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `start_at` date - requires a \"filter[patient]\", \"filter[groups]\", \"filter[organization]\", or \"filter[attendees]\" parameter. Example to include all calendar events for November 2017 - \"11\/01\/2017,12\/01\/2017\".
+        - name: filter[end_at]
+          in: query
+          type: string
+          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `end_at` date - requires a \"filter[patient]\", \"filter[groups]\", \"filter[organization]\", or \"filter[attendees]\" parameter. Example to include all calendar events for November 2017 - \"11\/01\/2017,12\/01\/2017\".
+        - name: filter[completed_at]
+          in: query
+          type: string
+          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `completed_at` date - requires a \"filter[patient]\", \"filter[groups]\", \"filter[organization]\", or \"filter[attendees]\" parameter. Example to include all calendar events for November 2017 - \"11\/01\/2017,12\/01\/2017\".
+        - name: filter[created_at]
+          in: query
+          type: string
+          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `created_at` date - requires a \"filter[patient]\", \"filter[groups]\", \"filter[organization]\", or \"filter[attendees]\" parameter. Example to include all calendar events for November 2017 - \"11\/01\/2017,12\/01\/2017\".
+        - name: page[number]
+          in: query
+          description: Page number
+          required: false
+          type: integer
+          default: 1
+        - name: page[size]
+          in: query
+          description: Page size
+          required: false
+          type: integer
+          default: 10
+          maximum: 50
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - owner
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchCalendarEventsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /calendar_event/{id}:
+    get:
+      tags:
+        - calendar event
+      summary: Get a calendar event
+      description: Get a calendar event by id
+      operationId: fetchCalendarEvent
+      parameters:
+        - name: id
+          in: path
+          description: Calendar event identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchCalendarEventResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+
   /email_history:
     get:
       tags:
@@ -733,7 +848,7 @@ paths:
         - name: filter[patient]
           in: query
           type: string
-          description: Patient id to fetch healt profile (either a patient, group or organization filter is required)
+          description: Patient id to fetch health profile (either a patient, group or organization filter is required)
         - name: filter[groups]
           in: query
           type: string
@@ -4985,7 +5100,6 @@ definitions:
     type: object
     required:
       - type
-      - id
     properties:
       type:
         type: string
@@ -5554,3 +5668,182 @@ definitions:
           $ref: '#/definitions/HealthQuestionDefinitionResource'
 
   # END health profile resource definitions
+
+  # BEGIN calendar resource resource definitions
+
+  CalendarEventResource:
+     type: object
+     required:
+       - type
+     properties:
+       type:
+         type: string
+       id:
+         type: string
+       attributes:
+         type: object
+         properties:
+          _completed_by:
+            type: object
+            description: 'The coach who marked the calendar event as completed'
+          completed_at:
+            type: string
+            format: ISODate
+            example: '2017-11-03T06:00:00.000Z'
+            description: 'The date and time when the calendar event is marked as completed'
+          type:
+            type: string
+            description: 'The type of calendar event'
+            example: 'plan-check-in'
+          time_zone:
+            type: string
+            description: 'The time zone in which the dates for the calendar event are specified'
+            example: 'America/New_York'
+          all_day:
+            type: boolean
+            description: 'true if the calendar event is an all day event, false otherwise'
+          start_at:
+            type: string
+            format: ISODate
+            description: 'The date and time when the calendar event starts'
+            example: '2017-11-03T04:00:00.000Z'
+          end_at:
+            type: string
+            format: ISODate
+            description: 'The date and time when the calendar event ends'
+            example: '2017-11-03T08:00:00.000Z'
+          title:
+            type: string
+            description: 'The title of the calendar event'
+          location:
+            type: string
+          description:
+            type: string
+          _attendees:
+            type: array
+            description: 'List of attendees for the calendar event'
+            items:
+              type: object
+              properties:
+                _user:
+                  type: object
+                response_status:
+                  type: string
+                  description: 'Status of responses from attendees'
+                  enum:
+                    - needsAction
+                    - declined
+                    - tentative
+                    - accepted
+       links:
+         type: object
+         readOnly: true
+         required:
+           - self
+         properties:
+           self:
+             type: string
+             pattern: '/calendar_event/[0-9a-z]+'
+             example: '/calendar_event/5a0c8e2aa9d454cc1509a142'
+       relationships:
+         type: object
+         properties:
+           owner:
+             type: object
+             readOnly: true
+             properties:
+               data:
+                 type: object
+                 properties:
+                   type:
+                     type: string
+                   id:
+                     type: string
+               links:
+                 type: object
+                 readOnly: true
+                 properties:
+                   related:
+                     type: string
+                     pattern: '/pub/calendar_event/[0-9a-z]+'
+                     example: '/pub/calendar_event/5a0c8e2aa9d454cc1509a142/owner'
+     example:
+       {
+           "type": "calendar_event",
+           "id": "5a0c8e2aa9d454cc1509a142",
+           "attributes": {
+               "completed_at": "2017-11-03T04:00:00.000Z",
+               "type": "plan-check-in",
+               "time_zone": "America/New_York",
+               "all_day": true,
+               "start_at": "2017-11-03T04:00:00.000Z",
+               "title": "Plan Check-In",
+               "_attendees": [
+                   {
+                       "_user": "5a0c8e27a9d454cc150997c9",
+                       "response_status": "accepted"
+                   }
+               ],
+               "created_at": "2017-10-20T10:59:40.000Z",
+               "created_by": "5a0c8e27a9d454cc150997c9",
+               "updated_at": "2017-10-20T10:59:40.000Z",
+               "updated_by": "5a0c8e27a9d454cc150997c9"
+           },
+           "relationships": {
+               "owner": {
+                   "links": {
+                       "related": "/pub/calendar_event/5a0c8e2aa9d454cc1509a142/owner"
+                   },
+                   "data": {
+                       "type": "patient",
+                       "id": "5a0c8e27a9d454cc150997f7"
+                   }
+               }
+           },
+           "links": {
+               "self": "/pub/calendar_event/5a0c8e2aa9d454cc1509a142"
+           },
+       }
+
+  FetchCalendarEventResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      data:
+        $ref: '#/definitions/CalendarEventResource'
+      included:
+        description: |
+          Related resources which are included in the response based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [patient](#operation/fetchPatient)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+
+  FetchCalendarEventsResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      links:
+        $ref: '#/definitions/CollectionResponseLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/CalendarEventResource'
+      included:
+        description: |
+          Related resources which are included in the response based on the `include` param.
+          Attributes of each resource will vary depending on the type.
+          See [patient](#operation/fetchPatient)
+        type: array
+        items:
+          $ref: '#/definitions/Resource'
+
+  # BEGIN calendar event resource definitions
+
