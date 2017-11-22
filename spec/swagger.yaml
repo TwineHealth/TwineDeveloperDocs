@@ -686,19 +686,19 @@ paths:
         - name: filter[start_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `start_at` date - requires a \"filter[patient]\", \"filter[groups]\", \"filter[organization]\", or \"filter[attendees]\" parameter. Example to include all calendar events for November 2017 - \"11\/01\/2017,12\/01\/2017\".
+          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `start_at` date. Example for including all calendar events for November 2017 `filter[start_at]=11/01/2017,12/01/2017`.
         - name: filter[end_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `end_at` date - requires a \"filter[patient]\", \"filter[groups]\", \"filter[organization]\", or \"filter[attendees]\" parameter. Example to include all calendar events for November 2017 - \"11\/01\/2017,12\/01\/2017\".
+          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `end_at` date. Example for including all calendar events for November 2017 `filter[end_at]=11/01/2017,12/01/2017`.
         - name: filter[completed_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `completed_at` date - requires a \"filter[patient]\", \"filter[groups]\", \"filter[organization]\", or \"filter[attendees]\" parameter. Example to include all calendar events for November 2017 - \"11\/01\/2017,12\/01\/2017\".
+          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `completed_at` date. Example for including all calendar events for November 2017 `filter[completed_at]=11/01/2017,12/01/2017`.
         - name: filter[created_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `created_at` date - requires a \"filter[patient]\", \"filter[groups]\", \"filter[organization]\", or \"filter[attendees]\" parameter. Example to include all calendar events for November 2017 - \"11\/01\/2017,12\/01\/2017\".
+          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `created_at` date. Example for including all calendar events for November 2017 `filter[created_at]=11/01/2017,12/01/2017`.
         - name: page[number]
           in: query
           description: Page number
