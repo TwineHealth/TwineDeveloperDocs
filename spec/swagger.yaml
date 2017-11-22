@@ -696,19 +696,23 @@ paths:
         - name: filter[start_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SS+00:00 format separated by `..` to filter events by the `start_at` date (example `filter[start_at]=2017-11-01T00:00:00-05:00..2017-12-01T00:00:00-05:00`)
+          description: |
+            The start (inclusive) and end (exclusive) dates are ISO date and time strings separated by `..`. Example for events starting in November 2017 (America/New_York): `filter[start_at]=2017-11-01T00:00:00-04:00..2017-12-01T00:00:00-05:00`
         - name: filter[end_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SS+00:00 format separated by `..` to filter events by the `end_at` date (example `filter[end_at]=2017-11-01T00:00:00-05:00..2017-12-01T00:00:00-05:00`)
+          description: |
+            The start (inclusive) and end (exclusive) dates are ISO date and time strings separated by `..`. Example for events ending in November 2017 (America/New_York): `filter[end_at]=2017-11-01T00:00:00-04:00..2017-12-01T00:00:00-05:00`
         - name: filter[completed_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SS+00:00 format separated by `..` to filter events by the `completed_at` date (example `filter[completed_at]=2017-11-01T00:00:00-05:00..2017-12-01T00:00:00-05:00`)
+          description: |
+            The start (inclusive) and end (exclusive) dates are ISO date and time strings separated by `..`. Example for events completed in November 2017 (America/New_York): `filter[completed_at]=2017-11-01T00:00:00-04:00..2017-12-01T00:00:00-05:00`
         - name: filter[created_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SS+00:00 format separated by `..` to filter events by the `created_at` date (example `filter[created_at]=2017-11-01T00:00:00-05:00..2017-12-01T00:00:00-05:00`)
+          description: |
+            The start (inclusive) and end (exclusive) dates are ISO date and time strings separated by `..`. Example for events created in November 2017 (America/New_York): `filter[created_at]=2017-11-01T00:00:00-04:00..2017-12-01T00:00:00-05:00`
         - name: page[number]
           in: query
           description: Page number
