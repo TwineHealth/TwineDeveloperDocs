@@ -52,7 +52,7 @@ tags:
   - name: bundle
     description: A bundle is a collection of actions (an action plan) in a patient's plan summary.
   - name: calendar event
-    description: An calendar event is created by a Twine coach or patient with optional attendees invited.
+    description: A calendar event represents an event involving or relevant to a patient which will or has occurred on a specific date or during a specific period of time.
   - name: email history
     description: Email history represents a single email that was sent using twine.
   - name: health profile
@@ -483,7 +483,7 @@ paths:
           schema:
             $ref: '#/definitions/CreateActionRequest'
       responses:
-        '200':
+        '201':
           description: OK
           schema:
             $ref: '#/definitions/CreateActionResponse'
@@ -662,43 +662,53 @@ paths:
         - name: filter[patient]
           in: query
           type: string
-          description: Patient id to fetch calendar event (either a patient, group, organization or attendees filter is required)
+          description: |
+            Patient id to fetch calendar event. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
         - name: filter[groups]
           in: query
           type: string
-          description: Comma-separated list of Twine group ids (either a patient, group, organization or attendees filter is required)
+          description: |
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
         - name: filter[organization]
           in: query
           type: string
-          description: Twine organization id (either a patient, group, organization or attendees filter is required)
+          description: |
+            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
         - name: filter[attendees]
           in: query
           type: string
-          description: Comma-separated list of Twine coach or patient ids (either a patient, group, organization or attendees filter is required)
+          description: |
+            Comma-separated list of coach or patient ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
         - name: filter[type]
           in: query
           type: string
-          description: Calendar event type. Valid values are `plan-check-in`, `reminder`, `telephone-call`, `office-visit` and `video-call`.
+          description: Calendar event type
+          enum:
+            - plan-check-in
+            - reminder
+            - telephone-call
+            - office-visit
+            - video-call
         - name: filter[completed]
           in: query
           type: boolean
-          description: If not specified, return all calendar events. If set to 'true' return only events marked as completed, otherwise if set to 'false', return only events not marked as completed yet.
+          description: If not specified, return all calendar events. If set to `true` return only events marked as completed, if set to `false`, return only events not marked as completed yet.
         - name: filter[start_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `start_at` date. Example for including all calendar events for November 2017 `filter[start_at]=11/01/2017,12/01/2017`.
+          description: The inclusive start and end dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `start_at` date (example `filter[start_at]=2017-11-01T00:00:00Z..2017-11-30T23:59:59Z`)
         - name: filter[end_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `end_at` date. Example for including all calendar events for November 2017 `filter[end_at]=11/01/2017,12/01/2017`.
+          description: The inclusive start and end dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `end_at` date (example `filter[end_at]=2017-11-01T00:00:00Z..2017-11-30T23:59:59Z`)
         - name: filter[completed_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `completed_at` date. Example for including all calendar events for November 2017 `filter[completed_at]=11/01/2017,12/01/2017`.
+          description: The inclusive start and end dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `completed_at` date (example `filter[completed_at]=2017-11-01T00:00:00Z..2017-11-30T23:59:59Z`)
         - name: filter[created_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) date separated by a comman to filter events by the `created_at` date. Example for including all calendar events for November 2017 `filter[created_at]=11/01/2017,12/01/2017`.
+          description: The inclusive start and end dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `created_at` date (example `filter[created_at]=2017-11-01T00:00:00Z..2017-11-30T23:59:59Z`)
         - name: page[number]
           in: query
           description: Page number
@@ -848,15 +858,18 @@ paths:
         - name: filter[patient]
           in: query
           type: string
-          description: Patient id to fetch health profile (either a patient, group or organization filter is required)
+          description: |
+            Patient id to fetch health profile. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
         - name: filter[groups]
           in: query
           type: string
-          description: Comma-separated list of Twine group ids (either a patient, group or organization filter is required)
+          description: |
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
         - name: filter[organization]
           in: query
           type: string
-          description: Twine organization id (either a patient, group or organization filter is required)
+          description: |
+            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
         - name: page[number]
           in: query
           description: Page number
@@ -974,15 +987,18 @@ paths:
         - name: filter[patient]
           in: query
           type: string
-          description: Patient id to fetch healt profile answers (either a patient, group or organization filter is required)
+          description: |
+            Patient id to fetch healt profile answers. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
         - name: filter[groups]
           in: query
           type: string
-          description: Comma-separated list of Twine group ids (either a patient, group or organization filter is required)
+          description: |
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
         - name: filter[organization]
           in: query
           type: string
-          description: Twine organization id (either a patient, group or organization filter is required)
+          description: |
+            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
         - name: page[number]
           in: query
           description: Page number
@@ -1310,11 +1326,11 @@ paths:
         - name: filter[groups]
           in: query
           type: string
-          description: Comma-separated list of Twine group ids (either a group or organization filter is required)
+          description: Comma-separated list of group ids. Note that either `filter[group]` or `filter[organization]` must be specified.
         - name: filter[organization]
           in: query
           type: string
-          description: Twine organization id (either a group or organization filter is required)
+          description: Twine organization id. Note that either `filter[group]` or `filter[organization]` must be specified.
         - name: filter[identifier][system]
           in: query
           type: string
@@ -3203,12 +3219,17 @@ definitions:
           completed_at:
             type: string
             format: ISODate
-            example: '2017-11-03T06:00:00.000Z'
+            example: '2017-11-03T06:17:34.652Z'
             description: 'The date and time when the calendar event is marked as completed'
           type:
             type: string
             description: 'The type of calendar event'
-            example: 'plan-check-in'
+            enum:
+              - plan-check-in
+              - reminder
+              - telephone-call
+              - office-visit
+              - video-call
           time_zone:
             type: string
             description: 'The time zone in which the dates for the calendar event are specified'
@@ -3233,13 +3254,13 @@ definitions:
             type: string
           description:
             type: string
-          _attendees:
+          attendees:
             type: array
             description: 'List of attendees for the calendar event'
             items:
               type: object
               properties:
-                _user:
+                user:
                   type: object
                 response_status:
                   type: string
@@ -3281,20 +3302,22 @@ definitions:
                      type: string
                      pattern: '/pub/calendar_event/[0-9a-z]+'
                      example: '/pub/calendar_event/5a0c8e2aa9d454cc1509a142/owner'
+             description: An owner is the patient whom the calendar event is created specificially for
      example:
        {
            "type": "calendar_event",
            "id": "5a0c8e2aa9d454cc1509a142",
            "attributes": {
-               "completed_at": "2017-11-03T04:00:00.000Z",
+               "completed_at": "2017-11-03T06:17:34.652Z",
                "type": "plan-check-in",
                "time_zone": "America/New_York",
                "all_day": true,
                "start_at": "2017-11-03T04:00:00.000Z",
+               "end_at": "2017-11-03T08:00:00.000Z",
                "title": "Plan Check-In",
-               "_attendees": [
+               "attendees": [
                    {
-                       "_user": "5a0c8e27a9d454cc150997c9",
+                       "user": "5a0c8e27a9d454cc150997c9",
                        "response_status": "accepted"
                    }
                ],
