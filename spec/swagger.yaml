@@ -696,19 +696,19 @@ paths:
         - name: filter[start_at]
           in: query
           type: string
-          description: The inclusive start and end dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `start_at` date (example `filter[start_at]=2017-11-01T00:00:00Z..2017-11-30T23:59:59Z`)
+          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `start_at` date (example `filter[start_at]=2017-11-01T00:00:00Z..2017-12-01T00:00:00Z`)
         - name: filter[end_at]
           in: query
           type: string
-          description: The inclusive start and end dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `end_at` date (example `filter[end_at]=2017-11-01T00:00:00Z..2017-11-30T23:59:59Z`)
+          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `end_at` date (example `filter[end_at]=2017-11-01T00:00:00Z..2017-12-01T00:00:00Z`)
         - name: filter[completed_at]
           in: query
           type: string
-          description: The inclusive start and end dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `completed_at` date (example `filter[completed_at]=2017-11-01T00:00:00Z..2017-11-30T23:59:59Z`)
+          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `completed_at` date (example `filter[completed_at]=2017-11-01T00:00:00Z..2017-12-01T00:00:00Z`)
         - name: filter[created_at]
           in: query
           type: string
-          description: The inclusive start and end dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `created_at` date (example `filter[created_at]=2017-11-01T00:00:00Z..2017-11-30T23:59:59Z`)
+          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `created_at` date (example `filter[created_at]=2017-11-01T00:00:00Z..2017-12-01T00:00:00Z`)
         - name: page[number]
           in: query
           description: Page number
