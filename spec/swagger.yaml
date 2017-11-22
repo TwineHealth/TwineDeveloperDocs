@@ -696,19 +696,19 @@ paths:
         - name: filter[start_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `start_at` date (example `filter[start_at]=2017-11-01T00:00:00Z..2017-12-01T00:00:00Z`)
+          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SS+00:00 format separated by `..` to filter events by the `start_at` date (example `filter[start_at]=2017-11-01T00:00:00-05:00..2017-12-01T00:00:00-05:00`)
         - name: filter[end_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `end_at` date (example `filter[end_at]=2017-11-01T00:00:00Z..2017-12-01T00:00:00Z`)
+          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SS+00:00 format separated by `..` to filter events by the `end_at` date (example `filter[end_at]=2017-11-01T00:00:00-05:00..2017-12-01T00:00:00-05:00`)
         - name: filter[completed_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `completed_at` date (example `filter[completed_at]=2017-11-01T00:00:00Z..2017-12-01T00:00:00Z`)
+          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SS+00:00 format separated by `..` to filter events by the `completed_at` date (example `filter[completed_at]=2017-11-01T00:00:00-05:00..2017-12-01T00:00:00-05:00`)
         - name: filter[created_at]
           in: query
           type: string
-          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SSZ format separated by a `..` to filter events by the `created_at` date (example `filter[created_at]=2017-11-01T00:00:00Z..2017-12-01T00:00:00Z`)
+          description: The start (inclusive) and end (exclusive) dates in YYYY-MM-DDTHH:MM:SS+00:00 format separated by `..` to filter events by the `created_at` date (example `filter[created_at]=2017-11-01T00:00:00-05:00..2017-12-01T00:00:00-05:00`)
         - name: page[number]
           in: query
           description: Page number
@@ -3213,7 +3213,7 @@ definitions:
        attributes:
          type: object
          properties:
-          _completed_by:
+          completed_by:
             type: object
             description: 'The coach who marked the calendar event as completed'
           completed_at:
@@ -3302,7 +3302,7 @@ definitions:
                      type: string
                      pattern: '/pub/calendar_event/[0-9a-z]+'
                      example: '/pub/calendar_event/5a0c8e2aa9d454cc1509a142/owner'
-             description: An owner is the patient whom the calendar event is created specificially for
+             description: The owner is the patient for whom the calendar event is created specificially for
      example:
        {
            "type": "calendar_event",
