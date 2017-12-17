@@ -4376,6 +4376,10 @@ definitions:
         type: string
       value: 
         type: string
+      unique:
+        description: If `true`, the combination of system and value must be global unique among all patients and coaches in Twine.
+        type: boolean
+        default: true
   ArchiveHistory:
     type: object
     properties:
@@ -4916,6 +4920,15 @@ definitions:
     required:
       - data
     properties:
+      meta:
+        type: object
+        properties:
+          ignore_duplicates:
+            description: |
+              If `true`, patients with any conflicting identifiers (same `system` and `value`) will be ignored.
+              Useful for gracefully skipping duplicates after errors occur during bulk create.
+            type: boolean
+            default: false
       data:
         $ref: '#/definitions/PatientCreateResource'
     example:
