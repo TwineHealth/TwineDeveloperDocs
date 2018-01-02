@@ -529,7 +529,7 @@ paths:
       tags:
         - action
       summary: Update an action
-      description: Updte a health action from a patient's plan.
+      description: Update a health action from a patient's plan.
       operationId: updateAction
       parameters:
         - name: id
@@ -652,6 +652,35 @@ paths:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
 
   /calendar_event:
+    post:
+      tags:
+        - calendar event
+      summary: Create calendar event
+      description: Create a calendar event for a patient.
+      operationId: createCalendarEvent
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateCalendarEventRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateCalendarEventResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
     get:
       tags:
         - calendar event
@@ -781,6 +810,40 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
+    patch:
+      tags:
+        - calendar event
+      summary: Update a calendar event
+      description: Update a calendar event for a patient.
+      operationId: updateCalendarEvent
+      parameters:
+        - name: id
+          in: path
+          description: Calendar event identifier
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateCalendarEventRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UpdateCalendarEventResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
 
   /email_history:
     get:
@@ -2617,6 +2680,22 @@ definitions:
                     type: string
                   id:
                     type: string
+  CreateRewardProgramRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/RewardProgramResource'
+  CreateRewardProgramResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/RewardProgramResource'
   FetchRewardProgramResponse:
     type: object
     required:
@@ -2637,22 +2716,6 @@ definitions:
           type: array
           items:
             $ref: '#/definitions/RewardProgramResource'
-  CreateRewardProgramRequest:
-    type: object
-    required:
-      - data
-    properties:
-      data:
-        $ref: '#/definitions/RewardProgramResource'
-  CreateRewardProgramResponse:
-    type: object
-    required:
-      - data
-    properties:
-      meta:
-        $ref: '#/definitions/CreateOrUpdateMetaResponse'
-      data:
-        $ref: '#/definitions/RewardProgramResource'
   # END /reward_program definitions
 
   # BEGIN /action definitions
@@ -3361,6 +3424,38 @@ definitions:
            "self": "/pub/calendar_event/5a0c8e2aa9d454cc1509a142"
          },
      }
+  CreateCalendarEventRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/CalendarEventResource'
+  CreateCalendarEventResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/CalendarEventResource'
+  UpdateCalendarEventRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/CalendarEventResource'
+  UpdateCalendarEventResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/CalendarEventResource'
   FetchCalendarEventResponse:
     type: object
     required:
