@@ -656,7 +656,7 @@ paths:
       tags:
         - calendar event
       summary: Create calendar event
-      description: Create a calendar event for a patient.
+      description: Create a calendar event for a patient. Attribute `all_day` cannot be specified for `plan-check-in` event type.
       operationId: createCalendarEvent
       parameters:
         - name: body
@@ -814,7 +814,7 @@ paths:
       tags:
         - calendar event
       summary: Update a calendar event
-      description: Update a calendar event for a patient.
+      description: Update a calendar event for a patient. Attribute `all_day` cannot be specified for `plan-check-in` event type.
       operationId: updateCalendarEvent
       parameters:
         - name: id
@@ -3308,6 +3308,8 @@ definitions:
     properties:
       type:
         type: string
+        enum:
+          - calendar_event
       id:
         type: string
       attributes:
@@ -3476,7 +3478,7 @@ definitions:
     example:
       {
         "data": {
-          "type": "calendar event",
+          "type": "calendar_event",
           "attributes": {
             "completed_at": "2017-11-03T06:17:34.652Z",
             "completed_by": "5a0c8e27a9d454cc150997c9",
@@ -3519,9 +3521,14 @@ definitions:
     type: object
     properties:
       data:
+        required:
+          - type
+          - id
         properties:
           type:
             $ref: "#/definitions/CalendarEventResource/properties/type"
+          id:
+            $ref: "#/definitions/CalendarEventResource/properties/id"
           attributes:
             allOf:
               - $ref: "#/definitions/CalendarEventResource/properties/attributes"
@@ -3536,7 +3543,8 @@ definitions:
     example:
       {
         "data": {
-          "type": "calendar event",
+          "type": "calendar_event",
+          "id": "42ba7c2da9d45415234345b3",
           "attributes": {
             "completed_at": "2017-11-03T06:17:34.652Z",
             "completed_by": "5a0c8e27a9d454cc150997c9",
