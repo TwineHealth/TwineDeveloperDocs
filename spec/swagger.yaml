@@ -844,6 +844,29 @@ paths:
           description: Invalid Request
           schema:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
+    delete:
+      tags:
+        - calendar event
+      summary: Delete a calendar event
+      description: Delete a calendar event by id
+      operationId: deleteCalendarEvent
+      parameters:
+        - name: id
+          in: path
+          description: Calendar event identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
 
   /email_history:
     get:
