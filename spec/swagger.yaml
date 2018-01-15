@@ -3450,6 +3450,7 @@ definitions:
       - data
     properties:
       data:
+        type: object
         required:
           - type
           - attributes
@@ -3521,6 +3522,7 @@ definitions:
     type: object
     properties:
       data:
+        type: object
         required:
           - type
           - id
