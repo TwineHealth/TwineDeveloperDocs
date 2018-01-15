@@ -3385,7 +3385,7 @@ definitions:
           owner:
             type: object
             required:
-              - owner
+              - data
             properties:
               data:
                 type: object
