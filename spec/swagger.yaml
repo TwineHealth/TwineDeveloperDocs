@@ -3363,7 +3363,7 @@ definitions:
               type: object
               properties:
                 user:
-                  type: object
+                  type: string
                 response_status:
                   type: string
                   description: 'Status of responses from attendees'
