@@ -815,6 +815,7 @@ paths:
         - calendar event
       summary: Update a calendar event
       description: Update a calendar event for a patient. Attribute `all_day` cannot be specified for `plan-check-in` event type.
+                   To mark a calendar event as 'completed', set `completed_at` and `completed_by` to desired values.  To mark a completed calendar event as 'not completed', set `completed_at` and `completed_by` to null.
       operationId: updateCalendarEvent
       parameters:
         - name: id
