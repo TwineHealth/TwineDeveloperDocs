@@ -3481,13 +3481,10 @@ definitions:
         "data": {
           "type": "calendar_event",
           "attributes": {
-            "completed_at": "2017-11-03T06:17:34.652Z",
-            "completed_by": "5a0c8e27a9d454cc150997c9",
             "type": "plan-check-in",
             "time_zone": "America/New_York",
             "all_day": true,
             "start_at": "2017-11-03T04:00:00.000Z",
-            "end_at": "2017-11-03T08:00:00.000Z",
             "title": "Plan Check-In",
             "attendees": [
               {
@@ -3499,12 +3496,10 @@ definitions:
           },
           "relationships": {
             "owner": {
-              "data": [
-                {
-                  "type": "patient",
-                  "id": "5a0c8e27a9d454cc150997f7"
-                }
-              ]
+              "data": {
+                "type": "patient",
+                "id": "5a0c8e27a9d454cc150997f7"
+              }
             }
           }
         }
@@ -3564,12 +3559,10 @@ definitions:
           },
           "relationships": {
             "owner": {
-              "data": [
-                {
+              "data": {
                   "type": "patient",
                   "id": "5a0c8e27a9d454cc150997f7"
-                }
-              ]
+              }
             }
           }
         }
