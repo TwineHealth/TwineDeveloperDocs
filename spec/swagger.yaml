@@ -814,7 +814,7 @@ paths:
       tags:
         - calendar event
       summary: Update a calendar event
-      description: Update a calendar event for a patient. Attribute `all_day` cannot be specified for `plan-check-in` event type.
+      description: Update a calendar event for a patient. Attribute `all_day` and `end_at` cannot be specified for `plan-check-in` event type.  If `all_day` is set to true, then `start_at` must also be set. (e.g. 2018-02-01T05:00:00Z).
                    To mark a calendar event as 'completed', set `completed_at` and `completed_by` to desired values.  To mark a completed calendar event as 'not completed', set `completed_at` and `completed_by` to null.
       operationId: updateCalendarEvent
       parameters:
@@ -3485,7 +3485,7 @@ definitions:
             "type": "plan-check-in",
             "time_zone": "America/New_York",
             "all_day": true,
-            "start_at": "2017-11-03T04:00:00.000Z",
+            "start_at": "2018-02-20T00:00:00Z",
             "title": "Plan Check-In",
             "attendees": [
               {
@@ -3544,12 +3544,12 @@ definitions:
           "attributes": {
             "completed_at": "2017-11-03T06:17:34.652Z",
             "completed_by": "5a0c8e27a9d454cc150997c9",
-            "type": "plan-check-in",
+            "type": "telephone-call",
             "time_zone": "America/New_York",
-            "all_day": true,
-            "start_at": "2017-11-03T04:00:00.000Z",
-            "end_at": "2017-11-03T08:00:00.000Z",
-            "title": "Plan Check-In",
+            "all_day": false,
+            "start_at": "2018-02-20T14:00:00Z",
+            "end_at": "2018-02-20T18:00:00Z",
+            "title": "Telephone Call",
             "attendees": [
               {
                 "user": "5a0c8e27a9d454cc150997c9"
