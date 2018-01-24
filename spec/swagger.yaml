@@ -814,8 +814,7 @@ paths:
       tags:
         - calendar event
       summary: Update a calendar event
-      description: Update a calendar event for a patient. Attribute `all_day` and `end_at` cannot be specified for `plan-check-in` event type.  If `all_day` is set to true, then `start_at` must also be set. (e.g. 2018-02-01T05:00:00Z).
-                   To mark a calendar event as 'completed', set `completed_at` and `completed_by` to desired values.  To mark a completed calendar event as 'not completed', set `completed_at` and `completed_by` to null.
+      description: Update a calendar event for a patient. Attribute `all_day` must be true and `end_at` cannot be specified for `plan-check-in` event type. To mark a calendar event as 'completed', set `completed_at` and `completed_by` to desired values.  To mark a completed calendar event as 'not completed', set `completed_at` and `completed_by` to `null`.
       operationId: updateCalendarEvent
       parameters:
         - name: id
@@ -3318,15 +3317,15 @@ definitions:
         properties:
           completed_by:
             type: object
-            description: 'The coach who marked the calendar event as completed'
+            description: 'The coach who marked the calendar event as completed. Only valid for `plan-check-in` event type.'
           completed_at:
             type: string
             format: ISODate
             example: '2017-11-03T06:17:34.652Z'
-            description: 'The date and time when the calendar event is marked as completed'
+            description: 'The date and time when the calendar event is marked as completed. Only valid for `plan-check-in` event type.'
           type:
             type: string
-            description: 'The type of calendar event'
+            description: 'The type of calendar event. Immutable after event creation.'
             enum:
               - plan-check-in
               - reminder
@@ -3339,7 +3338,7 @@ definitions:
             example: 'America/New_York'
           all_day:
             type: boolean
-            description: 'true if the calendar event is an all day event, false otherwise'
+            description: 'True if the calendar event is an all day event, false otherwise. Must be set to true for `plan-check-in` event type. If it is true, then `start_at` and `end_at` must also be set to beginning of day, except `plan-check-in` event type does not need an `end_at` date. If it is false, then `start_at` and `end_at` must be on the same day.'
           start_at:
             type: string
             format: ISODate
@@ -3348,11 +3347,11 @@ definitions:
           end_at:
             type: string
             format: ISODate
-            description: 'The date and time when the calendar event ends'
+            description: 'The date and time when the calendar event ends. Not valid for `plan-check-in` event type.'
             example: '2017-11-03T08:00:00.000Z'
           title:
             type: string
-            description: 'The title of the calendar event'
+            description: 'The title of the calendar event. Must not be empty or null'
           location:
             type: string
           description:
