@@ -718,6 +718,10 @@ paths:
             - telephone-call
             - office-visit
             - video-call
+        - name: filter[overdue]
+          in: query
+          type: boolean
+          description: If not specified, return all calendar events. If set to `true` return only events that have started but not yet ended nor completed, if set to `false`, return only events that have either not started, or have ended, or completed.
         - name: filter[completed]
           in: query
           type: boolean
@@ -737,6 +741,16 @@ paths:
           type: string
           description: |
             The start (inclusive) and end (exclusive) dates are ISO date and time strings separated by `..`. Example for events completed in November 2017 (America/New_York): `filter[completed_at]=2017-11-01T00:00:00-04:00..2017-12-01T00:00:00-05:00`
+        - name: filter[occurred_at]
+          in: query
+          type: string
+          description: |
+            Includes events with start_at, end_at, or completed_at occurred within the specified date range. The start (inclusive) and end (exclusive) dates are ISO date and time strings separated by `..`. Example for events completed in November 2017 (America/New_York): `filter[occurred_at]=2017-11-01T00:00:00-04:00..2017-12-01T00:00:00-05:00`
+        - name: filter[active_at]
+          in: query
+          type: string
+          description: |
+            Includes events with end_at, or completed_at occurred within the specified date range. The start (inclusive) and end (exclusive) dates are ISO date and time strings separated by `..`. Example for events completed in November 2017 (America/New_York): `filter[active_at]=2017-11-01T00:00:00-04:00..2017-12-01T00:00:00-05:00`
         - name: filter[created_at]
           in: query
           type: string
