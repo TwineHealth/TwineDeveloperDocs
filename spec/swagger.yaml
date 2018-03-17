@@ -828,7 +828,7 @@ paths:
       tags:
         - calendar event
       summary: Update a calendar event
-      description: Update a calendar event for a patient. Attribute `all_day` must be true and `end_at` cannot be specified for `plan-check-in` event type. To mark a calendar event as 'completed', set `completed_at` and `completed_by` to desired values.  To mark a completed calendar event as 'not completed', set `completed_at` and `completed_by` to `null`.
+      description: Update a calendar event for a patient. Attribute `all_day` must be true and `end_at` cannot be specified for `plan-check-in` event type. To mark a calendar event as 'completed', set `completed_at`, `completed_by` to desired values and set `incomplete_reason` to `null`.  To mark a completed calendar event as 'not completed', set `completed_at` and `completed_by` to `null`, include an optional values for `incomplete_reason`.
       operationId: updateCalendarEvent
       parameters:
         - name: id
@@ -3337,6 +3337,19 @@ definitions:
             format: ISODate
             example: '2017-11-03T06:17:34.652Z'
             description: 'The date and time when the calendar event is marked as completed. Only valid for `plan-check-in` event type.'
+          incomplete_reason:
+            type: string
+            description: 'A reason for the calendar event not being marked as completed.'
+            enum:
+              - voicemail
+              - no_show
+              - requested_reschedule
+              - canceled_by_participant
+              - canceled_by_coach
+              - technical_difficulties
+              - unable_to_connect
+              - incorrectly_scheduled
+              - double_booked
           type:
             type: string
             description: 'The type of calendar event. Immutable after event creation.'
