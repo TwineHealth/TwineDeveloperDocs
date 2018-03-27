@@ -708,11 +708,6 @@ paths:
           type: string
           description: |
             Comma-separated list of coach or patient ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
-        - name: filter[token_user]
-          in: query
-          type: string
-          description: |
-            The unique object id of the user for controlling access to calendar events (e.g. 5ab522cb73a174be89daa499). To access all calendar events, please specify an user having the role of `accessAllGroups`.  Must be specified if either `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]` is specified.
         - name: filter[type]
           in: query
           type: string
