@@ -17,6 +17,26 @@ info:
     
     See [POST /oauth/token](#operation/createToken) for details on the request and response formats.
     <!-- ReDoc-Inject: <security-definitions> -->
+    
+    # Paging
+    The Twine API supports two different pagination strategies for GET collection endpoints. 
+    
+    #### Skip-based paging
+    
+    Skip-based paging uses the query parameters `page[size]` and `page[number]` to specify the max number of entries returned and the page number. We default to skip-based paging if there are no page parameters. The response will include a `links` object containing links to the first, last, prev, and next pages of data.
+    
+    If the contents of the collection change while you are iterating through the collection, you will see duplicate or missing documents. For example, if you are iterating through the `calender_event` resource via `GET /pub/calendar_event?sort=start_at&page[size]=50&page[number]=1`, and a new `calendar_event` is created that has a `start_at` value before the first `calendar_event`, when you fetch the next page at `GET /pub/calendar_event?sort=start_at&page[size]=50&page[number]=2`, the first entry in the second response will be a duplicate of the last entry in the first response.
+    
+    #### Cursor-based paging
+    Cursor-based paging uses the query parameters `page[limit]` and `page[after]` to specify the max number of entries returned and identify where to begin the next page. Add `page[limit]` to the parameters to trigger cursor-based paging. The response will include a `links` object containing a link to the next page of data, if the next page exists. 
+    
+    Cursor-based paging is not subject to duplication if new documents are added to the collection. For example, if you are iterating through the `calender_event` resource via `GET /pub/calendar_event?sort=start_at&page[limit]=50`, and a new `calendar_event` is created that has a `start_at` value before the first `calendar_event`, you will not see a duplicate entry when you fetch the next page at `GET /pub/calendar_event?sort=start_at&page[limit]=50&page[after]=<cursor>`. 
+    
+    We encourage the use of cursor-based paging for performance reasons. 
+    
+    In either form of paging, you can determine whether any documents were missed by comparing the number of fetched documents against `meta.count`. 
+    
+    It is not valid to mix the two strategies.
 host: api.twinehealth.com
 basePath: /pub
 schemes:
