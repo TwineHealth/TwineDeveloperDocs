@@ -692,22 +692,22 @@ paths:
           in: query
           type: string
           description: |
-            Patient id to fetch calendar event. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
+            Patient id to fetch calendar event. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`, or `filter[attendees]`.
         - name: filter[groups]
           in: query
           type: string
           description: |
-            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`, or `filter[attendees]`.
         - name: filter[organization]
           in: query
           type: string
           description: |
-            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
+            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`, or `filter[attendees]`.
         - name: filter[attendees]
           in: query
           type: string
           description: |
-            Comma-separated list of coach or patient ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
+            Comma-separated list of coach or patient ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`, or `filter[attendees]`.
         - name: filter[type]
           in: query
           type: string
@@ -718,6 +718,10 @@ paths:
             - telephone-call
             - office-visit
             - video-call
+        - name: filter[overdue]
+          in: query
+          type: boolean
+          description: If not specified, return all calendar events. If set to `true` return only events that have started but not yet ended nor completed, if set to `false`, return only events that have either not started, or have ended, or completed.
         - name: filter[completed]
           in: query
           type: boolean
@@ -737,6 +741,16 @@ paths:
           type: string
           description: |
             The start (inclusive) and end (exclusive) dates are ISO date and time strings separated by `..`. Example for events completed in November 2017 (America/New_York): `filter[completed_at]=2017-11-01T00:00:00-04:00..2017-12-01T00:00:00-05:00`
+        - name: filter[occurred_at]
+          in: query
+          type: string
+          description: |
+            Includes events with start_at, end_at, or completed_at occurred within the specified date range. The start (inclusive) and end (exclusive) dates are ISO date and time strings separated by `..`. Example for events completed in November 2017 (America/New_York): `filter[occurred_at]=2017-11-01T00:00:00-04:00..2017-12-01T00:00:00-05:00`
+        - name: filter[active_at]
+          in: query
+          type: string
+          description: |
+            Includes events with end_at, or completed_at occurred within the specified date range. The start (inclusive) and end (exclusive) dates are ISO date and time strings separated by `..`. Example for events completed in November 2017 (America/New_York): `filter[active_at]=2017-11-01T00:00:00-04:00..2017-12-01T00:00:00-05:00`
         - name: filter[created_at]
           in: query
           type: string
@@ -814,7 +828,7 @@ paths:
       tags:
         - calendar event
       summary: Update a calendar event
-      description: Update a calendar event for a patient. Attribute `all_day` must be true and `end_at` cannot be specified for `plan-check-in` event type. To mark a calendar event as 'completed', set `completed_at` and `completed_by` to desired values.  To mark a completed calendar event as 'not completed', set `completed_at` and `completed_by` to `null`.
+      description: Update a calendar event for a patient. Attribute `all_day` must be true and `end_at` cannot be specified for `plan-check-in` event type. To mark a calendar event as 'completed', set `completed_at`, `completed_by` to desired values and set `incomplete_reason` to `null`.  To mark a completed calendar event as 'not completed', set `completed_at` and `completed_by` to `null`, include an optional values for `incomplete_reason`.
       operationId: updateCalendarEvent
       parameters:
         - name: id
@@ -954,17 +968,17 @@ paths:
           in: query
           type: string
           description: |
-            Patient id to fetch health profile. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Patient id to fetch health profile. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, or `filter[organization]`.
         - name: filter[groups]
           in: query
           type: string
           description: |
-            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, or `filter[organization]`.
         - name: filter[organization]
           in: query
           type: string
           description: |
-            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, or `filter[organization]`.
         - name: page[number]
           in: query
           description: Page number
@@ -1083,17 +1097,17 @@ paths:
           in: query
           type: string
           description: |
-            Patient id to fetch healt profile answers. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Patient id to fetch healt profile answers. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, or `filter[organization]`.
         - name: filter[groups]
           in: query
           type: string
           description: |
-            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, or `filter[organization]`.
         - name: filter[organization]
           in: query
           type: string
           description: |
-            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, or `filter[organization]`.
         - name: page[number]
           in: query
           description: Page number
@@ -1421,11 +1435,11 @@ paths:
         - name: filter[groups]
           in: query
           type: string
-          description: Comma-separated list of group ids. Note that either `filter[group]` or `filter[organization]` must be specified.
+          description: Comma-separated list of group ids. Note that either `filter[groups]` or `filter[organization]` must be specified.
         - name: filter[organization]
           in: query
           type: string
-          description: Twine organization id. Note that either `filter[group]` or `filter[organization]` must be specified.
+          description: Twine organization id. Note that either `filter[groups]` or `filter[organization]` must be specified.
         - name: filter[identifier][system]
           in: query
           type: string
@@ -3323,6 +3337,19 @@ definitions:
             format: ISODate
             example: '2017-11-03T06:17:34.652Z'
             description: 'The date and time when the calendar event is marked as completed. Only valid for `plan-check-in` event type.'
+          incomplete_reason:
+            type: string
+            description: 'A reason for the calendar event not being marked as completed.'
+            enum:
+              - voicemail
+              - no_show
+              - requested_reschedule
+              - canceled_by_participant
+              - canceled_by_coach
+              - technical_difficulties
+              - unable_to_connect
+              - incorrectly_scheduled
+              - double_booked
           type:
             type: string
             description: 'The type of calendar event. Immutable after event creation.'
