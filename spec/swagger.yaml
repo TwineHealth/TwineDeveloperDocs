@@ -692,22 +692,22 @@ paths:
           in: query
           type: string
           description: |
-            Patient id to fetch calendar event. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
+            Patient id to fetch calendar event. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`, or `filter[attendees]`.
         - name: filter[groups]
           in: query
           type: string
           description: |
-            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`, or `filter[attendees]`.
         - name: filter[organization]
           in: query
           type: string
           description: |
-            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
+            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`, or `filter[attendees]`.
         - name: filter[attendees]
           in: query
           type: string
           description: |
-            Comma-separated list of coach or patient ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
+            Comma-separated list of coach or patient ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`, or `filter[attendees]`.
         - name: filter[type]
           in: query
           type: string
@@ -968,17 +968,17 @@ paths:
           in: query
           type: string
           description: |
-            Patient id to fetch health profile. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Patient id to fetch health profile. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, or `filter[organization]`.
         - name: filter[groups]
           in: query
           type: string
           description: |
-            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, or `filter[organization]`.
         - name: filter[organization]
           in: query
           type: string
           description: |
-            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, or `filter[organization]`.
         - name: page[number]
           in: query
           description: Page number
@@ -1097,17 +1097,17 @@ paths:
           in: query
           type: string
           description: |
-            Patient id to fetch healt profile answers. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Patient id to fetch healt profile answers. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, or `filter[organization]`.
         - name: filter[groups]
           in: query
           type: string
           description: |
-            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, or `filter[organization]`.
         - name: filter[organization]
           in: query
           type: string
           description: |
-            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, or `filter[organization]`.
         - name: page[number]
           in: query
           description: Page number
@@ -1435,11 +1435,11 @@ paths:
         - name: filter[groups]
           in: query
           type: string
-          description: Comma-separated list of group ids. Note that either `filter[group]` or `filter[organization]` must be specified.
+          description: Comma-separated list of group ids. Note that either `filter[groups]` or `filter[organization]` must be specified.
         - name: filter[organization]
           in: query
           type: string
-          description: Twine organization id. Note that either `filter[group]` or `filter[organization]` must be specified.
+          description: Twine organization id. Note that either `filter[groups]` or `filter[organization]` must be specified.
         - name: filter[identifier][system]
           in: query
           type: string
