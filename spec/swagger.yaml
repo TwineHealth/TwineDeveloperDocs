@@ -781,6 +781,18 @@ paths:
           default: 10
           minimum: 0
           maximum: 50
+        - name: page[limit]
+          in: query
+          description: Page limit
+          type: integer
+          required: false
+          default: 50
+          minimum: 0
+        - name: page[cursor]
+          in: query
+          description: Page cursor
+          type: string
+          required: false
         - name: include
           description: List of related resources to include in the response
           in: query
@@ -1000,6 +1012,18 @@ paths:
           default: 10
           minimum: 0
           maximum: 50
+        - name: page[limit]
+          in: query
+          description: Page limit
+          type: integer
+          required: false
+          default: 50
+          minimum: 0
+        - name: page[cursor]
+          in: query
+          description: Page cursor
+          type: string
+          required: false
         - name: include
           description: List of related resources to include in the response
           in: query
@@ -1130,6 +1154,18 @@ paths:
           default: 50
           minimum: 0
           maximum: 100
+        - name: page[limit]
+          in: query
+          description: Page limit
+          type: integer
+          required: false
+          default: 50
+          minimum: 0
+        - name: page[cursor]
+          in: query
+          description: Page cursor
+          type: string
+          required: false
         - name: include
           description: List of related resources to include in the response
           in: query
@@ -1331,6 +1367,18 @@ paths:
           default: 10
           minimum: 0
           maximum: 50
+        - name: page[limit]
+          in: query
+          description: Page limit
+          type: integer
+          required: false
+          default: 50
+          minimum: 0
+        - name: page[cursor]
+          in: query
+          description: Page cursor
+          type: string
+          required: false
       responses:
         '200':
           description: OK
@@ -1486,6 +1534,18 @@ paths:
           default: 10
           minimum: 0
           maximum: 50
+        - name: page[limit]
+          in: query
+          description: Page limit
+          type: integer
+          required: false
+          default: 50
+          minimum: 0
+        - name: page[cursor]
+          in: query
+          description: Page cursor
+          type: string
+          required: false
       responses:
         '200':
           description: OK
