@@ -3852,10 +3852,8 @@ definitions:
             $ref: "#/definitions/CalendarEventResponseResource/properties/type"
           attributes:
             required:
-              - type
-              - start_at
-              - title
-              - attendees
+              - attendee
+              - response_status
             allOf:
               - $ref: "#/definitions/CalendarEventResponseResource/properties/attributes"
           relationships:
@@ -3899,13 +3897,6 @@ definitions:
           }
         }
       }
-  CreateCalendarEventResponseResponse:
-    type: object
-    properties:
-      meta:
-        $ref: '#/definitions/CreateOrUpdateMetaResponse'
-      data:
-        $ref: '#/definitions/CalendarEventResource'
   # END /calendar_event_response definitions
 
   # BEGIN /email_history definitions
