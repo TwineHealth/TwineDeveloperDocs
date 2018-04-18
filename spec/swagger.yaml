@@ -73,6 +73,8 @@ tags:
     description: A bundle is a collection of actions (an action plan) in a patient's plan summary.
   - name: calendar event
     description: A calendar event represents an event involving or relevant to a patient which will or has occurred on a specific date or during a specific period of time.
+  - name: calendar event response
+    description: A calendar event response indicates the attendee's response to a calendar event.  Only `POST` for creation is allowed as the responses are updated into the corresponding calendar events.
   - name: email history
     description: Email history represents a single email that was sent using twine.
   - name: health profile
@@ -112,6 +114,7 @@ x-tagGroups:
       - action
       - bundle
       - calendar event
+      - calendar event response
       - email history
       - health profile
       - health profile answer
@@ -847,7 +850,7 @@ paths:
       tags:
         - calendar event
       summary: Update a calendar event
-      description: Update a calendar event for a patient. Attribute `all_day` must be true and `end_at` cannot be specified for `plan-check-in` event type. To mark a calendar event as 'completed', set `completed_at` and `completed_by` to desired values.  To mark a completed calendar event as 'not completed', set `completed_at` and `completed_by` to `null`.
+      description: Update a calendar event for a patient. Attribute `all_day` must be true and `end_at` cannot be specified for `plan-check-in` event type. To mark a calendar event as 'completed', set `completed_at` and `completed_by` to desired values.  To mark a completed calendar event as 'not completed', set `completed_at` and `completed_by` to `null`. Attendees can be added or removed, but response status cannot be updated. Use the calendar event response api for response status updates instead.
       operationId: updateCalendarEvent
       parameters:
         - name: id
@@ -900,6 +903,37 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
+
+  /calendar_event_response:
+    post:
+      tags:
+        - calendar event response
+      summary: Create calendar event response
+      description: Create a calendar event response for an attendee of a calendar event, the attendee can be a coach or patient.  Calendar event responses cannot be fetched, updated nor deleted.  Use calendar event api to fetch the response status for attendees.
+      operationId: createCalendarEventResponse
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateCalendarEventResponseRequest'
+      responses:
+        '201':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateCalendarEventResponseRequest'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
 
   /email_history:
     get:
@@ -3502,9 +3536,11 @@ definitions:
            "title": "Plan Check-In",
            "attendees": [
                {
+                  "_id": "5ac7e74679f6868274a42e28",
                   "user": "5a0c8e27a9d454cc150997c9",
                   "response_status": "needsAction"
                }, {
+                 "_id": "5ac7e74679f6868274a42e27",
                   "user": "5a0c8e27a9d454cc150997f7",
                   "response_status": "needsAction"
                }
@@ -3694,6 +3730,174 @@ definitions:
         items:
           $ref: '#/definitions/Resource'
   # END /calendar_event definitions
+
+  # BEGIN /calendar_event_response definitions
+  CalendarEventResponseResource:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - calendar_event_response
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          attendee:
+            type: object
+            description: 'The attendee in the attendees list of the calendar event.'
+          response_status:
+            type: string
+            description: 'The response status for the attendee.'
+            enum:
+              - accepted
+              - declined
+              - tentative
+      links:
+       type: object
+       properties:
+         self:
+           type: string
+           pattern: '/calendar_event_response/[0-9a-z]+'
+           example: '/calendar_event_response/5ad0f966ceb0909e4bfa84dd'
+      relationships:
+        type: object
+        properties:
+          user:
+            type: object
+            required:
+              - data
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+                properties:
+                  related:
+                    type: string
+                    pattern: '/pub/calendar_event_response/[0-9a-z]+'
+                    example: '/pub/calendar_event_response/5ad0f966ceb0909e4bfa84dd/user'
+            description: The user is the coach or patient for whom the calendar event response is created specificially for
+          calendar_event:
+            type: object
+            required:
+              - data
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+                properties:
+                  related:
+                    type: string
+                    pattern: '/pub/calendar_event_response/[0-9a-z]+'
+                    example: '/pub/calendar_event_response/5ad0f966ceb0909e4bfa84dd/calendar_event'
+            description: The calendar_event is the calendar event for which the calendar event response is created specificially for
+    example:
+     {
+         "type": "calendar_event_response",
+         "id": "5ad0f966ceb0909e4bfa84dd",
+         "attributes": {
+           "attendee": "5ac7e74679f6868274a42e28",
+           "response_status": "accepted"
+         },
+         "relationships": {
+           "user": {
+               "links": {
+                   "related": "/pub/calendar_event_response/5ad0f966ceb0909e4bfa84dd/user"
+               },
+               "data": {
+                   "type": "user",
+                   "id": "5a0c8e27a9d454cc150997f7"
+               }
+           },
+           "calendar_event": {
+               "links": {
+                   "related": "/pub/calendar_event_response/5ad0f966ceb0909e4bfa84dd/calendar_event"
+               },
+               "data": {
+                   "type": "calendar_event",
+                   "id": "5755db2a3db4179179999acf"
+               }
+           }
+         },
+         "links": {
+           "self": "/pub/calendar_event_response/5ad0f966ceb0909e4bfa84dd"
+         },
+     }
+  CreateCalendarEventResponseRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        type: object
+        required:
+          - type
+          - attributes
+          - relationships
+        properties:
+          type:
+            $ref: "#/definitions/CalendarEventResponseResource/properties/type"
+          attributes:
+            required:
+              - attendee
+              - response_status
+            allOf:
+              - $ref: "#/definitions/CalendarEventResponseResource/properties/attributes"
+          relationships:
+            type: object
+            properties:
+              user:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: "#/definitions/CalendarEventResponseResource/properties/relationships/properties/user/properties/data"
+              calendar_event:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: "#/definitions/CalendarEventResponseResource/properties/relationships/properties/calendar_event/properties/data"
+    example:
+      {
+        "data": {
+          "type": "calendar_event_response",
+          "attributes": {
+           "attendee": "5ac7e74679f6868274a42e28",
+           "response_status": "accepted"
+          },
+          "relationships": {
+            "user": {
+              "data": {
+                "type": "user",
+                "id": "5a0c8e27a9d454cc150997f7"
+              }
+            },
+            "calendar_event": {
+              "data": {
+                "type": "calendar_event",
+                "id": "5755db2a3db4179179999acf"
+              }
+            }
+          }
+        }
+      }
+  # END /calendar_event_response definitions
 
   # BEGIN /email_history definitions
   EmailHistoryResource:
