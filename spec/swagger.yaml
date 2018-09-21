@@ -5573,140 +5573,150 @@ definitions:
   
   # BEGIN /patient_plan_summary definitions
   PatientPlanSummaryResource:
-      type: object
-      required:
-        - id
-        - type
-      properties:
-        id:
-          type: string
-          example: '57b36e3c04ad8c2224f2af38'
-        type:
-          type: string
-          enum:
-            - patient_plan_summary
-          example: patient_plan_summary
-        attributes:
-          type: object
-          properties:
-            adherence:
-              readOnly: true
+    type: object
+    required:
+      - id
+      - type
+    properties:
+      id:
+        type: string
+        example: '57b36e3c04ad8c2224f2af38'
+      type:
+        type: string
+        enum:
+          - patient_plan_summary
+        example: patient_plan_summary
+      attributes:
+        type: object
+        properties:
+          adherence:
+            readOnly: true
+            type: object
+          critical:
+            type: array
+            items:
               type: object
-            critical:
-              type: array
-              items:
+          time_zone:
+            type: string
+          window_order:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                _actions:
+                  type: array
+                  items:
+                    type: string
+          effective_from:
+            readOnly: true
+            type: string
+            format: dateTime
+          window_notification_times:
+            readOnly: true
+            type: object
+            properties:
+              morning:
+                type: integer
+              afternoon:
+                type: integer
+              evening:
+                type: integer
+              night:
+                type: integer
+      relationships:
+        type: object
+        required:
+          - actions
+          - bundles
+          - patient
+        properties:
+          actions:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - type
+                    - id
+                  properties:
+                    type:
+                      type: string
+                    id:
+                      type: string
+              links:
                 type: object
-            time_zone:
-              type: string
-            window_order:
-              type: array
-              items:
+                properties:
+                  related:
+                    type: string
+          bundles:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - type
+                    - id
+                  properties:
+                    type:
+                      type: string
+                    id:
+                      type: string
+              links:
+                type: object
+                properties:
+                  related:
+                    type: string
+          patient:
+            type: object
+            properties:
+              data:
                 type: object
                 properties:
                   type:
                     type: string
-                  _actions:
-                    type: array
-                    items:
+                  id:
+                    type: string
+              links:
+                type: object
+                properties:
+                  related:
+                    type: string
+          current_results:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - type
+                    - id
+                  properties:
+                    type:
                       type: string
-            effective_from:
-              readOnly: true
-              type: string
-              format: dateTime
-            window_notification_times:
-              readOnly: true
-              type: object
-              properties:
-                morning:
-                  type: integer
-                afternoon:
-                  type: integer
-                evening:
-                  type: integer
-                night:
-                  type: integer
-        relationships:
-          type: object
-          required:
-            - actions
-            - bundles
-            - patient
-          properties:
-            actions:
-              type: array
-              items: 
+                    id:
+                      type: string
+              links:
                 type: object
                 properties:
-                  data:
-                    type: object
-                    required:
-                      - type
-                      - id
-                    properties:
-                      type:
-                        type: string
-                      id:
-                        type: string
-                  links:
-                    type: object
-                    properties:
-                      related:
-                        type: string
-            bundles:
-              type: array
-              items: 
-                type: object
-                properties:
-                  data:
-                    type: object
-                    required:
-                      - type
-                      - id
-                    properties:
-                      type:
-                        type: string
-                      id:
-                        type: string
-                  links:
-                    type: object
-                    properties:
-                      related:
-                        type: string
-            patient:
-              type: object
-              properties:
-                  data:
-                    type: object
-                    properties:
-                      type: 
-                        type: string
-                      id:
-                        type: string
-            current_results:
-              type: array
-              items:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    required:
-                      - type
-                      - id
-                    properties:
-                      type:
-                        type: string
-                      id:
-                        type: string
-        links:
-          type: object
-          readOnly: true
-          required:
-            - self
-          properties:
-            self:
-              type: string
-              pattern: '/patient_plan_summary/[0-9a-z]+'
-              example: '/patient_plan_summary/57b36e3c04ad8c2224f2af38'
+                  related:
+                    type: string
+      links:
+        type: object
+        readOnly: true
+        required:
+          - self
+        properties:
+          self:
+            type: string
+            pattern: '/patient_plan_summary/[0-9a-z]+'
+            example: '/patient_plan_summary/57b36e3c04ad8c2224f2af38'
   FetchPatientPlanSummaryResponse:
     type: object
     required:
