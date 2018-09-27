@@ -9,33 +9,33 @@ info:
   description: |
     # Overview
     The Twine Health API is RESTful API. The requests and responses are formated according to the [JSON API](http://jsonapi.org/format/1.0/) specification.
-    
+
     In addition to this documentation, we also provide an [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) "yaml" file describing the API: [Twine API Specification](swagger.yaml).
 
     # Authentication
     Authentication for the Twine API is based on the [OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749). Twine currently supports grant types of **client_credentials** and **refresh_token**.
-    
+
     See [POST /oauth/token](#operation/createToken) for details on the request and response formats.
     <!-- ReDoc-Inject: <security-definitions> -->
-    
+
     # Paging
-    The Twine API supports two different pagination strategies for GET collection endpoints. 
-    
+    The Twine API supports two different pagination strategies for GET collection endpoints.
+
     #### Skip-based paging
-    
+
     Skip-based paging uses the query parameters `page[size]` and `page[number]` to specify the max number of resources returned and the page number. We default to skip-based paging if there are no page parameters. The response will include a `links` object containing links to the first, last, prev, and next pages of data.
-    
+
     If the contents of the collection change while you are iterating through the collection, you will see duplicate or missing documents. For example, if you are iterating through the `calender_event` resource via `GET /pub/calendar_event?sort=start_at&page[size]=50&page[number]=1`, and a new `calendar_event` is created that has a `start_at` value before the first `calendar_event`, when you fetch the next page at `GET /pub/calendar_event?sort=start_at&page[size]=50&page[number]=2`, the first entry in the second response will be a duplicate of the last entry in the first response.
-    
+
     #### Cursor-based paging
-    Cursor-based paging uses the query parameters `page[limit]` and `page[after]` to specify the max number of entries returned and identify where to begin the next page. Add `page[limit]` to the parameters to use cursor-based paging. The response will include a `links` object containing a link to the next page of data, if the next page exists. 
-    
-    Cursor-based paging is not subject to duplication if new resources are added to the collection. For example, if you are iterating through the `calender_event` resource via `GET /pub/calendar_event?sort=start_at&page[limit]=50`, and a new `calendar_event` is created that has a `start_at` value before the first `calendar_event`, you will not see a duplicate entry when you fetch the next page at `GET /pub/calendar_event?sort=start_at&page[limit]=50&page[after]=<cursor>`. 
-    
-    We encourage the use of cursor-based paging for performance reasons. 
-    
+    Cursor-based paging uses the query parameters `page[limit]` and `page[after]` to specify the max number of entries returned and identify where to begin the next page. Add `page[limit]` to the parameters to use cursor-based paging. The response will include a `links` object containing a link to the next page of data, if the next page exists.
+
+    Cursor-based paging is not subject to duplication if new resources are added to the collection. For example, if you are iterating through the `calender_event` resource via `GET /pub/calendar_event?sort=start_at&page[limit]=50`, and a new `calendar_event` is created that has a `start_at` value before the first `calendar_event`, you will not see a duplicate entry when you fetch the next page at `GET /pub/calendar_event?sort=start_at&page[limit]=50&page[after]=<cursor>`.
+
+    We encourage the use of cursor-based paging for performance reasons.
+
     In either form of paging, you can determine whether any resources were missed by comparing the number of fetched resources against `meta.count`. Set `page[size]` or `page[limit]` to 0 to get only the count.
-    
+
     It is not valid to mix the two strategies.
 host: api.twinehealth.com
 basePath: /pub
@@ -148,7 +148,7 @@ paths:
         }
         ```
       operationId: createToken
-      consumes: 
+      consumes:
         - application/vnd.api+json
         - application/json
       parameters:
@@ -2222,14 +2222,14 @@ definitions:
       source:
         type: object
         properties:
-          parameter: 
+          parameter:
             type: string
           pointer:
             type: string
   CreateOrUpdateErrorResponse:
     type: object
     properties:
-      meta: 
+      meta:
         $ref: '#/definitions/CreateOrUpdateMetaResponse'
       errors:
         $ref: '#/definitions/Error'
@@ -2248,7 +2248,7 @@ definitions:
   FetchErrorResponse:
     type: object
     properties:
-      meta: 
+      meta:
         $ref: '#/definitions/FetchMetaResponse'
       errors:
         $ref: '#/definitions/Error'
@@ -2310,7 +2310,7 @@ definitions:
                 - links
                 - data
               properties:
-                data: 
+                data:
                   type: array
                   items:
                     type: object
@@ -2320,7 +2320,7 @@ definitions:
                     properties:
                       type:
                         type: string
-                        enum: 
+                        enum:
                           - group
                         example: group
                       id:
@@ -2339,14 +2339,14 @@ definitions:
                 - links
                 - data
               properties:
-                data: 
+                data:
                   required:
                     - type
                     - id
                   properties:
                     type:
                       type: string
-                      enum: 
+                      enum:
                         - organization
                       example: organization
                     id:
@@ -2372,7 +2372,7 @@ definitions:
         properties:
           type:
             type: string
-            enum: 
+            enum:
               - token
             example: token
           attributes:
@@ -2389,7 +2389,7 @@ definitions:
                 example: client_credentials
               client_id:
                 type: string
-                description: Contact Twine to get a client id and secret. 
+                description: Contact Twine to get a client id and secret.
                 example: '19391dc5-8af8-4152-93e8-74ff9361607e'
               client_secret:
                 type: string
@@ -2399,7 +2399,7 @@ definitions:
                 type: string
                 description: Required if grant_type is "refresh_token"
                 example: 'b7dcc4a4-593b-4410-a0c5-97ae48939396'
-    example: 
+    example:
       {
         "data": {
           "type": "oauth/token",
@@ -2423,7 +2423,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/GroupResource'
-    example: 
+    example:
       {
         "meta": {
           "req_id": "2de51f1a-bafa-4e48-a0d0-cd8d4a9ffb28"
@@ -2451,7 +2451,7 @@ definitions:
         }
       }
   # END /oauth/token definitions
-  
+
   # BEGIN /organization definitions
   OrganizationResource:
       type: object
@@ -2536,7 +2536,7 @@ definitions:
               type: string
               example: Team Health
               description: The name of the group
-            bio: 
+            bio:
               type: string
               description: A description of the group
               example: Team Health is all about the patient experience.
@@ -4851,11 +4851,11 @@ definitions:
         example: '02138'
       lines:
         type: array
-        example: 
+        example:
           - '1234 Any St.'
         items:
           type: string
-      use: 
+      use:
         type: string
       type:
         type: string
@@ -4873,9 +4873,9 @@ definitions:
     properties:
       label:
         type: string
-      system: 
+      system:
         type: string
-      value: 
+      value:
         type: string
       unique:
         description: If `true`, the combination of system and value must be global unique among all patients and coaches in Twine.
@@ -5569,8 +5569,8 @@ definitions:
         },
         "included": []
       }
-  # END /patient definitions        
-  
+  # END /patient definitions
+
   # BEGIN /patient_plan_summary definitions
   PatientPlanSummaryResource:
     type: object
@@ -5593,9 +5593,8 @@ definitions:
             readOnly: true
             type: object
           critical:
-            type: array
-            items:
-              type: object
+            type: object
+            additionalProperties: true
           time_zone:
             type: string
           window_order:
@@ -5747,6 +5746,21 @@ definitions:
                 "count": 0
               }
             },
+            "critical": {
+              "blood_glucose": {
+                "data": {
+                  "maximum": {
+                    "unit": "mg/dL",
+                    "value": 300
+                  },
+                  "minimum": {
+                    "unit": "mg/dL",
+                    "value": 70
+                  }
+                }
+              },
+              "effective_from": "2017-07-01T04:00:00.000Z"
+            },
             "window_order": [],
             "effective_from": "2017-07-01T04:00:00.000Z",
             "window_notification_times": {
@@ -5873,7 +5887,7 @@ definitions:
         $ref: '#/definitions/FetchMetaResponse'
       data:
         type: array
-        items: 
+        items:
           $ref: '#/definitions/PatientPlanSummaryResource'
       included:
         description: |
@@ -6029,7 +6043,7 @@ definitions:
     properties:
       type:
         type: string
-      id: 
+      id:
         type: string
       attributes:
         type: object
@@ -6096,10 +6110,10 @@ definitions:
           reward_program_activation:
             type: object
             properties:
-              data: 
+              data:
                 type: object
                 properties:
-                  type: 
+                  type:
                     type: string
                   id:
                     type: string
