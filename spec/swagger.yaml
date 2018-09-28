@@ -1329,7 +1329,7 @@ paths:
                  },
                  "type": "ldl_cholesterol",
                  "occurred_at": "2017-03-14T11:00:57.000Z",
-                 "value": "121",
+                 "value": 121,
                  "unit": "mg/dl"
               },
               "relationships": {
@@ -4687,7 +4687,7 @@ definitions:
               value:
                 type: string
           value:
-            type: number
+            description: Can be any value (number, boolean, string, object) depending on the metric type. Most values are of type number.
           systolic:
             type: number
           diastolic:
@@ -4754,7 +4754,7 @@ definitions:
              },
              "type": "ldl_cholesterol",
              "occurred_at": "2017-03-14T11:00:57.000Z",
-             "value": "121",
+             "value": 121,
              "unit": "mg/dl"
           },
           "relationships": {
