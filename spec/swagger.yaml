@@ -1597,6 +1597,35 @@ paths:
           description: Invalid Request
           schema:
             $ref: '#/definitions/FetchErrorResponse'
+    put:
+      tags:
+        - patient
+      summary: Upsert patient
+      description: Create a new patient or update an existing patient
+      operationId: upsertPatient
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpsertPatientRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreatePatientResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
   /patient/{id}:
     get:
       tags:
@@ -5568,6 +5597,64 @@ definitions:
           }
         },
         "included": []
+      }
+  UpsertPatientRequest:
+    type: object
+    required:
+      - meta
+      - data
+    properties:
+      meta:
+        type: object
+        required:
+          - query
+        properties:
+          query:
+            type: object
+            required:
+              - identifier
+              - groups
+            description: Query identifying group to create patient in, and identifier to match patient
+            properties:
+              identifier:
+                type: object
+                properties:
+                  system:
+                    type: string
+                    description: Name of system
+                  value:
+                    type: string
+                    description: Value in system
+              groups:
+                type: array
+                items:
+                  type: string
+                  description: ID of group
+      data:
+        $ref: "#/definitions/PatientResource"
+    example:
+      {
+        "meta": {
+          "query": {
+            "identifier": { "system": "OtherPlace", "value": "123456" },
+            "groups": ["5755db2a3db4179179999acf"]
+          }
+        },
+        "data": {
+          "type": "patient",
+          "attributes": {
+            "first_name": "Jack",
+            "last_name": "Frost"
+          },
+          "relationships": {
+            "groups": {
+              "data": [{
+                "type": "group",
+                "id": "5755db2a3db4179179999acf"
+              }]
+            }
+          }
+        }
       }
   # END /patient definitions
 
