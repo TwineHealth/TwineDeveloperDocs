@@ -5614,9 +5614,9 @@ definitions:
             required:
               - identifier
               - groups
-            description: Query identifying group to create patient in, and identifier to match patient
             properties:
               identifier:
+                description: Identifier to match patient
                 type: object
                 properties:
                   system:
@@ -5626,6 +5626,7 @@ definitions:
                     type: string
                     description: Value in system
               groups:
+                description: Group to create/update patient in.
                 type: array
                 items:
                   type: string
