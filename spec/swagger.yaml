@@ -1,25 +1,25 @@
 swagger: '2.0'
 info:
   version: v7.75.0
-  title: Twine API
+  title: Fitbit Plus API
   x-logo:
-    url: 'http://developer.twinehealth.com/images/twinehealth_hz_4color.png'
+    url: 'http://developer.twinehealth.com/images/Fitbit_Plus_lockup_2C_RGB-32.png'
   contact:
     email: apiteam@twinehealth.com
   description: |
     # Overview
-    The Twine Health API is RESTful API. The requests and responses are formated according to the [JSON API](http://jsonapi.org/format/1.0/) specification.
+    The Fitbit Plus API is a RESTful API. The requests and responses are formated according to the [JSON API](http://jsonapi.org/format/1.0/) specification.
 
-    In addition to this documentation, we also provide an [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) "yaml" file describing the API: [Twine API Specification](swagger.yaml).
+    In addition to this documentation, we also provide an [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) "yaml" file describing the API: [Fitbit Plus API Specification](swagger.yaml).
 
     # Authentication
-    Authentication for the Twine API is based on the [OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749). Twine currently supports grant types of **client_credentials** and **refresh_token**.
+    Authentication for the Fitbit Plus API is based on the [OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749). Fitbit Plus currently supports grant types of **client_credentials** and **refresh_token**.
 
     See [POST /oauth/token](#operation/createToken) for details on the request and response formats.
     <!-- ReDoc-Inject: <security-definitions> -->
 
     # Paging
-    The Twine API supports two different pagination strategies for GET collection endpoints.
+    The Fitbit Plus API supports two different pagination strategies for GET collection endpoints.
 
     #### Skip-based paging
 
@@ -60,7 +60,7 @@ tags:
   - name: oauth
     description: Authentication operations
   - name: organization
-    description: An organization is a Twine customer. No data is accessible across organizations.
+    description: An organization is a Fitbit Plus customer. No data is accessible across organizations.
   - name: group
     description: A group is a cohort of patients within an organization. The creation of groups allows for the segmentation of dashboards and analytics. For example, a group might correspond to the patients in a particular practice or the employees of a particular employer.
   - name: coach
@@ -88,7 +88,7 @@ tags:
   - name: metric
     description: A metric is a quantitative result for a patient. For example, vital signs, lab results, etc. are all metrics.
   - name: patient
-    description: A patient is the core user of Twine.
+    description: A patient is the core user of Fitbit Plus.
   - name: plan
     description: A plan is the set of actions and associated goals for a patient.
   - name: reward
@@ -725,7 +725,7 @@ paths:
           in: query
           type: string
           description: |
-            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
+            Fitbit Plus organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, `filter[organization]`, or `filter[attendees]`.
         - name: filter[attendees]
           in: query
           type: string
@@ -946,11 +946,11 @@ paths:
         - name: filter[receiver]
           in: query
           type: string
-          description: Twine user id of email recipient. Required if filter[sender] is not defined.
+          description: Fitbit Plus user id of email recipient. Required if filter[sender] is not defined.
         - name: filter[sender]
           in: query
           type: string
-          description: Twine user id of email sender. Required if filter[receiver] is not defined.
+          description: Fitbit Plus user id of email sender. Required if filter[receiver] is not defined.
         - name: filter[emailType]
           in: query
           type: string
@@ -1031,7 +1031,7 @@ paths:
           in: query
           type: string
           description: |
-            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Fitbit Plus organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
         - name: page[number]
           in: query
           description: Page number
@@ -1173,7 +1173,7 @@ paths:
           in: query
           type: string
           description: |
-            Twine organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+            Fitbit Plus organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
         - name: page[number]
           in: query
           description: Page number
@@ -1531,7 +1531,7 @@ paths:
         - name: filter[organization]
           in: query
           type: string
-          description: Twine organization id. Note that either `filter[group]` or `filter[organization]` must be specified.
+          description: Fitbit Plus organization id. Note that either `filter[group]` or `filter[organization]` must be specified.
         - name: filter[identifier][system]
           in: query
           type: string
@@ -2389,11 +2389,11 @@ definitions:
                 example: client_credentials
               client_id:
                 type: string
-                description: Contact Twine to get a client id and secret.
+                description: Contact Fitbit Plus to get a client id and secret.
                 example: '19391dc5-8af8-4152-93e8-74ff9361607e'
               client_secret:
                 type: string
-                description: Contact Twine to get a client id and secret. Secret is required if grant_type is "client_credentials"
+                description: Contact Fitbit Plus to get a client id and secret. Secret is required if grant_type is "client_credentials"
                 example: '63eca384-7a65-42e2-872b-afd3e8659d0a'
               refresh_token:
                 type: string
@@ -4878,7 +4878,7 @@ definitions:
       value:
         type: string
       unique:
-        description: If `true`, the combination of system and value must be global unique among all patients and coaches in Twine.
+        description: If `true`, the combination of system and value must be global unique among all patients and coaches in Fitbit Plus.
         type: boolean
         default: true
   ArchiveHistory:
@@ -4993,8 +4993,8 @@ definitions:
             example: '/patient/57b36ef304ad8c2224f2af3a'
           twine_web_app:
             type: string
-            example: 'https://app.twinehealth.com/#/coach/patient/5367c6300b7bb6e94188c02c/overview'
-            description: 'A link to the patient record in the Twine web application.'
+            example: 'https://app.plus.fitbit.com/#/coach/patient/5367c6300b7bb6e94188c02c/overview'
+            description: 'A link to the patient record in the Fitbit Plus web application.'
       relationships:
         type: object
         required:
@@ -5185,7 +5185,7 @@ definitions:
               ],
               "identifiers": [
                 {
-                  "label": "Twine Sample Data Filler Patient",
+                  "label": "Fitbit Plus Sample Data Filler Patient",
                   "system": "twine-filler-patient",
                   "value": "filler-92"
                 }
@@ -5243,7 +5243,7 @@ definitions:
               ],
               "identifiers": [
                 {
-                  "label": "Twine Sample Data Filler Patient",
+                  "label": "Fitbit Plus Sample Data Filler Patient",
                   "system": "twine-filler-patient",
                   "value": "filler-5"
                 }
@@ -5299,7 +5299,7 @@ definitions:
               ],
               "identifiers": [
                 {
-                  "label": "Twine Sample Data Filler Patient",
+                  "label": "Fitbit Plus Sample Data Filler Patient",
                   "system": "twine-filler-patient",
                   "value": "filler-3"
                 }
@@ -5374,7 +5374,7 @@ definitions:
             ],
             "identifiers": [
               {
-                "label": "Twine Sample Data Filler Patient",
+                "label": "Fitbit Plus Sample Data Filler Patient",
                 "system": "twine-filler-patient",
                 "value": "filler-92"
               }

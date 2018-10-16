@@ -2,7 +2,7 @@
   "generator-openapi-repo": {
     "importExistingSpec": true,
     "importedSpec": "../spec/swagger.yaml",
-    "name": "Twine",
+    "name": "Fitbit Plus",
     "repo": "TwineHealth/TwineDeveloperDocs",
     "splitSpec": false,
     "samples": true,
