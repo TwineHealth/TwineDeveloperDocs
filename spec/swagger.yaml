@@ -97,7 +97,7 @@ tags:
   - name: calendar event response
     description: A calendar event response indicates the attendee's response to a calendar event.  Only `POST` for creation is allowed as the responses are updated into the corresponding calendar events.
   - name: email history
-    description: Email history represents a single email that was sent using twine.
+    description: Email history represents a single email that was sent using Fitbit Plus.
   - name: health profile
     description: A health profile contains a set of health questions and answers for a patient.
   - name: health profile answer
@@ -2410,11 +2410,11 @@ definitions:
                 example: client_credentials
               client_id:
                 type: string
-                description: Contact Fitbit Plus to get a client id and secret.
+                description: Contact Fitbit Plus API Support to get a client id and secret.
                 example: '19391dc5-8af8-4152-93e8-74ff9361607e'
               client_secret:
                 type: string
-                description: Contact Fitbit Plus to get a client id and secret. Secret is required if grant_type is "client_credentials"
+                description: Contact Fitbit Plus API Support to get a client id and secret. Secret is required if grant_type is "client_credentials"
                 example: '63eca384-7a65-42e2-872b-afd3e8659d0a'
               refresh_token:
                 type: string
