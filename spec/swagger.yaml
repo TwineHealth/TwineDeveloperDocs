@@ -72,7 +72,8 @@ securityDefinitions:
     description: |
       Fitbit Plus allows customers to access data for their organization using client credentials.
       OAuth2 is a safe and secure way to give you access.
-    flow: client credentials
+    flow: application
+    tokenUrl: '/oauth/token'
     scopes:
       'group': access patients and data within a group
       'organization': access patients and data within an organization
@@ -203,7 +204,7 @@ paths:
           schema:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
       security:
-        - twine_auth:
+        - OAuth2:
           - 'group'
           - 'organization'
   /oauth/token/{id}/groups:
@@ -233,7 +234,7 @@ paths:
           schema:
             $ref: '#/definitions/FetchErrorResponse'
       security:
-        - twine_auth:
+        - OAuth2:
           - 'group'
           - 'organization'
   /oauth/token/{id}/organization:
