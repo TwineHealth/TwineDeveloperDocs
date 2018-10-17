@@ -1,4 +1,4 @@
-# Twine OpenAPI Specification
+# Fitbit Plus OpenAPI Specification
 [![Build Status](https://travis-ci.org/TwineHealth/TwineDeveloperDocs.svg?branch=master)](https://travis-ci.org/TwineHealth/TwineDeveloperDocs)
 
 ## Links

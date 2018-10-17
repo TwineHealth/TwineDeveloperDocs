@@ -1,5 +1,5 @@
 {
-  "name": "Twine-openapi-spec",
+  "name": "fitbit-plus-openapi-spec",
   "version": "0.0.1",
   "dependencies": {
     "bower": "^1.7.7",
