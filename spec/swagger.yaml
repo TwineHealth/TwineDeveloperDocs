@@ -264,6 +264,37 @@ paths:
           schema:
             $ref: '#/definitions/FetchErrorResponse'
 
+  /organization:
+    post:
+      tags:
+        - organization
+      summary: Create an organization
+      description: |
+        Create an organization record. A bearer token with a privileged scope is required for this operation.
+      operationId: createOrganization
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateOrganizationRequest'
+      responses:
+        '201':
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateOrganizationResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
   /organization/{id}:
     get:
       tags:
@@ -290,6 +321,41 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
+    patch:
+      tags:
+        - organization
+      summary: Update an organization
+      description: |
+        Find organization by id and update record. A bearer token with a privileged scope is required for this operation.
+      operationId: updateOrganization
+      parameters:
+        - name: id
+          in: path
+          description: Organization identifier
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateOrganizationRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UpdateOrganizationResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/CreateOrUpdateErrorResponse'
 
   /group:
     post:
@@ -2525,6 +2591,10 @@ definitions:
             name:
               type: string
               example: Health Activation Partners
+            features:
+              type: array
+              items:
+                type: string
         links:
           readOnly: true
           required:
@@ -2553,6 +2623,95 @@ definitions:
           "id": "5873b63605376e337a89d64a",
           "attributes": {
             "name": "Health Activation Partners"
+          },
+          "links": {
+            "self": "/pub/organization/5873b63605376e337a89d64a"
+          }
+        }
+      }
+  CreateOrganizationRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/OrganizationResource'
+    example:
+      {
+      	"data": {
+      		"type": "organization",
+      		"attributes": {
+      			"name": "Acme Inc"
+      		}
+      	}
+      }
+  CreateOrganizationResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/OrganizationResource'
+    example:
+      {
+        "meta": {
+          "req_id": "aeb94ed8-d7f9-4e72-a78f-e276c4f52c2a"
+        },
+        "included": [],
+        "data": {
+          "type": "organization",
+          "id": "5873b63605376e337a89d64a",
+          "attributes": {
+            "name": "Acme Inc",
+            "features": []
+          },
+          "links": {
+            "self": "/pub/organization/5873b63605376e337a89d64a"
+          }
+        }
+      }
+  UpdateOrganizationRequest:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        $ref: '#/definitions/OrganizationResource'
+    example:
+      {
+      	"data": {
+      		"type": "organization",
+      		"attributes": {
+            "features": {
+              "FHS_MANAGED": true,
+              "OTHER_FEATURE": false
+            }
+      		}
+      	}
+      }
+  UpdateOrganizationResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/CreateOrUpdateMetaResponse'
+      data:
+        $ref: '#/definitions/OrganizationResource'
+    example:
+      {
+        "meta": {
+          "req_id": "aeb94ed8-d7f9-4e72-a78f-e276c4f52c2a"
+        },
+        "included": [],
+        "data": {
+          "type": "organization",
+          "id": "5873b63605376e337a89d64a",
+          "attributes": {
+            "name": "Acme Inc",
+            "features": ["FHS_MANAGED"]
           },
           "links": {
             "self": "/pub/organization/5873b63605376e337a89d64a"
