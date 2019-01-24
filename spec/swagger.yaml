@@ -2638,12 +2638,12 @@ definitions:
         $ref: '#/definitions/OrganizationResource'
     example:
       {
-      	"data": {
-      		"type": "organization",
-      		"attributes": {
-      			"name": "Acme Inc"
-      		}
-      	}
+        "data": {
+          "type": "organization",
+          "attributes": {
+            "name": "Acme Inc"
+          }
+        }
       }
   CreateOrganizationResponse:
     type: object
@@ -2681,9 +2681,9 @@ definitions:
         $ref: '#/definitions/OrganizationResource'
     example:
       {
-      	"data": {
-      		"type": "organization",
-      		"attributes": {
+        "data": {
+          "type": "organization",
+          "attributes": {
             "features": {
               "FHS_MANAGED": true,
               "OTHER_FEATURE": false
