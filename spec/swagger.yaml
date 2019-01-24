@@ -2688,8 +2688,8 @@ definitions:
               "FHS_MANAGED": true,
               "OTHER_FEATURE": false
             }
-      		}
-      	}
+          }
+        }
       }
   UpdateOrganizationResponse:
     type: object
