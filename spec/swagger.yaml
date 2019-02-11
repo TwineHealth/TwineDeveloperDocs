@@ -2592,9 +2592,9 @@ definitions:
               type: string
               example: Health Activation Partners
             features:
-              type: array
-              items:
-                type: string
+              type: object
+              additionalProperties:
+                type: boolean
         links:
           readOnly: true
           required:
@@ -2665,7 +2665,7 @@ definitions:
           "id": "5873b63605376e337a89d64a",
           "attributes": {
             "name": "Acme Inc",
-            "features": []
+            "features": {}
           },
           "links": {
             "self": "/pub/organization/5873b63605376e337a89d64a"
@@ -2711,7 +2711,9 @@ definitions:
           "id": "5873b63605376e337a89d64a",
           "attributes": {
             "name": "Acme Inc",
-            "features": ["FHS_MANAGED"]
+            "features": {
+              "FHS_MANAGED": true
+            }
           },
           "links": {
             "self": "/pub/organization/5873b63605376e337a89d64a"
@@ -5220,8 +5222,6 @@ definitions:
             description: 'A link to the patient record in the Fitbit Plus web application.'
       relationships:
         type: object
-        required:
-          - groups
         properties:
           groups:
             required:
