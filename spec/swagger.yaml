@@ -5090,6 +5090,16 @@ definitions:
         description: If `true`, the combination of system and value must be global unique among all patients and coaches in Fitbit Plus.
         type: boolean
         default: true
+  IdentityProvider:
+    type: object
+    required:
+      - type
+      - profile_id
+    properties:
+      type:
+        type: string
+      profile_id:
+        type: string
   ArchiveHistory:
     type: object
     properties:
@@ -5144,6 +5154,10 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/PatientIdentifier'
+          identity_providers:
+            type: array
+            items:
+              $ref: '#/definitions/IdentityProvider'
           birth_date:
             type: string
             format: date
@@ -5228,6 +5242,26 @@ definitions:
                     id:
                       type: string
                       example: '57b3708b04ad8c2224f2af3b'
+          organizations:
+            required:
+              - data
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - type
+                    - id
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - organization
+                      example: organization
+                    id:
+                      type: string
+                      example: '5c5c2ba8083880a847dee720'
           coaches:
             required:
               - data
@@ -5700,6 +5734,15 @@ definitions:
                 "related": "/pub/patient/5817ead56f5316c0d05ba8bf/groups"
               }
             },
+            "organizations": {
+              "data": [{
+                "type": "organization",
+                "id": "5c3c927220ce103d3c7b6c65"
+              }],
+              "links": {
+                "related": "/pub/patient/5c3c927220ce103d3c7b6c65/organizations"
+              }
+            }
             "coaches": {
               "data": [],
               "links": {
