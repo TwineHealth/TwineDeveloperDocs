@@ -5742,7 +5742,7 @@ definitions:
               "links": {
                 "related": "/pub/patient/5c3c927220ce103d3c7b6c65/organizations"
               }
-            }
+            },
             "coaches": {
               "data": [],
               "links": {
@@ -5834,9 +5834,6 @@ definitions:
         properties:
           query:
             type: object
-            required:
-              - identifier
-              - groups
             properties:
               identifier:
                 description: Identifier to match patient
@@ -5854,32 +5851,85 @@ definitions:
                 items:
                   type: string
                   description: ID of group
+              identity_provider_email_dob:
+                description: Set of fields to search for a participant before create/update operation. Includes identity_provider object and email + birth_date pair. At least one of these is required.
+                type: object
+                properties:
+                  identity_provider:
+                    type: object
+                    description: External identity provider
+                    properties:
+                      type:
+                        type: string
+                        description: External identity name or type
+                      profile_id:
+                        type: string
+                        description: Value in external system
+                  email_address:
+                    type: string
+                    description: Primary email address
+                  birth_date:
+                    type: string
+                    description: Date of birth
       data:
         $ref: "#/definitions/PatientResource"
     example:
-      {
-        "meta": {
-          "query": {
-            "identifier": { "system": "OtherPlace", "value": "123456" },
-            "groups": ["5755db2a3db4179179999acf"]
-          }
-        },
-        "data": {
-          "type": "patient",
-          "attributes": {
-            "first_name": "Jack",
-            "last_name": "Frost"
+      Patient is searched by identifier and groups pair:
+        {
+          "meta": {
+            "query": {
+              "identifier": { "system": "OtherPlace", "value": "123456" },
+              "groups": ["5755db2a3db4179179999acf"]
+            }
           },
-          "relationships": {
-            "groups": {
-              "data": [{
-                "type": "group",
-                "id": "5755db2a3db4179179999acf"
-              }]
+          "data": {
+            "type": "patient",
+            "attributes": {
+              "first_name": "Jack",
+              "last_name": "Frost"
+            },
+            "relationships": {
+              "groups": {
+                "data": [{
+                  "type": "group",
+                  "id": "5755db2a3db4179179999acf"
+                }]
+              }
             }
           }
         }
-      }
+      Patient is searched by identity_provider_email_dob:
+        {
+          "meta": {
+            "query": {
+              "identity_provider_email_dob": {
+                "identity_provider": {
+                  "type": "Fitbit",
+                  "profile_id": "229C9A"
+                },
+                "email_address": "jim.green@example.com",
+                "birth_date": "1980-04-22"
+              }
+            }
+          },
+          "data": {
+            "type": "patient",
+            "attributes": {
+              "first_name": "Jim",
+              "last_name": "Green"
+            },
+            "relationships": {
+              "groups": {
+                "data": [
+                  {
+                    "type": "organization",
+                    "id": "5c3c927220ce103d3c7b6c65"
+                  }
+                ]
+              }
+            }
+          }
+        }
   # END /patient definitions
 
   # BEGIN /patient_plan_summary definitions
