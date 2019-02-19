@@ -2294,7 +2294,13 @@ definitions:
       ignored:
         type: array
         items:
-          type: string
+          type: object
+          properties:
+            source:
+              type: object
+              properties:
+                pointer:
+                  type: string
   FetchMetaResponse:
     type: object
     properties:
@@ -2418,6 +2424,9 @@ definitions:
             expires_in:
               type: integer
               example: 3600
+            scope:
+              type: string
+              example: 'internal_scope'
         relationships:
           type: object
           properties:
@@ -2489,7 +2498,7 @@ definitions:
           type:
             type: string
             enum:
-              - token
+              - oauth/token
             example: token
           attributes:
             type: object
@@ -2515,6 +2524,10 @@ definitions:
                 type: string
                 description: Required if grant_type is "refresh_token"
                 example: 'b7dcc4a4-593b-4410-a0c5-97ae48939396'
+              scope:
+                type: string
+                description: Required for internal usage
+                example: 'internal_scope'
     example:
       {
         "data": {
@@ -5871,6 +5884,8 @@ definitions:
                   birth_date:
                     type: string
                     description: Date of birth
+                    format: date
+                    example: '1944-03-06'
       data:
         $ref: "#/definitions/PatientResource"
     example:
