@@ -2608,6 +2608,9 @@ definitions:
               type: object
               additionalProperties:
                 type: boolean
+            fhsProgramId:
+              type: string
+              example: 228TMV
         links:
           readOnly: true
           required:
@@ -2636,6 +2639,7 @@ definitions:
           "id": "5873b63605376e337a89d64a",
           "attributes": {
             "name": "Health Activation Partners"
+            "fhsProgramId": "228TMV"
           },
           "links": {
             "self": "/pub/organization/5873b63605376e337a89d64a"
@@ -2678,7 +2682,8 @@ definitions:
           "id": "5873b63605376e337a89d64a",
           "attributes": {
             "name": "Acme Inc",
-            "features": {}
+            "features": {},
+            "fhsProgramId": "228TMV"
           },
           "links": {
             "self": "/pub/organization/5873b63605376e337a89d64a"
@@ -2726,7 +2731,8 @@ definitions:
             "name": "Acme Inc",
             "features": {
               "FHS_MANAGED": true
-            }
+            },
+            "fhsProgramId": "228TMV"
           },
           "links": {
             "self": "/pub/organization/5873b63605376e337a89d64a"
