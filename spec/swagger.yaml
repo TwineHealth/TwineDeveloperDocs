@@ -2604,10 +2604,6 @@ definitions:
             name:
               type: string
               example: Health Activation Partners
-            features:
-              type: object
-              additionalProperties:
-                type: boolean
             fhsProgramId:
               type: string
               example: 228TMV
@@ -2682,7 +2678,6 @@ definitions:
           "id": "5873b63605376e337a89d64a",
           "attributes": {
             "name": "Acme Inc",
-            "features": {},
             "fhsProgramId": "228TMV"
           },
           "links": {
@@ -2702,10 +2697,7 @@ definitions:
         "data": {
           "type": "organization",
           "attributes": {
-            "features": {
-              "FHS_MANAGED": true,
-              "OTHER_FEATURE": false
-            }
+            "fhsProgramId": "228TMV"
           }
         }
       }
@@ -2729,9 +2721,6 @@ definitions:
           "id": "5873b63605376e337a89d64a",
           "attributes": {
             "name": "Acme Inc",
-            "features": {
-              "FHS_MANAGED": true
-            },
             "fhsProgramId": "228TMV"
           },
           "links": {
