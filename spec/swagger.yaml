@@ -5033,6 +5033,17 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/ArchiveHistory'
+          statement:
+            type: object
+            readOnly: true
+            properties:
+              value:
+                type: string
+                example: 'Enjoying nature.'
+              updated_at:
+                type: string
+                format: dateTime
+                example: '2016-06-03T13:15:22.000Z'
       links:
         type: object
         readOnly: true
