@@ -5034,6 +5034,7 @@ definitions:
             items:
               $ref: '#/definitions/ArchiveHistory'
           statement:
+            description: A patient's motivation statement.
             type: object
             readOnly: true
             properties:
@@ -5044,6 +5045,9 @@ definitions:
                 type: string
                 format: dateTime
                 example: '2016-06-03T13:15:22.000Z'
+              updated_by:
+                type: string
+                example: '5c509cc2f60e34018180b57c'
       links:
         type: object
         readOnly: true
@@ -5255,7 +5259,8 @@ definitions:
               "archive_history": [],
               "statement": {
                              "value": "Enjoying nature.",
-                             "updated_at": "2016-03-16T13:32:57.000Z"
+                             "updated_at": "2016-03-16T13:32:57.000Z",
+                             "updated_by": "5c509cc2f60e34018180b57c"
               }
             },
             "links": {
@@ -5448,7 +5453,8 @@ definitions:
             "archive_history": [],
             "statement": {
               "value": "Enjoying nature.",
-              "updated_at": "2016-03-16T13:32:57.000Z"
+              "updated_at": "2016-03-16T13:32:57.000Z",
+              "updated_by": "5c509cc2f60e34018180b57c"
             }
           },
           "links": {
