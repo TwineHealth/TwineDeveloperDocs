@@ -5033,6 +5033,21 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/ArchiveHistory'
+          statement:
+            description: A patient's motivation statement.
+            type: object
+            readOnly: true
+            properties:
+              value:
+                type: string
+                example: 'Enjoying nature.'
+              updated_at:
+                type: string
+                format: dateTime
+                example: '2016-06-03T13:15:22.000Z'
+              updated_by:
+                type: string
+                example: '5c509cc2f60e34018180b57c'
       links:
         type: object
         readOnly: true
@@ -5241,7 +5256,12 @@ definitions:
                 }
               ],
               "archived": false,
-              "archive_history": []
+              "archive_history": [],
+              "statement": {
+                             "value": "Enjoying nature.",
+                             "updated_at": "2016-03-16T13:32:57.000Z",
+                             "updated_by": "5c509cc2f60e34018180b57c"
+              }
             },
             "links": {
               "twine_web_app": "http://10.0.1.55:9000/#/coach/admin/coaches/58163112237d84a94035f78b/profile",
@@ -5430,7 +5450,12 @@ definitions:
               }
             ],
             "archived": false,
-            "archive_history": []
+            "archive_history": [],
+            "statement": {
+              "value": "Enjoying nature.",
+              "updated_at": "2016-03-16T13:32:57.000Z",
+              "updated_by": "5c509cc2f60e34018180b57c"
+            }
           },
           "links": {
             "twine_web_app": "http://10.0.1.55:9000/#/coach/admin/coaches/58163112237d84a94035f78b/profile",
