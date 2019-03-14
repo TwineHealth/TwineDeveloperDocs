@@ -2354,7 +2354,9 @@ definitions:
       meta:
         $ref: '#/definitions/CreateOrUpdateMetaResponse'
       errors:
-        $ref: '#/definitions/Error'
+        type: array
+        items:
+          $ref: '#/definitions/Error'
     example:
       {
         "meta": {
