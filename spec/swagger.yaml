@@ -1641,6 +1641,10 @@ paths:
           type: string
           description: |
             The start (inclusive) and end (exclusive) dates are ISO date and time strings separated by `..`. Example for patients updated in November 2017 (America/New_York): `filter[updated_at]=2017-11-01T00:00:00-04:00..2017-12-01T00:00:00-05:00`
+        - name: filter[enrolled]
+          in: query
+          type: boolean
+          description: If not specified, return all patients. If set to 'true' return only enrolled patients, if set to 'false', return patients who are not enrolled.
         - name: page[number]
           in: query
           description: Page number
