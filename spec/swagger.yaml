@@ -5116,6 +5116,16 @@ definitions:
         type: string
       profile_id:
         type: string
+      email_address:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      display_name:
+        type: string
+      profile_picture:
+        type: string
   ArchiveHistory:
     type: object
     properties:
@@ -5256,26 +5266,6 @@ definitions:
                     id:
                       type: string
                       example: '57b3708b04ad8c2224f2af3b'
-          organizations:
-            required:
-              - data
-            properties:
-              data:
-                type: array
-                items:
-                  type: object
-                  required:
-                    - type
-                    - id
-                  properties:
-                    type:
-                      type: string
-                      enum:
-                        - organization
-                      example: organization
-                    id:
-                      type: string
-                      example: '5c5c2ba8083880a847dee720'
           coaches:
             required:
               - data
@@ -5748,15 +5738,6 @@ definitions:
                 "related": "/pub/patient/5817ead56f5316c0d05ba8bf/groups"
               }
             },
-            "organizations": {
-              "data": [{
-                "type": "organization",
-                "id": "5c3c927220ce103d3c7b6c65"
-              }],
-              "links": {
-                "related": "/pub/patient/5c3c927220ce103d3c7b6c65/organizations"
-              }
-            },
             "coaches": {
               "data": [],
               "links": {
@@ -5865,20 +5846,20 @@ definitions:
                 items:
                   type: string
                   description: ID of group
-              identity_provider_email_dob:
-                description: Set of fields to search for a participant before create/update operation. Includes identity_provider object and email + birth_date pair. At least one of these is required.
+              identity_provider:
+                description: External identity provider to filter against.
                 type: object
                 properties:
-                  identity_provider:
-                    type: object
-                    description: External identity provider
-                    properties:
-                      type:
-                        type: string
-                        description: External identity name or type
-                      profile_id:
-                        type: string
-                        description: Value in external system
+                  type:
+                    type: string
+                    description: External identity type or name
+                  profile_id:
+                    type: string
+                    description: Value in external system
+              email_birth_date:
+                description: Email and date of birth values pair.
+                type: object
+                properties:
                   email_address:
                     type: string
                     description: Primary email address
@@ -5890,7 +5871,7 @@ definitions:
       data:
         $ref: "#/definitions/PatientResource"
     example:
-      Patient is searched by identifier and groups pair:
+      Patient is filtered by identifier and groups pair:
         {
           "meta": {
             "query": {
@@ -5914,15 +5895,29 @@ definitions:
             }
           }
         }
-      Patient is searched by identity_provider_email_dob:
+      Patient is filtered by identity_provider:
         {
           "meta": {
             "query": {
-              "identity_provider_email_dob": {
-                "identity_provider": {
-                  "type": "Fitbit",
-                  "profile_id": "229C9A"
-                },
+              "identity_provider": {
+                "type": "Fitbit",
+                "profile_id": "229C9A"
+              }
+            }
+          },
+          "data": {
+            "type": "patient",
+            "attributes": {
+              "first_name": "Jim",
+              "last_name": "Green"
+            }
+          }
+        }
+      Patient is filtered by email_birth_date:
+        {
+          "meta": {
+            "query": {
+              "email_birth_date": {
                 "email_address": "jim.green@example.com",
                 "birth_date": "1980-04-22"
               }
@@ -5933,16 +5928,6 @@ definitions:
             "attributes": {
               "first_name": "Jim",
               "last_name": "Green"
-            },
-            "relationships": {
-              "groups": {
-                "data": [
-                  {
-                    "type": "organization",
-                    "id": "5c3c927220ce103d3c7b6c65"
-                  }
-                ]
-              }
             }
           }
         }
