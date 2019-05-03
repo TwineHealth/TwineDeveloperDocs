@@ -1932,7 +1932,7 @@ paths:
           required: false
           default: 50
           minimum: 0
-        - name: page[after]
+        - name: page[cursor]
           in: query
           description: Page cursor
           type: string
