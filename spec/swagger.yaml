@@ -112,6 +112,8 @@ tags:
     description: A patient is the core user of Fitbit Plus.
   - name: plan
     description: A plan is the set of actions and associated goals for a patient.
+  - name: result
+    description: A patient health result is a quantitative result for a patient.
   - name: reward
     description: A reward allocates a portion of the budget from the reward program activation for achieving a particular goal and sets a target date.
   - name: reward earning
@@ -144,6 +146,7 @@ x-tagGroups:
       - metric
       - patient
       - plan
+      - result
       - reward
       - reward earning
       - reward earning fulfillment
@@ -1866,6 +1869,117 @@ paths:
           description: Invalid Request
           schema:
             $ref: '#/definitions/CreateOrUpdateErrorResponse'
+
+  /result:
+    get:
+      tags:
+        - result
+      summary: List patient health results
+      description: Get a list of patient health results.
+      operationId: fetchPatientHealthResults
+      parameters:
+        - name: filter[patient]
+          in: query
+          description: Filter the patient health results for a specified patient
+          required: true
+          type: string
+        - name: filter[actions]
+          in: query
+          description: A comma-separated list of action identifiers
+          type: string
+        - name: filter[start_at]
+          in: query
+          description: Filter results that occurred after the passed ISO date and time string
+          type: string
+          format: dateTime
+        - name: filter[end_at]
+          in: query
+          description: Filter results that occurred before the passed ISO date and time string
+          type: string
+          format: dateTime
+        - name: filter[threads]
+          in: query
+          description: A comma-separated list of thread identifiers
+          type: string
+        - name: filter[created_at]
+          in: query
+          type: string
+          description: |
+            The start (inclusive) and end (exclusive) dates are ISO date and time strings separated by `..`. Example for results created in November 2017 (America/New_York): `filter[created_at]=2017-11-01T00:00:00-04:00..2017-12-01T00:00:00-05:00`
+        - name: filter[updated_at]
+          in: query
+          type: string
+          description: |
+            The start (inclusive) and end (exclusive) dates are ISO date and time strings separated by `..`. Example for results updated in November 2017 (America/New_York): `filter[updated_at]=2017-11-01T00:00:00-04:00..2017-12-01T00:00:00-05:00`
+        - name: page[number]
+          in: query
+          description: Page number
+          required: false
+          type: integer
+          default: 1
+        - name: page[size]
+          in: query
+          description: Page size
+          required: false
+          type: integer
+          default: 10
+          minimum: 0
+          maximum: 50
+        - name: page[limit]
+          in: query
+          description: Page limit
+          type: integer
+          required: false
+          default: 50
+          minimum: 0
+        - name: page[after]
+          in: query
+          description: Page cursor
+          type: string
+          required: false
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchPatientHealthResultResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+  /result/{id}:
+    get:
+        tags:
+          - result
+        summary: Get a patient health result
+        description: Get patient health result by id.
+        operationId: fetchPatientHealthResult
+        parameters:
+          - name: id
+            in: path
+            description: Patient health result identifier
+            required: true
+            type: string
+        responses:
+          '200':
+            description: OK
+            schema:
+              $ref: '#/definitions/FetchPatientHealthResultResponse'
+          '401':
+            description: Unauthorized
+            schema:
+              $ref: '#/definitions/FetchErrorResponse'
+          '403':
+            description: Forbidden
+            schema:
+              $ref: '#/definitions/FetchErrorResponse'
 
   /reward:
     post:
@@ -6048,6 +6162,239 @@ definitions:
       data:
         $ref: '#/definitions/PatientPlanSummaryResource'
   # END /patient_plan_summary definitions
+
+  # BEGIN /result defintions
+  PatientHealthResultResource:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          type:
+            type: string
+            description: Type of result. Usually the same as metric_type except for lifestyle actions
+          metric_type:
+            type: string
+            enum:
+              - blood_pressure_systolic
+              - blood_pressure_diastolic
+              - hemoglobin_a1c
+              - hdl_cholesterol
+              - ldl_cholesterol
+              - total_cholesterol
+              - triglycerides
+              - blood_urea_nitrogen
+              - creatinine
+              - hemoglobin
+              - hematocrit
+              - total_serum_iron
+              - thyroid_stimulating_hormone
+              - free_thyroxine
+              - free_triiodothyronine
+              - total_triiodothyronine
+              - cd4_cell_count
+              - hiv_viral_load
+              - inr
+              - free_testosterone
+              - total_testosterone
+              - c_reactive_protein
+              - prostate_specific_antigen
+              - cotinine
+              - c_peptide
+              - blood_pressure
+              - blood_glucose
+              - weight
+              - heart_rate
+              - body_fat_percentage
+              - body_mass_index
+              - body_temperature
+              - forced_expiratory_volume1
+              - forced_vital_capacity
+              - lean_body_mass
+              - nausea_level
+              - oxygen_saturation
+              - pain_level
+              - peak_expiratory_flow_rate
+              - peripheral_perfusion_index
+              - respiratory_rate
+              - inhaler_usage
+          annotations:
+            type: array
+            items:
+              type: object
+              properties:
+                text:
+                  type: string
+                title:
+                  type: string
+          skipped:
+            type: boolean
+          occurred_at:
+            type: string
+            format: dateTime
+            example: '2018-09-18T12:24:37.000Z'
+          occurred_at_time_zone:
+            type: string
+            example: 'America/New_York'
+          window:
+            type: string
+          data:
+            type: object
+            properties:
+              value:
+                description: Can be any value (number, boolean, string, object) depending on the metric type. Most values are of type number
+          _thread:
+            type: string
+            description: Links together results. This should be the same as the thread of _action, if it is defined
+          channel:
+            type: string
+          external_id:
+            type: string
+          source:
+            type: object
+            properties:
+              source_id:
+                type: string
+              name:
+                type: string
+              metadata:
+                description: Can be any value
+          aggregation:
+            type: string
+
+      relationships:
+        type: object
+        properties:
+          patient:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+                    description: Required if the `meta.query` is not defined.
+                    example: '5c0fc0d02d02421ed70ca1d1'
+                  meta:
+                    type: object
+                    description: Allows the specification of a query for a patient rather than providing a patient id directly
+                    required:
+                      - query
+                    properties:
+                      query:
+                        type: object
+                        description: The query must return one and only one patient.
+                        required:
+                          - identifier
+                        properties:
+                          groups:
+                            type: array
+                            items:
+                              type: string
+                          organization:
+                            type: string
+                          identifier:
+                            type: object
+                            required:
+                              - system
+                              - value
+                            properties:
+                              system:
+                                type: string
+                              value:
+                                type: string
+              links:
+                type: object
+          action:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+          metric:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  id:
+                    type: string
+              links:
+                type: object
+    example:
+      {
+        "data": {
+            "type": "result",
+            "id": "5c0fc0d42d02421ed70cae16",
+            "attributes": {
+                "type": "medication",
+                "annotations": [],
+                "occurred_at": "2018-09-18T12:24:37.000Z",
+                "occurred_at_time_zone": "America/New_York",
+                "window": "5c0fc0d42d02421ed70cae01",
+                "data": {
+                    "value": 1
+                },
+                "_thread": "569c631f4b378f51306324f2d69fd29aa0c034ac",
+                "source": {},
+                "created_at": "2018-09-18T12:24:37.000Z",
+                "created_by": "5c0fc0d02d02421ed70ca1d1",
+                "updated_at": "2018-09-18T12:24:37.000Z",
+                "updated_by": "5c0fc0d02d02421ed70ca1d1"
+            },
+            "relationships": {
+                "action": {
+                    "data": {
+                        "type": "action",
+                        "id": "5ada648779672451a6c1b095"
+                    }
+                },
+                "patient": {
+                    "data": {
+                        "type": "patient",
+                        "id": "5c0fc0d02d02421ed70ca1d1"
+                    }
+                },
+                "metric": {
+                    "data": {
+                        "type": "patient_health_metric",
+                        "id": "5c0fc0d42d02421ed70cae16"
+                    }
+                }
+            }
+        }
+      }
+  FetchPatientHealthResultResponse:
+    type: object
+    required:
+      - data
+    properties:
+      meta:
+        $ref: '#/definitions/FetchMetaResponse'
+      links:
+        $ref: '#/definitions/CollectionResponseLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/PatientHealthResultResource'
+  # END /result definitions
 
   # BEGIN /reward_program_activation defintions
   RewardProgramActivationResource:
