@@ -2021,7 +2021,6 @@ paths:
         - name: filter[patient]
           in: query
           description: Patient identifier
-          required: true
           type: string
         - name: filter[reward_program_activation]
           in: query
@@ -2031,6 +2030,16 @@ paths:
           in: query
           description: Thread identifier
           type: string
+        - name: filter[groups]
+          in: query
+          type: string
+          description: |
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[organization]`.
+        - name: filter[organization]
+          in: query
+          type: string
+          description: |
+            Fitbit Plus organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`.
       responses:
         '200':
           description: OK
