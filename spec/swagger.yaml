@@ -2020,7 +2020,8 @@ paths:
       parameters:
         - name: filter[patient]
           in: query
-          description: Patient identifier
+          description: |
+            Patient identifier. Note that one of the following filters must be specified: `filter[groups]`, `filter[organization]`.
           type: string
         - name: filter[reward_program_activation]
           in: query
