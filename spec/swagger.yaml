@@ -380,7 +380,37 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-
+  /coach:
+    get:
+      tags:
+        - coach
+      summary: List coaches
+      description: Get a list of coaches matching the specified filters.
+      operationId: fetchCoaches
+      parameters:
+        - name: filter[groups]
+          in: query
+          type: string
+          description: |
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[groups]`, `filter[organization]`.
+        - name: filter[organization]
+          in: query
+          type: string
+          description: |
+            Fitbit Plus organization id. Note that one of the following filters must be specified: `filter[groups]`, `filter[organization]`.
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchCoachesResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
   /coach/{id}:
     get:
       tags:
@@ -407,7 +437,6 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
-
   /reward_program:
     post:
       tags:
@@ -447,9 +476,14 @@ paths:
       parameters:
         - name: filter[groups]
           in: query
-          description: Comma-separated list of group identifiers
-          required: true
+          description: |
+            Comma-separated list of group identifiers. Note that one of the following filters must be specified: `filter[groups]`, `filter[organization]`.
           type: string
+        - name: filter[organization]
+          in: query
+          type: string
+          description: |
+            Fitbit Plus organization id. Note that one of the following filters must be specified: `filter[groups]`, `filter[organization]`.
       responses:
         '200':
           description: OK
@@ -1141,6 +1175,54 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/FetchErrorResponse'
+  /health_profile_question:
+    get:
+      tags:
+        - health profile question
+      summary: List health profile questions
+      description: Get a list of health profile questions
+      operationId: fetchHealthProfileQuestions
+      parameters:
+        - name: filter[patient]
+          in: query
+          type: string
+          description: |
+            Patient id to fetch healt profile questions. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+        - name: filter[groups]
+          in: query
+          type: string
+          description: |
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+        - name: filter[organization]
+          in: query
+          type: string
+          description: |
+            Fitbit Plus organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[group]`, or `filter[organization]`.
+        - name: include
+          description: List of related resources to include in the response
+          in: query
+          required: false
+          type: string
+          enum:
+            - question_definition
+            - answer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FetchHealthProfileQuestionsResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
+        '409':
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/FetchErrorResponse'
   /health_profile_question/{id}:
     get:
       tags:
@@ -1408,9 +1490,19 @@ paths:
       parameters:
         - name: filter[patient]
           in: query
-          description: Filter the patient health metrics for a specified patient
-          required: true
+          description: |
+            Filter the patient health metrics for a specified patient. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`.
           type: string
+        - name: filter[groups]
+          in: query
+          type: string
+          description: |
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`.
+        - name: filter[organization]
+          in: query
+          type: string
+          description: |
+            Fitbit Plus organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`.
         - name: page[number]
           in: query
           description: Page number
@@ -1774,8 +1866,18 @@ paths:
         - name: filter[patient]
           in: query
           type: string
-          description: Patient id to fetch plan summary for
-          required: true
+          description: |
+            Patient id to fetch plan summary for. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`.
+        - name: filter[groups]
+          in: query
+          type: string
+          description: |
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`.
+        - name: filter[organization]
+          in: query
+          type: string
+          description: |
+            Fitbit Plus organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`.
         - name: include
           description: List of related resources to include in the response
           in: query
@@ -2020,8 +2122,8 @@ paths:
       parameters:
         - name: filter[patient]
           in: query
-          description: Patient identifier
-          required: true
+          description: |
+            Patient identifier. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`.
           type: string
         - name: filter[reward_program_activation]
           in: query
@@ -2031,6 +2133,16 @@ paths:
           in: query
           description: Thread identifier
           type: string
+        - name: filter[groups]
+          in: query
+          type: string
+          description: |
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`.
+        - name: filter[organization]
+          in: query
+          type: string
+          description: |
+            Fitbit Plus organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`.
       responses:
         '200':
           description: OK
@@ -2280,9 +2392,19 @@ paths:
       parameters:
         - name: filter[patient]
           in: query
-          description: Patient identifier
-          required: true
+          description: |
+            Patient identifier. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`.
           type: string
+        - name: filter[groups]
+          in: query
+          type: string
+          description: |
+            Comma-separated list of group ids. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`.
+        - name: filter[organization]
+          in: query
+          type: string
+          description: |
+            Fitbit Plus organization id. Note that one of the following filters must be specified: `filter[patient]`, `filter[groups]`, `filter[organization]`.
       responses:
         '200':
           description: OK
@@ -4500,6 +4622,27 @@ definitions:
           $ref: '#/definitions/FetchMetaResponse'
         data:
           $ref: '#/definitions/HealthProfileQuestionResource'
+        included:
+          description: |
+            Related resources which are included in the response based on the `include` param.
+            Attributes of each resource will vary depending on the type.
+            See [question_definition](#operation/fetchHealthQuestionDefinition), [answer](#operation/fetchHealthProfileAnswer)
+          type: array
+          items:
+            $ref: '#/definitions/Resource'
+  FetchHealthProfileQuestionsResponse:
+    type: object
+    required:
+      - data
+    properties:
+        meta:
+          $ref: '#/definitions/FetchMetaResponse'
+        links:
+          $ref: '#/definitions/CollectionResponseLinks'
+        data:
+          type: array
+          items:
+            $ref: '#/definitions/HealthProfileQuestionResource'
         included:
           description: |
             Related resources which are included in the response based on the `include` param.
