@@ -1,0 +1,22 @@
+{
+  "name": "swagger-ui-dist",
+  "version": "3.24.0",
+  "main": "index.js",
+  "repository": "git@github.com:swagger-api/swagger-ui.git",
+  "contributors": [
+    "(in alphabetical order)",
+    "Anna Bodnia <anna.bodnia@gmail.com>",
+    "Buu Nguyen <buunguyen@gmail.com>",
+    "Josh Ponelat <jponelat@gmail.com>",
+    "Kyle Shockey <kyleshockey1@gmail.com>",
+    "Robert Barnwell <robert@robertismy.name>",
+    "Sahar Jafari <shr.jafari@gmail.com>"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {},
+  "devDependencies": {}
+
+,"_resolved": "https://artifacts.site-ops.fitbit.com:443/artifactory/api/npm/npm-virtual/swagger-ui-dist/-/swagger-ui-dist-3.24.0.tgz"
+,"_integrity": "sha1-cAqhmB16QHe/mT9EttpZZkFhYKY="
+,"_from": "swagger-ui-dist@3.24.0"
+}
